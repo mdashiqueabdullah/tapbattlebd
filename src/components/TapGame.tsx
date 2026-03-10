@@ -162,7 +162,7 @@ function randomPosition() {
 }
 
 export default function TapGame({ isPractice, attemptsRemaining, onGameEnd, onCancel }: TapGameProps) {
-  const [phase, setPhase] = useState<"ready" | "playing" | "done">("ready");
+  const [phase, setPhase] = useState<"ready" | "starting" | "playing" | "submitting" | "done">("ready");
   const [score, setScore] = useState(0);
   const [ballType, setBallType] = useState<BallType>("normal");
   const [flyingCoins, setFlyingCoins] = useState<FlyingCoin[]>([]);
@@ -173,6 +173,8 @@ export default function TapGame({ isPractice, attemptsRemaining, onGameEnd, onCa
   const [comboMultiplier, setComboMultiplier] = useState(1);
   const [bonusEvent, setBonusEvent] = useState<string | null>(null);
   const [isDoubleScore, setIsDoubleScore] = useState(false);
+  const [verifiedScore, setVerifiedScore] = useState<number | null>(null);
+  const [wasFlagged, setWasFlagged] = useState(false);
 
   // Lion bonus state
   const [lion, setLion] = useState<LionBonus | null>(null);
@@ -180,6 +182,8 @@ export default function TapGame({ isPractice, attemptsRemaining, onGameEnd, onCa
   const [chest, setChest] = useState<LuckyChest | null>(null);
   // Frenzy mode state
   const [isFrenzy, setIsFrenzy] = useState(false);
+
+  const { startSession, recordTap, submitScore } = useAntiCheat();
 
   const scoreRef = useRef(0);
   const coinIdRef = useRef(0);
@@ -208,15 +212,54 @@ export default function TapGame({ isPractice, attemptsRemaining, onGameEnd, onCa
     if (lionTimerRef.current) clearTimeout(lionTimerRef.current);
     if (chestTimerRef.current) clearTimeout(chestTimerRef.current);
     if (frenzyTimerRef.current) clearTimeout(frenzyTimerRef.current);
-    setPhase("done");
+    setPhase("submitting");
   }, [clearInactivityTimer]);
+
+  // Submit score to server when phase becomes "submitting"
+  useEffect(() => {
+    if (phase !== "submitting") return;
+    let cancelled = false;
+
+    const doSubmit = async () => {
+      const result = await submitScore(scoreRef.current);
+      if (cancelled) return;
+
+      if (result.success) {
+        setVerifiedScore(result.verifiedScore ?? scoreRef.current);
+        setWasFlagged(result.flagged ?? false);
+        if (result.flagged) {
+          toast.error("সন্দেহজনক কার্যকলাপ শনাক্ত হয়েছে। স্কোর রিভিউ করা হবে।");
+        }
+      } else {
+        // Fallback: use client score for practice, 0 for ranked
+        setVerifiedScore(isPractice ? scoreRef.current : 0);
+        if (!isPractice) {
+          toast.error("স্কোর জমা দিতে সমস্যা হয়েছে।");
+        }
+      }
+      setPhase("done");
+    };
+
+    doSubmit();
+    return () => { cancelled = true; };
+  }, [phase, submitScore, isPractice]);
 
   const resetInactivityTimer = useCallback(() => {
     clearInactivityTimer();
     inactivityTimerRef.current = setTimeout(endSession, INACTIVITY_TIMEOUT_MS);
   }, [clearInactivityTimer, endSession]);
 
-  const startGame = useCallback(() => {
+  const startGame = useCallback(async () => {
+    setPhase("starting");
+
+    // Start anti-cheat session
+    const result = await startSession(isPractice);
+    if (!result.success) {
+      toast.error(result.error || "সেশন শুরু করতে ব্যর্থ। আবার চেষ্টা করুন।");
+      setPhase("ready");
+      return;
+    }
+
     setPhase("playing");
     setScore(0);
     scoreRef.current = 0;
@@ -232,7 +275,9 @@ export default function TapGame({ isPractice, attemptsRemaining, onGameEnd, onCa
     setLion(null);
     setChest(null);
     setIsFrenzy(false);
-  }, []);
+    setVerifiedScore(null);
+    setWasFlagged(false);
+  }, [isPractice, startSession]);
 
   useEffect(() => {
     if (phase === "playing") {
