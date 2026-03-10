@@ -124,7 +124,7 @@ export default function Dashboard() {
               )}
 
               {/* Daily Streak */}
-              <div className="mb-6">
+              <div className="mb-5">
                 <DailyStreak />
               </div>
 
