@@ -3,11 +3,13 @@ import { Shield, Users, Trophy, CreditCard, BarChart3, AlertTriangle, Download, 
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
+import AntiCheatPanel from "@/components/AntiCheatPanel";
 
 const tabs = [
   { key: "overview", label: "ওভারভিউ", icon: BarChart3 },
   { key: "users", label: "ইউজার", icon: Users },
   { key: "leaderboard", label: "লিডারবোর্ড", icon: Trophy },
+  { key: "anticheat", label: "অ্যান্টি-চিট", icon: Shield },
   { key: "payouts", label: "পেআউট", icon: CreditCard },
   { key: "purchases", label: "পার্চেজ", icon: ShoppingCart },
   { key: "referrals", label: "রেফারেল", icon: Share2 },
@@ -442,6 +444,8 @@ export default function Admin() {
               </div>
             </div>
           )}
+
+          {activeTab === "anticheat" && <AntiCheatPanel />}
 
           {activeTab === "referrals" && (
             <div>

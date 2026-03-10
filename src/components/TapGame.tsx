@@ -9,6 +9,8 @@ import {
 } from "@/lib/prizes";
 import { BannerAd, RectangleAd } from "@/components/ads/AdContainer";
 import { t } from "@/lib/i18n";
+import { useAntiCheat } from "@/hooks/useAntiCheat";
+import { toast } from "sonner";
 
 interface TapGameProps {
   isPractice: boolean;
@@ -160,7 +162,7 @@ function randomPosition() {
 }
 
 export default function TapGame({ isPractice, attemptsRemaining, onGameEnd, onCancel }: TapGameProps) {
-  const [phase, setPhase] = useState<"ready" | "playing" | "done">("ready");
+  const [phase, setPhase] = useState<"ready" | "starting" | "playing" | "submitting" | "done">("ready");
   const [score, setScore] = useState(0);
   const [ballType, setBallType] = useState<BallType>("normal");
   const [flyingCoins, setFlyingCoins] = useState<FlyingCoin[]>([]);
@@ -171,6 +173,8 @@ export default function TapGame({ isPractice, attemptsRemaining, onGameEnd, onCa
   const [comboMultiplier, setComboMultiplier] = useState(1);
   const [bonusEvent, setBonusEvent] = useState<string | null>(null);
   const [isDoubleScore, setIsDoubleScore] = useState(false);
+  const [verifiedScore, setVerifiedScore] = useState<number | null>(null);
+  const [wasFlagged, setWasFlagged] = useState(false);
 
   // Lion bonus state
   const [lion, setLion] = useState<LionBonus | null>(null);
@@ -178,6 +182,8 @@ export default function TapGame({ isPractice, attemptsRemaining, onGameEnd, onCa
   const [chest, setChest] = useState<LuckyChest | null>(null);
   // Frenzy mode state
   const [isFrenzy, setIsFrenzy] = useState(false);
+
+  const { startSession, recordTap, submitScore } = useAntiCheat();
 
   const scoreRef = useRef(0);
   const coinIdRef = useRef(0);
@@ -206,15 +212,54 @@ export default function TapGame({ isPractice, attemptsRemaining, onGameEnd, onCa
     if (lionTimerRef.current) clearTimeout(lionTimerRef.current);
     if (chestTimerRef.current) clearTimeout(chestTimerRef.current);
     if (frenzyTimerRef.current) clearTimeout(frenzyTimerRef.current);
-    setPhase("done");
+    setPhase("submitting");
   }, [clearInactivityTimer]);
+
+  // Submit score to server when phase becomes "submitting"
+  useEffect(() => {
+    if (phase !== "submitting") return;
+    let cancelled = false;
+
+    const doSubmit = async () => {
+      const result = await submitScore(scoreRef.current);
+      if (cancelled) return;
+
+      if (result.success) {
+        setVerifiedScore(result.verifiedScore ?? scoreRef.current);
+        setWasFlagged(result.flagged ?? false);
+        if (result.flagged) {
+          toast.error("সন্দেহজনক কার্যকলাপ শনাক্ত হয়েছে। স্কোর রিভিউ করা হবে।");
+        }
+      } else {
+        // Fallback: use client score for practice, 0 for ranked
+        setVerifiedScore(isPractice ? scoreRef.current : 0);
+        if (!isPractice) {
+          toast.error("স্কোর জমা দিতে সমস্যা হয়েছে।");
+        }
+      }
+      setPhase("done");
+    };
+
+    doSubmit();
+    return () => { cancelled = true; };
+  }, [phase, submitScore, isPractice]);
 
   const resetInactivityTimer = useCallback(() => {
     clearInactivityTimer();
     inactivityTimerRef.current = setTimeout(endSession, INACTIVITY_TIMEOUT_MS);
   }, [clearInactivityTimer, endSession]);
 
-  const startGame = useCallback(() => {
+  const startGame = useCallback(async () => {
+    setPhase("starting");
+
+    // Start anti-cheat session
+    const result = await startSession(isPractice);
+    if (!result.success) {
+      toast.error(result.error || "সেশন শুরু করতে ব্যর্থ। আবার চেষ্টা করুন।");
+      setPhase("ready");
+      return;
+    }
+
     setPhase("playing");
     setScore(0);
     scoreRef.current = 0;
@@ -230,7 +275,9 @@ export default function TapGame({ isPractice, attemptsRemaining, onGameEnd, onCa
     setLion(null);
     setChest(null);
     setIsFrenzy(false);
-  }, []);
+    setVerifiedScore(null);
+    setWasFlagged(false);
+  }, [isPractice, startSession]);
 
   useEffect(() => {
     if (phase === "playing") {
@@ -458,6 +505,9 @@ export default function TapGame({ isPractice, attemptsRemaining, onGameEnd, onCa
 
     setBallType(pickBallType());
 
+    // Record tap for anti-cheat
+    recordTap(currentType, basePts, multiplier);
+
     setTimeout(() => {
       const newScore = Math.max(0, scoreRef.current + basePts);
       scoreRef.current = newScore;
@@ -492,13 +542,13 @@ export default function TapGame({ isPractice, attemptsRemaining, onGameEnd, onCa
   }, [phase, ballType, isDoubleScore, comboMultiplier, bonusEvent, isFrenzy, resetInactivityTimer, spawnParticles, spawnFloatingText, trySpawnLion, trySpawnChest, activateFrenzy]);
 
   useEffect(() => {
-    if (phase === "done") onGameEnd(scoreRef.current);
-  }, [phase, onGameEnd]);
+    if (phase === "done") onGameEnd(verifiedScore ?? scoreRef.current);
+  }, [phase, onGameEnd, verifiedScore]);
 
   const currentStyle = BALL_STYLES[ballType];
 
   // Ready screen
-  if (phase === "ready") {
+  if (phase === "ready" || phase === "starting") {
     return (
       <div className="fixed inset-0 z-50 bg-background flex flex-col items-center justify-center p-6">
         <div className="text-center max-w-sm">
@@ -557,9 +607,10 @@ export default function TapGame({ isPractice, attemptsRemaining, onGameEnd, onCa
 
           <button
             onClick={startGame}
-            className="w-full py-4 rounded-xl gradient-primary text-primary-foreground font-bold text-lg neon-border"
+            disabled={phase === "starting"}
+            className="w-full py-4 rounded-xl gradient-primary text-primary-foreground font-bold text-lg neon-border disabled:opacity-50"
           >
-            {t("tapToStart")}
+            {phase === "starting" ? "সেশন শুরু হচ্ছে..." : t("tapToStart")}
           </button>
           <button onClick={onCancel} className="mt-3 text-sm text-muted-foreground hover:text-foreground">
             বাতিল
@@ -569,8 +620,24 @@ export default function TapGame({ isPractice, attemptsRemaining, onGameEnd, onCa
     );
   }
 
+  // Submitting screen
+  if (phase === "submitting") {
+    return (
+      <div className="fixed inset-0 z-50 bg-background flex flex-col items-center justify-center p-6">
+        <div className="text-center max-w-sm">
+          <h2 className="font-display text-2xl font-bold text-primary neon-text mb-2">স্কোর যাচাই হচ্ছে...</h2>
+          <p className="text-muted-foreground text-sm mb-4">আপনার স্কোর সার্ভারে যাচাই করা হচ্ছে</p>
+          <div className="glass-card p-8 my-6">
+            <div className="w-12 h-12 border-4 border-primary/30 border-t-primary rounded-full animate-spin mx-auto" />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   // Done screen
   if (phase === "done") {
+    const displayScore = verifiedScore ?? scoreRef.current;
     return (
       <div className="fixed inset-0 z-50 bg-background flex flex-col items-center justify-center p-6">
         <div className="text-center max-w-sm">
@@ -578,8 +645,17 @@ export default function TapGame({ isPractice, attemptsRemaining, onGameEnd, onCa
           <p className="text-muted-foreground text-sm mb-4">{INACTIVITY_TIMEOUT_SECONDS} সেকেন্ড নিষ্ক্রিয়তার কারণে সেশন শেষ হয়েছে</p>
           <div className="glass-card neon-border-gold p-8 my-6">
             <p className="text-muted-foreground text-sm mb-1">{t("finalScore")}</p>
-            <p className="font-display text-6xl font-black text-accent neon-text-gold">{scoreRef.current}</p>
+            <p className="font-display text-6xl font-black text-accent neon-text-gold">{displayScore}</p>
+            {!isPractice && (
+              <p className="text-xs text-muted-foreground mt-2">✅ সার্ভার যাচাইকৃত</p>
+            )}
           </div>
+          {wasFlagged && !isPractice && (
+            <div className="glass-card border border-destructive/30 p-3 mb-4">
+              <p className="text-destructive text-sm font-medium">⚠️ এই সেশনটি রিভিউয়ের জন্য ফ্ল্যাগ করা হয়েছে</p>
+              <p className="text-muted-foreground text-xs mt-1">অ্যাডমিন রিভিউয়ের পর স্কোর নিশ্চিত হবে</p>
+            </div>
+          )}
           {isPractice && (
             <p className="text-secondary text-sm mb-4">এটি প্র্যাকটিস মোড — লিডারবোর্ডে যাবে না</p>
           )}

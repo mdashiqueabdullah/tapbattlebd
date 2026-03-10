@@ -86,6 +86,99 @@ export type Database = {
         }
         Relationships: []
       }
+      game_sessions: {
+        Row: {
+          avg_interval_ms: number | null
+          bot_risk_score: number | null
+          client_score: number | null
+          created_at: string
+          ended_at: string | null
+          flag_reasons: string[] | null
+          flagged: boolean | null
+          focus_losses: number | null
+          id: string
+          interval_variance: number | null
+          ip_address: string | null
+          is_practice: boolean
+          max_interval_ms: number | null
+          min_interval_ms: number | null
+          review_status: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          screen_height: number | null
+          screen_width: number | null
+          session_token: string
+          started_at: string
+          status: string
+          tap_count: number | null
+          timezone: string | null
+          user_agent: string | null
+          user_id: string
+          verified_score: number | null
+          visibility_changes: number | null
+        }
+        Insert: {
+          avg_interval_ms?: number | null
+          bot_risk_score?: number | null
+          client_score?: number | null
+          created_at?: string
+          ended_at?: string | null
+          flag_reasons?: string[] | null
+          flagged?: boolean | null
+          focus_losses?: number | null
+          id?: string
+          interval_variance?: number | null
+          ip_address?: string | null
+          is_practice?: boolean
+          max_interval_ms?: number | null
+          min_interval_ms?: number | null
+          review_status?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          screen_height?: number | null
+          screen_width?: number | null
+          session_token: string
+          started_at?: string
+          status?: string
+          tap_count?: number | null
+          timezone?: string | null
+          user_agent?: string | null
+          user_id: string
+          verified_score?: number | null
+          visibility_changes?: number | null
+        }
+        Update: {
+          avg_interval_ms?: number | null
+          bot_risk_score?: number | null
+          client_score?: number | null
+          created_at?: string
+          ended_at?: string | null
+          flag_reasons?: string[] | null
+          flagged?: boolean | null
+          focus_losses?: number | null
+          id?: string
+          interval_variance?: number | null
+          ip_address?: string | null
+          is_practice?: boolean
+          max_interval_ms?: number | null
+          min_interval_ms?: number | null
+          review_status?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          screen_height?: number | null
+          screen_width?: number | null
+          session_token?: string
+          started_at?: string
+          status?: string
+          tap_count?: number | null
+          timezone?: string | null
+          user_agent?: string | null
+          user_id?: string
+          verified_score?: number | null
+          visibility_changes?: number | null
+        }
+        Relationships: []
+      }
       otp_verifications: {
         Row: {
           created_at: string
@@ -198,6 +291,33 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      rate_limits: {
+        Row: {
+          action: string
+          count: number
+          created_at: string
+          id: string
+          identifier: string
+          window_start: string
+        }
+        Insert: {
+          action: string
+          count?: number
+          created_at?: string
+          id?: string
+          identifier: string
+          window_start?: string
+        }
+        Update: {
+          action?: string
+          count?: number
+          created_at?: string
+          id?: string
+          identifier?: string
+          window_start?: string
+        }
+        Relationships: []
       }
       referrals: {
         Row: {
