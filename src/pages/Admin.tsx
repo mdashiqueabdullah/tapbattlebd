@@ -407,7 +407,39 @@ export default function Admin() {
           {activeTab === "leaderboard" && (
             <div>
               <h2 className="text-xl font-bold text-foreground mb-4">লিডারবোর্ড ম্যানেজমেন্ট</h2>
-              <p className="text-sm text-muted-foreground">চলতি মাসের লিডারবোর্ড এখানে দেখুন এবং প্রয়োজনে স্কোর অ্যাডজাস্ট করুন।</p>
+              <p className="text-xs text-muted-foreground mb-4">মোট স্কোর = অ্যাটেম্পট স্কোর + রেফার পয়েন্ট + স্ট্রিক পয়েন্ট</p>
+              <div className="glass-card overflow-hidden rounded-xl">
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="border-b border-border/30 text-muted-foreground">
+                        <th className="text-left p-3">#</th>
+                        <th className="text-left p-3">ইউজার</th>
+                        <th className="text-right p-3">অ্যাটেম্পট</th>
+                        <th className="text-right p-3">রেফার</th>
+                        <th className="text-right p-3">স্ট্রিক</th>
+                        <th className="text-right p-3">মোট</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-border/20">
+                      {[
+                        { rank: 1, username: "TapKing_BD", attemptTotal: 245, referral: 60, streak: 35, total: 340 },
+                        { rank: 2, username: "SpeedTapper", attemptTotal: 210, referral: 40, streak: 50, total: 300 },
+                        { rank: 3, username: "RajuGamer", attemptTotal: 198, referral: 20, streak: 25, total: 243 },
+                      ].map(u => (
+                        <tr key={u.rank}>
+                          <td className="p-3 font-display font-bold text-accent">{u.rank}</td>
+                          <td className="p-3 text-foreground font-medium">{u.username}</td>
+                          <td className="p-3 text-right text-primary">{u.attemptTotal}</td>
+                          <td className="p-3 text-right text-neon-pink">{u.referral}</td>
+                          <td className="p-3 text-right text-accent">{u.streak}</td>
+                          <td className="p-3 text-right font-display font-bold text-foreground">{u.total}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
             </div>
           )}
 

@@ -4,7 +4,7 @@ import Footer from "@/components/Footer";
 import CountdownTimer from "@/components/CountdownTimer";
 import { t } from "@/lib/i18n";
 import { mockLeaderboard } from "@/lib/mock-data";
-import { Trophy, Search } from "lucide-react";
+import { Trophy } from "lucide-react";
 import { BannerAd, RectangleAd } from "@/components/ads/AdContainer";
 
 const tabs = [
@@ -28,7 +28,8 @@ export default function Leaderboard() {
             <Trophy className="w-6 h-6 text-accent" />
             <h1 className="text-xl font-bold text-foreground">মাসিক লিডারবোর্ড</h1>
           </div>
-          <p className="text-sm text-muted-foreground mb-4">{t("contestEnds")}: <CountdownTimer compact /></p>
+          <p className="text-sm text-muted-foreground mb-1">{t("contestEnds")}: <CountdownTimer compact /></p>
+          <p className="text-[11px] text-muted-foreground mb-4">মোট স্কোর = অ্যাটেম্পট + রেফার + স্ট্রিক</p>
 
           {/* Tabs */}
           <div className="flex gap-1 mb-4 p-1 glass-card rounded-lg">
@@ -56,7 +57,10 @@ export default function Leaderboard() {
                     <span className="text-xl sm:text-2xl">{["🥇", "🥈", "🥉"][idx]}</span>
                     <p className={`font-bold ${isFirst ? "text-base sm:text-lg" : "text-xs sm:text-sm"} text-foreground mt-1 truncate max-w-[80px] sm:max-w-[100px]`}>{entry.username}</p>
                     <p className={`font-display font-bold ${isFirst ? "text-xl sm:text-2xl text-accent neon-text-gold" : "text-base sm:text-lg text-primary"}`}>{entry.totalScore}</p>
-                    {entry.referralPoints > 0 && <p className="text-[10px] text-neon-pink">+{entry.referralPoints} রেফার</p>}
+                    <div className="flex flex-wrap justify-center gap-x-2 mt-1">
+                      {entry.referralPoints > 0 && <span className="text-[10px] text-neon-pink">+{entry.referralPoints} রেফার</span>}
+                      {entry.streakPoints > 0 && <span className="text-[10px] text-accent">+{entry.streakPoints} স্ট্রিক</span>}
+                    </div>
                     <p className="text-xs text-muted-foreground">৳{entry.prize?.toLocaleString()}</p>
                   </div>
                 </div>
@@ -66,22 +70,24 @@ export default function Leaderboard() {
 
           {/* List */}
           <div className="glass-card divide-y divide-border/20 overflow-hidden rounded-xl">
-            <div className="flex items-center px-4 py-2 text-xs text-muted-foreground font-medium bg-muted/30">
-              <span className="w-10">#</span>
+            <div className="flex items-center px-3 py-2 text-[10px] text-muted-foreground font-medium bg-muted/30">
+              <span className="w-8">#</span>
               <span className="flex-1">{t("username")}</span>
-              <span className="w-14 text-right">গেম</span>
-              <span className="w-14 text-right">রেফার</span>
-              <span className="w-14 text-right">মোট</span>
+              <span className="w-12 text-right">অ্যাটেম্পট</span>
+              <span className="w-10 text-right">রেফার</span>
+              <span className="w-10 text-right">স্ট্রিক</span>
+              <span className="w-12 text-right">মোট</span>
             </div>
             {mockLeaderboard.map(entry => (
-              <div key={entry.rank} className={`flex items-center px-4 py-3 ${entry.rank <= 3 ? "bg-accent/5" : ""}`}>
-                <span className={`w-10 font-display font-bold text-sm ${entry.rank <= 3 ? "text-accent" : "text-muted-foreground"}`}>
+              <div key={entry.rank} className={`flex items-center px-3 py-3 ${entry.rank <= 3 ? "bg-accent/5" : ""}`}>
+                <span className={`w-8 font-display font-bold text-sm ${entry.rank <= 3 ? "text-accent" : "text-muted-foreground"}`}>
                   {entry.rank}
                 </span>
-                <span className="flex-1 font-medium text-foreground text-sm">{entry.username}</span>
-                <span className="w-14 text-right text-muted-foreground text-sm">{entry.bestScore}</span>
-                <span className="w-14 text-right text-neon-pink text-sm">{entry.referralPoints}</span>
-                <span className="w-14 text-right font-display font-bold text-primary text-sm">{entry.totalScore}</span>
+                <span className="flex-1 font-medium text-foreground text-sm truncate pr-1">{entry.username}</span>
+                <span className="w-12 text-right text-muted-foreground text-xs">{entry.attemptTotal}</span>
+                <span className="w-10 text-right text-neon-pink text-xs">{entry.referralPoints}</span>
+                <span className="w-10 text-right text-accent text-xs">{entry.streakPoints}</span>
+                <span className="w-12 text-right font-display font-bold text-primary text-sm">{entry.totalScore}</span>
               </div>
             ))}
           </div>

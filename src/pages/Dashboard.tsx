@@ -11,7 +11,8 @@ import { BannerAd, RectangleAd } from "@/components/ads/AdContainer";
 import { useAuth } from "@/hooks/useAuth";
 import { t } from "@/lib/i18n";
 import { MAX_RANKED_ATTEMPTS } from "@/lib/prizes";
-import { Gamepad2, Trophy, Award, Clock, Target, BarChart3, User, CreditCard, Users, Gift, ShoppingCart } from "lucide-react";
+import { mockAttemptHistory } from "@/lib/mock-data";
+import { Gamepad2, Trophy, Award, Clock, Target, BarChart3, User, CreditCard, Users, Gift, ShoppingCart, Flame, ListOrdered } from "lucide-react";
 import DailyStreak from "@/components/DailyStreak";
 
 export default function Dashboard() {
@@ -20,18 +21,16 @@ export default function Dashboard() {
   const [showBuyDialog, setShowBuyDialog] = useState(false);
   const { profile, refreshProfile } = useAuth();
 
-  // Use profile data or fallback to mock
-  const gameScore = profile?.lifetime_best_score ?? 65;
+  // Score breakdown
+  const attemptTotal = 95; // sum of all ranked attempt scores (mock)
   const referralPoints = profile?.referral_points ?? 0;
-  const totalScore = gameScore + referralPoints;
+  const streakPoints = 15; // mock — from daily_streaks.total_streak_points
+  const totalScore = attemptTotal + referralPoints + streakPoints;
   const extraAttempts = (profile as any)?.extra_attempts ?? 0;
+  const attemptsUsed = 3;
 
   const userData = {
     username: profile?.username || "Player_BD",
-    attemptsUsed: 3,
-    gameScore,
-    referralPoints,
-    totalScore,
     currentRank: 28,
   };
 
@@ -41,7 +40,7 @@ export default function Dashboard() {
     return (
       <TapGame
         isPractice={gameMode === "practice"}
-        attemptsRemaining={totalAttempts - userData.attemptsUsed}
+        attemptsRemaining={totalAttempts - attemptsUsed}
         onGameEnd={(score) => {
           console.log("Game ended with score:", score);
         }}
@@ -86,31 +85,49 @@ export default function Dashboard() {
 
           {activeTab === "main" && (
             <>
-              {/* Stats Grid */}
-              <div className="grid grid-cols-3 gap-3 mb-5">
-                {[
-                  { icon: Target, label: "গেম স্কোর", value: userData.gameScore, color: "text-primary" },
-                  { icon: Gift, label: "রেফার পয়েন্ট", value: userData.referralPoints, color: "text-neon-pink" },
-                  { icon: BarChart3, label: "মোট স্কোর", value: userData.totalScore, color: "text-accent" },
-                ].map((stat, i) => (
-                  <div key={i} className="glass-card p-4">
-                    <stat.icon className={`w-5 h-5 ${stat.color} mb-1.5`} />
-                    <p className="text-[11px] text-muted-foreground leading-tight">{stat.label}</p>
-                    <p className={`font-display text-xl font-bold ${stat.color} mt-0.5`}>{stat.value}</p>
+              {/* Score Breakdown */}
+              <div className="glass-card p-4 mb-5">
+                <h3 className="text-sm font-bold text-foreground mb-3 flex items-center gap-2">
+                  <BarChart3 className="w-4 h-4 text-primary" /> স্কোর ব্রেকডাউন
+                </h3>
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-muted-foreground flex items-center gap-1.5">
+                      <Target className="w-3.5 h-3.5 text-primary" /> অ্যাটেম্পট স্কোর
+                    </span>
+                    <span className="font-display font-bold text-primary">{attemptTotal}</span>
                   </div>
-                ))}
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-muted-foreground flex items-center gap-1.5">
+                      <Gift className="w-3.5 h-3.5 text-neon-pink" /> রেফার পয়েন্ট
+                    </span>
+                    <span className="font-display font-bold text-neon-pink">{referralPoints}</span>
+                  </div>
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-muted-foreground flex items-center gap-1.5">
+                      <Flame className="w-3.5 h-3.5 text-accent" /> স্ট্রিক পয়েন্ট
+                    </span>
+                    <span className="font-display font-bold text-accent">{streakPoints}</span>
+                  </div>
+                  <div className="border-t border-border/30 pt-2 mt-2 flex items-center justify-between">
+                    <span className="text-foreground font-semibold text-sm">মোট স্কোর</span>
+                    <span className="font-display text-xl font-bold text-foreground">{totalScore}</span>
+                  </div>
+                </div>
               </div>
+
+              {/* Stats Row */}
               <div className="grid grid-cols-2 gap-3 mb-5">
-                {[
-                  { icon: Trophy, label: t("currentRank"), value: `#${userData.currentRank}`, color: "text-accent" },
-                  { icon: Clock, label: t("attemptsUsed"), value: `${userData.attemptsUsed}/${totalAttempts}`, color: "text-secondary" },
-                ].map((stat, i) => (
-                  <div key={i} className="glass-card p-4">
-                    <stat.icon className={`w-5 h-5 ${stat.color} mb-1.5`} />
-                    <p className="text-[11px] text-muted-foreground leading-tight">{stat.label}</p>
-                    <p className={`font-display text-xl font-bold ${stat.color} mt-0.5`}>{stat.value}</p>
-                  </div>
-                ))}
+                <div className="glass-card p-4">
+                  <Trophy className="w-5 h-5 text-accent mb-1.5" />
+                  <p className="text-[11px] text-muted-foreground leading-tight">{t("currentRank")}</p>
+                  <p className="font-display text-xl font-bold text-accent mt-0.5">#{userData.currentRank}</p>
+                </div>
+                <div className="glass-card p-4">
+                  <Clock className="w-5 h-5 text-secondary mb-1.5" />
+                  <p className="text-[11px] text-muted-foreground leading-tight">{t("attemptsUsed")}</p>
+                  <p className="font-display text-xl font-bold text-secondary mt-0.5">{attemptsUsed}/{totalAttempts}</p>
+                </div>
               </div>
 
               {/* Extra Attempts Info */}
@@ -132,7 +149,7 @@ export default function Dashboard() {
               <div className="space-y-3 mb-5">
                 <button
                   onClick={() => setGameMode("ranked")}
-                  disabled={userData.attemptsUsed >= totalAttempts}
+                  disabled={attemptsUsed >= totalAttempts}
                   className="w-full py-4 rounded-xl gradient-primary text-primary-foreground font-bold text-lg neon-border flex items-center justify-center gap-2 disabled:opacity-50"
                 >
                   <Gamepad2 className="w-5 h-5" />
@@ -156,6 +173,32 @@ export default function Dashboard() {
                 <span className="font-semibold text-foreground">অতিরিক্ত অ্যাটেম্পট কিনুন</span>
                 <span className="font-display font-bold text-accent">৩০৳ থেকে</span>
               </button>
+
+              {/* Attempt History */}
+              <div className="glass-card p-4 mb-5">
+                <h3 className="text-sm font-bold text-foreground mb-3 flex items-center gap-2">
+                  <ListOrdered className="w-4 h-4 text-secondary" /> অ্যাটেম্পট হিস্ট্রি
+                </h3>
+                {mockAttemptHistory.length === 0 ? (
+                  <p className="text-sm text-muted-foreground">কোনো অ্যাটেম্পট নেই</p>
+                ) : (
+                  <div className="divide-y divide-border/20">
+                    {mockAttemptHistory.map((a) => (
+                      <div key={a.attempt} className="flex items-center justify-between py-2">
+                        <div>
+                          <span className="text-sm font-medium text-foreground">অ্যাটেম্পট #{a.attempt}</span>
+                          <p className="text-[11px] text-muted-foreground">{a.date}</p>
+                        </div>
+                        <span className="font-display font-bold text-primary text-sm">+{a.score}</span>
+                      </div>
+                    ))}
+                    <div className="pt-2 flex items-center justify-between">
+                      <span className="text-sm font-semibold text-foreground">মোট অ্যাটেম্পট স্কোর</span>
+                      <span className="font-display font-bold text-primary">{mockAttemptHistory.reduce((s, a) => s + a.score, 0)}</span>
+                    </div>
+                  </div>
+                )}
+              </div>
 
               {/* Purchase History */}
               <div className="mb-6">
