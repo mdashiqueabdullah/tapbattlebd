@@ -68,7 +68,7 @@ export function useContest(): UserContestData & {
       .select("*")
       .eq("month", month)
       .eq("year", year)
-      .single();
+      .maybeSingle();
 
     if (contestData) {
       setContest(contestData as unknown as Contest);
@@ -104,7 +104,7 @@ export function useContest(): UserContestData & {
       .select("*")
       .eq("user_id", user.id)
       .eq("contest_id", contestId)
-      .single();
+      .maybeSingle();
 
     if (lbEntry) {
       setAttemptsUsed((lbEntry as any).attempts_used ?? 0);
