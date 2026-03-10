@@ -19,6 +19,8 @@ import Contact from "./pages/Contact";
 import Admin from "./pages/Admin";
 import VerifyPhone from "./pages/VerifyPhone";
 import ReferralRules from "./pages/ReferralRules";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
