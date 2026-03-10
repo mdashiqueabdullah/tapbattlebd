@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { useAuth } from "@/hooks/useAuth";
@@ -7,12 +7,25 @@ import { toast } from "sonner";
 import { User, Phone, CreditCard, Calendar, Target, Trophy, Gamepad2, Edit3, Save } from "lucide-react";
 
 export default function Profile() {
-  const { profile, refreshProfile } = useAuth();
+  const { profile, refreshProfile, user } = useAuth();
   const [editing, setEditing] = useState(false);
   const [fullName, setFullName] = useState(profile?.full_name || "");
   const [bkash, setBkash] = useState(profile?.bkash_number || "");
   const [nagad, setNagad] = useState(profile?.nagad_number || "");
   const [saving, setSaving] = useState(false);
+  const [totalPrizeWon, setTotalPrizeWon] = useState(0);
+
+  useEffect(() => {
+    if (!user) return;
+    supabase
+      .from("monthly_winners")
+      .select("prize_amount")
+      .eq("user_id", user.id)
+      .then(({ data }) => {
+        const total = (data || []).reduce((sum, w) => sum + Number(w.prize_amount || 0), 0);
+        setTotalPrizeWon(total);
+      });
+  }, [user]);
 
   if (!profile) {
     return (
@@ -125,7 +138,7 @@ export default function Profile() {
               { icon: Gamepad2, label: "র‍্যাঙ্কড খেলা", value: profile.total_ranked_games, color: "text-primary" },
               { icon: Target, label: "প্র্যাকটিস", value: profile.total_practice_games, color: "text-secondary" },
               { icon: Trophy, label: "সেরা স্কোর", value: profile.lifetime_best_score, color: "text-accent" },
-              { icon: CreditCard, label: "মোট জয়", value: profile.total_wins, color: "text-neon-pink" },
+              { icon: CreditCard, label: "মোট জয়", value: `${totalPrizeWon}৳`, color: "text-neon-pink" },
             ].map((s, i) => (
               <div key={i} className="glass-card p-4">
                 <s.icon className={`w-5 h-5 ${s.color} mb-1`} />
