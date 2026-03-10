@@ -14,13 +14,167 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      otp_verifications: {
+        Row: {
+          created_at: string
+          expires_at: string
+          id: string
+          otp_code: string
+          phone_number: string
+          user_id: string | null
+          verified: boolean
+        }
+        Insert: {
+          created_at?: string
+          expires_at: string
+          id?: string
+          otp_code: string
+          phone_number: string
+          user_id?: string | null
+          verified?: boolean
+        }
+        Update: {
+          created_at?: string
+          expires_at?: string
+          id?: string
+          otp_code?: string
+          phone_number?: string
+          user_id?: string | null
+          verified?: boolean
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          bkash_number: string | null
+          country: string | null
+          created_at: string
+          email: string | null
+          full_name: string | null
+          id: string
+          is_banned: boolean
+          lifetime_best_score: number
+          nagad_number: string | null
+          phone_number: string | null
+          phone_verified: boolean
+          preferred_language: string | null
+          preferred_payout_method: string | null
+          referral_code: string
+          referral_points: number
+          referred_by_user_id: string | null
+          total_practice_games: number
+          total_ranked_games: number
+          total_wins: number
+          username: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          bkash_number?: string | null
+          country?: string | null
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id: string
+          is_banned?: boolean
+          lifetime_best_score?: number
+          nagad_number?: string | null
+          phone_number?: string | null
+          phone_verified?: boolean
+          preferred_language?: string | null
+          preferred_payout_method?: string | null
+          referral_code?: string
+          referral_points?: number
+          referred_by_user_id?: string | null
+          total_practice_games?: number
+          total_ranked_games?: number
+          total_wins?: number
+          username: string
+        }
+        Update: {
+          avatar_url?: string | null
+          bkash_number?: string | null
+          country?: string | null
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          is_banned?: boolean
+          lifetime_best_score?: number
+          nagad_number?: string | null
+          phone_number?: string | null
+          phone_verified?: boolean
+          preferred_language?: string | null
+          preferred_payout_method?: string | null
+          referral_code?: string
+          referral_points?: number
+          referred_by_user_id?: string | null
+          total_practice_games?: number
+          total_ranked_games?: number
+          total_wins?: number
+          username?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "profiles_referred_by_user_id_fkey"
+            columns: ["referred_by_user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      referrals: {
+        Row: {
+          created_at: string
+          id: string
+          phone_verified: boolean
+          points_awarded: number
+          referred_user_id: string
+          referrer_user_id: string
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          phone_verified?: boolean
+          points_awarded?: number
+          referred_user_id: string
+          referrer_user_id: string
+          status?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          phone_verified?: boolean
+          points_awarded?: number
+          referred_user_id?: string
+          referrer_user_id?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "referrals_referred_user_id_fkey"
+            columns: ["referred_user_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "referrals_referrer_user_id_fkey"
+            columns: ["referrer_user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      generate_referral_code: { Args: never; Returns: string }
     }
     Enums: {
       [_ in never]: never
