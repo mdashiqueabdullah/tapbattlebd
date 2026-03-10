@@ -324,8 +324,8 @@ export default function Admin() {
                       <tbody className="divide-y divide-border/20">
                         {purchases.map(p => (
                           <tr key={p.id}>
-                            <td className="p-3 text-foreground font-medium">
-                              {(p.profiles as any)?.username || "Unknown"}
+                            <td className="p-3 text-foreground font-medium text-xs font-mono">
+                              {p.user_id.slice(0, 8)}...
                             </td>
                             <td className="p-3 text-muted-foreground">
                               {p.payment_method === "bkash" ? "bKash" : "Nagad"}
