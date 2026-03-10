@@ -7,12 +7,25 @@ import { toast } from "sonner";
 import { User, Phone, CreditCard, Calendar, Target, Trophy, Gamepad2, Edit3, Save } from "lucide-react";
 
 export default function Profile() {
-  const { profile, refreshProfile } = useAuth();
+  const { profile, refreshProfile, user } = useAuth();
   const [editing, setEditing] = useState(false);
   const [fullName, setFullName] = useState(profile?.full_name || "");
   const [bkash, setBkash] = useState(profile?.bkash_number || "");
   const [nagad, setNagad] = useState(profile?.nagad_number || "");
   const [saving, setSaving] = useState(false);
+  const [totalPrizeWon, setTotalPrizeWon] = useState(0);
+
+  useEffect(() => {
+    if (!user) return;
+    supabase
+      .from("monthly_winners")
+      .select("prize_amount")
+      .eq("user_id", user.id)
+      .then(({ data }) => {
+        const total = (data || []).reduce((sum, w) => sum + Number(w.prize_amount || 0), 0);
+        setTotalPrizeWon(total);
+      });
+  }, [user]);
 
   if (!profile) {
     return (
