@@ -11,7 +11,8 @@ export default function Footer() {
             <span className="font-display text-sm font-bold text-primary">TAP BATTLE BD</span>
           </div>
           <div className="flex flex-wrap justify-center gap-4 text-sm text-muted-foreground">
-            <Link to="/rules" className="hover:text-primary transition-colors">নিয়মাবলী</Link>
+             <Link to="/rules" className="hover:text-primary transition-colors">নিয়মাবলী</Link>
+            <Link to="/referral-rules" className="hover:text-primary transition-colors">রেফার রুলস</Link>
             <Link to="/faq" className="hover:text-primary transition-colors">জিজ্ঞাসা</Link>
             <Link to="/privacy" className="hover:text-primary transition-colors">গোপনীয়তা</Link>
             <Link to="/terms" className="hover:text-primary transition-colors">শর্তাবলী</Link>

@@ -69,6 +69,7 @@ const AppRoutes = () => (
     <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
     <Route path="/payout" element={<ProtectedRoute><Payout /></ProtectedRoute>} />
     <Route path="/rules" element={<Rules />} />
+    <Route path="/referral-rules" element={<ReferralRules />} />
     <Route path="/faq" element={<FAQ />} />
     <Route path="/privacy" element={<Privacy />} />
     <Route path="/terms" element={<Terms />} />
