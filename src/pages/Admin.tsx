@@ -57,6 +57,9 @@ export default function Admin() {
     if (purchaseFilter !== "all") {
       query = query.eq("status", purchaseFilter);
     }
+    if (purchaseMethodFilter !== "all") {
+      query = query.eq("payment_method", purchaseMethodFilter);
+    }
 
     const { data, error } = await query;
     if (!error && data) {
