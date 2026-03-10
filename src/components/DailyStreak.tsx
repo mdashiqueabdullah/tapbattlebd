@@ -44,7 +44,7 @@ interface StreakData {
   total_streak_points: number;
 }
 
-export default function DailyStreak() {
+export default function DailyStreak({ onClaim }: { onClaim?: () => Promise<void> }) {
   const { user, refreshProfile } = useAuth();
   const [streakData, setStreakData] = useState<StreakData | null>(null);
   const [loading, setLoading] = useState(true);
