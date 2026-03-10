@@ -168,6 +168,11 @@ export default function Index() {
         </div>
       </section>
 
+      {/* ADSENSE: Banner ad before footer */}
+      <div className="container max-w-lg px-4">
+        <BannerAd />
+      </div>
+
       <Footer />
     </div>
   );
