@@ -114,7 +114,7 @@ export default function Index() {
       </div>
 
       {/* Live Leaderboard Preview */}
-      <section className="py-12 px-4">
+      <section className="py-12 md:py-16 px-4">
         <div className="container max-w-lg">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-xl font-bold text-foreground">🔥 লাইভ লিডারবোর্ড</h2>
