@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { GOLDEN_TARGET_CHANCE, GOLDEN_TARGET_POINTS, NORMAL_TARGET_POINTS, INACTIVITY_TIMEOUT_MS } from "@/lib/prizes";
+import { GOLDEN_TARGET_CHANCE, GOLDEN_TARGET_POINTS, NORMAL_TARGET_POINTS, INACTIVITY_TIMEOUT_MS, INACTIVITY_TIMEOUT_SECONDS } from "@/lib/prizes";
 import { BannerAd, RectangleAd } from "@/components/ads/AdContainer";
 import { t } from "@/lib/i18n";
 
@@ -141,7 +141,7 @@ export default function TapGame({ isPractice, attemptsRemaining, onGameEnd, onCa
           )}
           <h2 className="font-display text-3xl font-bold text-primary neon-text mb-4">TAP BATTLE</h2>
           <p className="text-muted-foreground mb-2">ট্যাপ করতে থাকো, স্কোর বাড়াও!</p>
-          <p className="text-muted-foreground text-xs mb-4">৫ মিনিট নিষ্ক্রিয় থাকলে সেশন শেষ হবে</p>
+          <p className="text-muted-foreground text-xs mb-4">{INACTIVITY_TIMEOUT_SECONDS} সেকেন্ড নিষ্ক্রিয় থাকলে সেশন শেষ হবে</p>
           <div className="flex gap-4 justify-center my-6">
             <div className="glass-card p-3 text-center">
               <div className="w-10 h-10 rounded-full gradient-primary mx-auto mb-1" />
@@ -172,7 +172,7 @@ export default function TapGame({ isPractice, attemptsRemaining, onGameEnd, onCa
       <div className="fixed inset-0 z-50 bg-background flex flex-col items-center justify-center p-6">
         <div className="text-center max-w-sm">
           <h2 className="font-display text-2xl font-bold text-accent neon-text-gold mb-2">{t("gameOver")}</h2>
-          <p className="text-muted-foreground text-sm mb-4">নিষ্ক্রিয়তার কারণে সেশন শেষ হয়েছে</p>
+          <p className="text-muted-foreground text-sm mb-4">{INACTIVITY_TIMEOUT_SECONDS} সেকেন্ড নিষ্ক্রিয়তার কারণে সেশন শেষ হয়েছে</p>
           <div className="glass-card neon-border-gold p-8 my-6">
             <p className="text-muted-foreground text-sm mb-1">{t("finalScore")}</p>
             <p className="font-display text-6xl font-black text-accent neon-text-gold">{scoreRef.current}</p>
@@ -267,7 +267,7 @@ export default function TapGame({ isPractice, attemptsRemaining, onGameEnd, onCa
         <div className="max-w-md mx-auto px-4">
           <BannerAd />
         </div>
-        <p className="text-muted-foreground/50 text-xs text-center mt-1">ট্যাপ করতে থাকো • ৫ মিনিট নিষ্ক্রিয় থাকলে সেশন শেষ</p>
+        <p className="text-muted-foreground/50 text-xs text-center mt-1">ট্যাপ করতে থাকো • {INACTIVITY_TIMEOUT_SECONDS}s নিষ্ক্রিয় থাকলে সেশন শেষ</p>
       </div>
     </div>
   );
