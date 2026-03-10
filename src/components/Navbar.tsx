@@ -11,7 +11,7 @@ export default function Navbar() {
   const links = [
     { to: "/", label: t("home"), icon: Gamepad2 },
     { to: "/leaderboard", label: t("leaderboard"), icon: Trophy },
-    { to: "/winners", label: t("weeklyWinners"), icon: Trophy },
+    { to: "/winners", label: t("monthlyWinners"), icon: Trophy },
     { to: "/rules", label: t("rules") },
     { to: "/login", label: t("login"), icon: LogIn },
   ];

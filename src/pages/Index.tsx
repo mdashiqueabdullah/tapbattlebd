@@ -103,7 +103,7 @@ export default function Index() {
       <section className="py-12 px-4 bg-muted/20">
         <div className="container max-w-lg">
           <h2 className="text-2xl font-bold text-center text-foreground mb-2">{t("prizeBreakdown")}</h2>
-          <p className="text-center text-muted-foreground mb-6">প্রতি সপ্তাহে টপ ১০০ জন পুরস্কার পায়</p>
+          <p className="text-center text-muted-foreground mb-6">প্রতি মাসে টপ ১০০ জন পুরস্কার পায়</p>
           <PrizeTable />
         </div>
       </section>
@@ -159,7 +159,7 @@ export default function Index() {
       <section className="py-16 px-4 text-center">
         <div className="container max-w-md">
           <h2 className="text-2xl font-bold text-foreground mb-2">আজই শুরু করুন!</h2>
-          <p className="text-muted-foreground mb-6">ফ্রি রেজিস্টার করুন এবং এই সপ্তাহের কনটেস্টে অংশ নিন</p>
+          <p className="text-muted-foreground mb-6">ফ্রি রেজিস্টার করুন এবং এই মাসের কনটেস্টে অংশ নিন</p>
           <Link
             to="/register"
             className="inline-block w-full py-4 rounded-xl gradient-primary text-primary-foreground font-bold text-lg neon-border"

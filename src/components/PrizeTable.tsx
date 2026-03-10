@@ -6,7 +6,7 @@ export default function PrizeTable() {
     <div className="glass-card overflow-hidden">
       <div className="p-4 border-b border-border/30 flex items-center gap-2">
         <Trophy className="w-5 h-5 text-accent" />
-        <h3 className="font-bold text-foreground">পুরস্কার বিভাজন — প্রতি সপ্তাহ ৳১৫,০০০</h3>
+        <h3 className="font-bold text-foreground">পুরস্কার বিভাজন — প্রতি মাস ৳১৫,০০০</h3>
       </div>
       <div className="divide-y divide-border/20">
         {PRIZE_DISTRIBUTION.map((p, i) => (

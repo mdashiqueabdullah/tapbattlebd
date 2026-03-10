@@ -57,7 +57,7 @@ export default function ReferralSection() {
   };
 
   const shareWhatsApp = () => {
-    const text = encodeURIComponent(`Tap Battle BD তে আমার রেফার লিংক দিয়ে জয়েন করো! প্রতি সপ্তাহে ৳১৫,০০০ জিতুন! ${referralLink}`);
+    const text = encodeURIComponent(`Tap Battle BD তে আমার রেফার লিংক দিয়ে জয়েন করো! প্রতি মাসে ৳১৫,০০০ জিতুন! ${referralLink}`);
     window.open(`https://wa.me/?text=${text}`, "_blank");
   };
 

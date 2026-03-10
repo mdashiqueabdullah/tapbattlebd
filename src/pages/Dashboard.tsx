@@ -132,7 +132,7 @@ export default function Dashboard() {
               <div className="grid grid-cols-2 gap-3">
                 {[
                   { to: "/leaderboard", icon: Trophy, label: t("leaderboard"), color: "text-accent" },
-                  { to: "/winners", icon: Award, label: t("weeklyWinners"), color: "text-neon-gold" },
+                  { to: "/winners", icon: Award, label: t("monthlyWinners"), color: "text-neon-gold" },
                   { to: "/payout", icon: CreditCard, label: t("payoutRequest"), color: "text-neon-pink" },
                   { to: "/profile", icon: User, label: t("profile"), color: "text-secondary" },
                 ].map((nav, i) => (
