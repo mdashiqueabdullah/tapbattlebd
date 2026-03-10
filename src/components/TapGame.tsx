@@ -299,9 +299,7 @@ export default function TapGame({ isPractice, attemptsRemaining, onGameEnd, onCa
       setFlyingCoins(prev => [...prev, { id: coinId, startX, startY, pts: basePts, type: currentType }]);
     }
 
-    // Move ball and pick new type immediately
-    const newPos = randomPosition();
-    setBallPos(newPos);
+    // Pick new ball type
     setBallType(pickBallType());
 
     // Score update
