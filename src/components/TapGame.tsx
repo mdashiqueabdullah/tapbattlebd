@@ -548,7 +548,7 @@ export default function TapGame({ isPractice, attemptsRemaining, onGameEnd, onCa
   const currentStyle = BALL_STYLES[ballType];
 
   // Ready screen
-  if (phase === "ready") {
+  if (phase === "ready" || phase === "starting") {
     return (
       <div className="fixed inset-0 z-50 bg-background flex flex-col items-center justify-center p-6">
         <div className="text-center max-w-sm">
