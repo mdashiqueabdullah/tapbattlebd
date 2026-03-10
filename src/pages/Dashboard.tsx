@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -12,14 +13,15 @@ import { useAuth } from "@/hooks/useAuth";
 import { t } from "@/lib/i18n";
 import { MAX_RANKED_ATTEMPTS } from "@/lib/prizes";
 import { mockAttemptHistory } from "@/lib/mock-data";
-import { Gamepad2, Trophy, Award, Clock, Target, BarChart3, User, CreditCard, Users, Gift, ShoppingCart, Flame, ListOrdered } from "lucide-react";
+import { Gamepad2, Trophy, Award, Clock, Target, BarChart3, User, CreditCard, Users, Gift, ShoppingCart, Flame, ListOrdered, LogOut } from "lucide-react";
 import DailyStreak from "@/components/DailyStreak";
 
 export default function Dashboard() {
   const [gameMode, setGameMode] = useState<"none" | "ranked" | "practice">("none");
   const [activeTab, setActiveTab] = useState<"main" | "referral">("main");
   const [showBuyDialog, setShowBuyDialog] = useState(false);
-  const { profile, refreshProfile } = useAuth();
+  const { profile, refreshProfile, signOut } = useAuth();
+  const navigate = useNavigate();
 
   // Score breakdown
   const attemptTotal = 95; // sum of all ranked attempt scores (mock)
@@ -227,6 +229,15 @@ export default function Dashboard() {
 
           {activeTab === "referral" && <ReferralSection />}
         </div>
+      </div>
+      {/* Logout Button */}
+      <div className="container px-4 pb-6">
+        <button
+          onClick={async () => { await signOut(); navigate("/"); }}
+          className="w-full py-3 rounded-xl border border-destructive/30 text-destructive font-semibold text-sm flex items-center justify-center gap-2 hover:bg-destructive/10 transition-colors"
+        >
+          <LogOut className="w-4 h-4" /> লগআউট
+        </button>
       </div>
       <Footer />
 
