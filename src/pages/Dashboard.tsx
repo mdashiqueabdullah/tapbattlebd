@@ -37,6 +37,9 @@ export default function Dashboard() {
       <Navbar />
       <div className="container pt-20 pb-8 px-4">
         <div className="max-w-lg mx-auto">
+          {/* ADSENSE: Banner ad top of dashboard */}
+          <BannerAd className="mb-4" />
+
           {/* Welcome */}
           <div className="mb-6">
             <h1 className="text-xl font-bold text-foreground">স্বাগতম, <span className="text-primary">{userData.username}</span>!</h1>
