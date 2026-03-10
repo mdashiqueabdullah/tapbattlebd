@@ -265,6 +265,7 @@ export default function Dashboard() {
         open={showBuyDialog}
         onClose={() => setShowBuyDialog(false)}
         onSuccess={() => { refreshProfile(); refreshContest(); }}
+        isPaywall={attemptsUsed >= maxAttempts}
       />
     </div>
   );

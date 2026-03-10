@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ShoppingCart, X, CreditCard, CheckCircle, Loader2, AlertTriangle, Package } from "lucide-react";
+import { ShoppingCart, X, CreditCard, CheckCircle, Loader2, AlertTriangle, Package, Zap } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
@@ -9,17 +9,18 @@ interface BuyAttemptsDialogProps {
   open: boolean;
   onClose: () => void;
   onSuccess?: () => void;
+  isPaywall?: boolean;
 }
 
 const PACKAGES = [
-  { attempts: 5, price: 30, label: "৫টি অ্যাটেম্পট", priceLabel: "৩০৳" },
-  { attempts: 10, price: 50, label: "১০টি অ্যাটেম্পট", priceLabel: "৫০৳", popular: true },
-  { attempts: 25, price: 100, label: "২৫টি অ্যাটেম্পট", priceLabel: "১০০৳", best: true },
+  { attempts: 50, price: 100, label: "৫০টি অ্যাটেম্পট", priceLabel: "১০০৳", perAttempt: "২" },
+  { attempts: 150, price: 150, label: "১৫০টি অ্যাটেম্পট", priceLabel: "১৫০৳", perAttempt: "১", badge: "⭐ Best Value", badgeClass: "bg-accent text-accent-foreground" },
+  { attempts: 300, price: 200, label: "৩০০টি অ্যাটেম্পট", priceLabel: "২০০৳", perAttempt: "০.৬৭", badge: "🔥 Most Popular", badgeClass: "bg-primary text-primary-foreground" },
 ];
 
 type Step = "package" | "method" | "transaction" | "submitting" | "success";
 
-export default function BuyAttemptsDialog({ open, onClose, onSuccess }: BuyAttemptsDialogProps) {
+export default function BuyAttemptsDialog({ open, onClose, onSuccess, isPaywall = false }: BuyAttemptsDialogProps) {
   const { user } = useAuth();
   const [step, setStep] = useState<Step>("package");
   const [selectedPkg, setSelectedPkg] = useState<typeof PACKAGES[0] | null>(null);
@@ -86,22 +87,36 @@ export default function BuyAttemptsDialog({ open, onClose, onSuccess }: BuyAttem
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm flex items-center justify-center p-4"
-        onClick={handleClose}
+        onClick={isPaywall ? undefined : handleClose}
       >
         <motion.div
-          initial={{ scale: 0.9, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          exit={{ scale: 0.9, opacity: 0 }}
-          className="glass-card w-full max-w-sm p-6 rounded-2xl relative"
+          initial={{ scale: 0.9, opacity: 0, y: 20 }}
+          animate={{ scale: 1, opacity: 1, y: 0 }}
+          exit={{ scale: 0.9, opacity: 0, y: 20 }}
+          transition={{ type: "spring", damping: 25, stiffness: 300 }}
+          className="glass-card w-full max-w-sm p-6 rounded-2xl relative border border-border/40"
           onClick={e => e.stopPropagation()}
         >
-          <button onClick={handleClose} className="absolute top-3 right-3 text-muted-foreground hover:text-foreground">
+          <button onClick={handleClose} className="absolute top-3 right-3 text-muted-foreground hover:text-foreground z-10">
             <X className="w-5 h-5" />
           </button>
 
+          {/* Header */}
           <div className="text-center mb-5">
-            <ShoppingCart className="w-8 h-8 text-primary mx-auto mb-2" />
-            <h3 className="font-display text-lg font-bold text-foreground">অতিরিক্ত অ্যাটেম্পট কিনুন</h3>
+            {isPaywall && step === "package" ? (
+              <>
+                <div className="w-14 h-14 rounded-full bg-destructive/20 flex items-center justify-center mx-auto mb-3">
+                  <Zap className="w-7 h-7 text-destructive" />
+                </div>
+                <h3 className="font-display text-lg font-bold text-foreground">অ্যাটেম্পট শেষ!</h3>
+                <p className="text-sm text-muted-foreground mt-1">🔥 টপ প্লেয়াররা বেশি অ্যাটেম্পট কিনে জেতে!</p>
+              </>
+            ) : (
+              <>
+                <ShoppingCart className="w-8 h-8 text-primary mx-auto mb-2" />
+                <h3 className="font-display text-lg font-bold text-foreground">অতিরিক্ত অ্যাটেম্পট কিনুন</h3>
+              </>
+            )}
           </div>
 
           {/* Step: Package Selection */}
@@ -109,23 +124,23 @@ export default function BuyAttemptsDialog({ open, onClose, onSuccess }: BuyAttem
             <div className="space-y-3">
               <p className="text-sm text-muted-foreground text-center">প্যাকেজ নির্বাচন করুন</p>
               <div className="space-y-2.5">
-                {PACKAGES.map(pkg => (
-                  <button
+                {PACKAGES.map((pkg, index) => (
+                  <motion.button
                     key={pkg.attempts}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: index * 0.1 }}
                     onClick={() => {
                       setSelectedPkg(pkg);
                       setStep("method");
                     }}
-                    className="w-full glass-card p-4 rounded-xl flex items-center justify-between transition-all hover:border-primary/40 group relative overflow-hidden"
+                    className={`w-full glass-card p-4 rounded-xl flex items-center justify-between transition-all hover:border-primary/40 group relative overflow-hidden ${
+                      pkg.badge ? "ring-1 ring-primary/30" : ""
+                    }`}
                   >
-                    {pkg.popular && (
-                      <span className="absolute top-0 right-0 bg-primary text-primary-foreground text-[10px] font-bold px-2 py-0.5 rounded-bl-lg">
-                        জনপ্রিয়
-                      </span>
-                    )}
-                    {pkg.best && (
-                      <span className="absolute top-0 right-0 bg-accent text-accent-foreground text-[10px] font-bold px-2 py-0.5 rounded-bl-lg">
-                        সেরা দাম
+                    {pkg.badge && (
+                      <span className={`absolute top-0 right-0 ${pkg.badgeClass} text-[10px] font-bold px-2 py-0.5 rounded-bl-lg`}>
+                        {pkg.badge}
                       </span>
                     )}
                     <div className="flex items-center gap-3">
@@ -133,12 +148,12 @@ export default function BuyAttemptsDialog({ open, onClose, onSuccess }: BuyAttem
                       <div className="text-left">
                         <p className="font-semibold text-foreground">{pkg.label}</p>
                         <p className="text-xs text-muted-foreground">
-                          প্রতি অ্যাটেম্পট ৳{(pkg.price / pkg.attempts).toFixed(0)}
+                          প্রতি অ্যাটেম্পট ৳{pkg.perAttempt}
                         </p>
                       </div>
                     </div>
                     <span className="font-display text-xl font-bold text-accent">{pkg.priceLabel}</span>
-                  </button>
+                  </motion.button>
                 ))}
               </div>
             </div>
