@@ -643,7 +643,7 @@ export default function TapGame({ isPractice, attemptsRemaining, onGameEnd, onCa
             initial={{ scale: 0, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0, opacity: 0 }}
-            className="absolute top-16 left-1/2 -translate-x-1/2 z-10"
+            className="absolute top-[72px] left-1/2 -translate-x-1/2 z-10"
           >
             <div className={`glass-card neon-border px-4 py-1.5 rounded-full ${
               isFrenzy ? "border-secondary" : comboMultiplier >= 3 ? "border-neon-pink" : ""
