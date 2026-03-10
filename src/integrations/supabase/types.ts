@@ -14,6 +14,44 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_logs: {
+        Row: {
+          action: string
+          admin_user_id: string | null
+          created_at: string | null
+          id: string
+          metadata: Json | null
+          target_id: string | null
+          target_table: string | null
+        }
+        Insert: {
+          action: string
+          admin_user_id?: string | null
+          created_at?: string | null
+          id?: string
+          metadata?: Json | null
+          target_id?: string | null
+          target_table?: string | null
+        }
+        Update: {
+          action?: string
+          admin_user_id?: string | null
+          created_at?: string | null
+          id?: string
+          metadata?: Json | null
+          target_id?: string | null
+          target_table?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "admin_logs_admin_user_id_fkey"
+            columns: ["admin_user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       attempt_purchases: {
         Row: {
           amount: number
@@ -52,6 +90,96 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      attempts: {
+        Row: {
+          attempt_number: number
+          contest_id: string
+          created_at: string | null
+          id: string
+          score: number
+          session_ended_at: string | null
+          session_id: string | null
+          session_started_at: string | null
+          user_id: string
+        }
+        Insert: {
+          attempt_number: number
+          contest_id: string
+          created_at?: string | null
+          id?: string
+          score?: number
+          session_ended_at?: string | null
+          session_id?: string | null
+          session_started_at?: string | null
+          user_id: string
+        }
+        Update: {
+          attempt_number?: number
+          contest_id?: string
+          created_at?: string | null
+          id?: string
+          score?: number
+          session_ended_at?: string | null
+          session_id?: string | null
+          session_started_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "attempts_contest_id_fkey"
+            columns: ["contest_id"]
+            isOneToOne: false
+            referencedRelation: "monthly_contests"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "attempts_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "game_sessions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "attempts_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      daily_claims: {
+        Row: {
+          claim_date: string
+          created_at: string | null
+          id: string
+          reward_points: number
+          user_id: string
+        }
+        Insert: {
+          claim_date: string
+          created_at?: string | null
+          id?: string
+          reward_points: number
+          user_id: string
+        }
+        Update: {
+          claim_date?: string
+          created_at?: string | null
+          id?: string
+          reward_points?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "daily_claims_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       daily_streaks: {
         Row: {
@@ -179,6 +307,138 @@ export type Database = {
         }
         Relationships: []
       }
+      leaderboard: {
+        Row: {
+          attempt_total_score: number
+          attempts_used: number
+          contest_id: string
+          daily_streak_points: number
+          id: string
+          rank_position: number | null
+          referral_points: number
+          total_score: number
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          attempt_total_score?: number
+          attempts_used?: number
+          contest_id: string
+          daily_streak_points?: number
+          id?: string
+          rank_position?: number | null
+          referral_points?: number
+          total_score?: number
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          attempt_total_score?: number
+          attempts_used?: number
+          contest_id?: string
+          daily_streak_points?: number
+          id?: string
+          rank_position?: number | null
+          referral_points?: number
+          total_score?: number
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "leaderboard_contest_id_fkey"
+            columns: ["contest_id"]
+            isOneToOne: false
+            referencedRelation: "monthly_contests"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "leaderboard_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      monthly_contests: {
+        Row: {
+          created_at: string | null
+          end_at: string
+          id: string
+          month: number
+          prize_pool: number
+          start_at: string
+          status: string
+          year: number
+        }
+        Insert: {
+          created_at?: string | null
+          end_at: string
+          id?: string
+          month: number
+          prize_pool?: number
+          start_at: string
+          status?: string
+          year: number
+        }
+        Update: {
+          created_at?: string | null
+          end_at?: string
+          id?: string
+          month?: number
+          prize_pool?: number
+          start_at?: string
+          status?: string
+          year?: number
+        }
+        Relationships: []
+      }
+      monthly_winners: {
+        Row: {
+          contest_id: string
+          created_at: string | null
+          final_rank: number
+          id: string
+          payout_status: string
+          prize_amount: number
+          user_id: string
+        }
+        Insert: {
+          contest_id: string
+          created_at?: string | null
+          final_rank: number
+          id?: string
+          payout_status?: string
+          prize_amount: number
+          user_id: string
+        }
+        Update: {
+          contest_id?: string
+          created_at?: string | null
+          final_rank?: number
+          id?: string
+          payout_status?: string
+          prize_amount?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "monthly_winners_contest_id_fkey"
+            columns: ["contest_id"]
+            isOneToOne: false
+            referencedRelation: "monthly_contests"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "monthly_winners_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       otp_verifications: {
         Row: {
           created_at: string
@@ -209,12 +469,68 @@ export type Database = {
         }
         Relationships: []
       }
+      payout_requests: {
+        Row: {
+          account_number: string
+          contest_id: string | null
+          created_at: string | null
+          id: string
+          payment_method: string
+          prize_amount: number
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string
+          user_id: string
+        }
+        Insert: {
+          account_number: string
+          contest_id?: string | null
+          created_at?: string | null
+          id?: string
+          payment_method: string
+          prize_amount: number
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          user_id: string
+        }
+        Update: {
+          account_number?: string
+          contest_id?: string | null
+          created_at?: string | null
+          id?: string
+          payment_method?: string
+          prize_amount?: number
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payout_requests_contest_id_fkey"
+            columns: ["contest_id"]
+            isOneToOne: false
+            referencedRelation: "monthly_contests"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payout_requests_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
           bkash_number: string | null
+          bonus_attempts: number
           country: string | null
           created_at: string
+          daily_streak_points: number
           email: string | null
           extra_attempts: number
           full_name: string | null
@@ -229,16 +545,20 @@ export type Database = {
           referral_code: string
           referral_points: number
           referred_by_user_id: string | null
+          total_points: number
           total_practice_games: number
           total_ranked_games: number
           total_wins: number
+          updated_at: string
           username: string
         }
         Insert: {
           avatar_url?: string | null
           bkash_number?: string | null
+          bonus_attempts?: number
           country?: string | null
           created_at?: string
+          daily_streak_points?: number
           email?: string | null
           extra_attempts?: number
           full_name?: string | null
@@ -253,16 +573,20 @@ export type Database = {
           referral_code?: string
           referral_points?: number
           referred_by_user_id?: string | null
+          total_points?: number
           total_practice_games?: number
           total_ranked_games?: number
           total_wins?: number
+          updated_at?: string
           username: string
         }
         Update: {
           avatar_url?: string | null
           bkash_number?: string | null
+          bonus_attempts?: number
           country?: string | null
           created_at?: string
+          daily_streak_points?: number
           email?: string | null
           extra_attempts?: number
           full_name?: string | null
@@ -277,9 +601,11 @@ export type Database = {
           referral_code?: string
           referral_points?: number
           referred_by_user_id?: string | null
+          total_points?: number
           total_practice_games?: number
           total_ranked_games?: number
           total_wins?: number
+          updated_at?: string
           username?: string
         }
         Relationships: [
@@ -364,12 +690,43 @@ export type Database = {
           },
         ]
       }
+      user_roles: {
+        Row: {
+          created_at: string | null
+          id: string
+          role: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          role?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          role?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
       generate_referral_code: { Args: never; Returns: string }
+      get_or_create_current_contest: { Args: never; Returns: string }
+      get_user_attempt_count: {
+        Args: { _contest_id: string; _user_id: string }
+        Returns: number
+      }
+      is_admin: { Args: { _user_id: string }; Returns: boolean }
+      update_leaderboard_scores: {
+        Args: { _contest_id: string; _user_id: string }
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never
