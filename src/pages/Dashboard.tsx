@@ -106,9 +106,9 @@ export default function Dashboard() {
                   { icon: Clock, label: t("attemptsUsed"), value: `${userData.attemptsUsed}/${totalAttempts}`, color: "text-secondary" },
                 ].map((stat, i) => (
                   <div key={i} className="glass-card p-4">
-                    <stat.icon className={`w-5 h-5 ${stat.color} mb-2`} />
-                    <p className="text-xs text-muted-foreground">{stat.label}</p>
-                    <p className={`font-display text-2xl font-bold ${stat.color}`}>{stat.value}</p>
+                    <stat.icon className={`w-5 h-5 ${stat.color} mb-1.5`} />
+                    <p className="text-[11px] text-muted-foreground leading-tight">{stat.label}</p>
+                    <p className={`font-display text-xl font-bold ${stat.color} mt-0.5`}>{stat.value}</p>
                   </div>
                 ))}
               </div>
