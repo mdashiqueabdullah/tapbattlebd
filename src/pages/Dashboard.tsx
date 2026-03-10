@@ -20,7 +20,8 @@ export default function Dashboard() {
   const [gameMode, setGameMode] = useState<"none" | "ranked" | "practice">("none");
   const [activeTab, setActiveTab] = useState<"main" | "referral">("main");
   const [showBuyDialog, setShowBuyDialog] = useState(false);
-  const { profile, refreshProfile } = useAuth();
+  const { profile, refreshProfile, signOut } = useAuth();
+  const navigate = useNavigate();
 
   // Score breakdown
   const attemptTotal = 95; // sum of all ranked attempt scores (mock)
