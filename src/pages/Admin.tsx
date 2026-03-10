@@ -304,6 +304,19 @@ export default function Admin() {
                   </button>
                 ))}
               </div>
+              <div className="flex gap-2 mb-4 flex-wrap">
+                {(["all", "bkash", "nagad"] as const).map(f => (
+                  <button
+                    key={f}
+                    onClick={() => setPurchaseMethodFilter(f)}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                      purchaseMethodFilter === f ? "gradient-primary text-primary-foreground" : "glass-card text-muted-foreground"
+                    }`}
+                  >
+                    {f === "all" ? "সব মেথড" : f === "bkash" ? "bKash" : "Nagad"}
+                  </button>
+                ))}
+              </div>
 
               {loadingPurchases ? (
                 <div className="text-center py-8 text-muted-foreground">লোড হচ্ছে...</div>
