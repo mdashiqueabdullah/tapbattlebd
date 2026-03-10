@@ -169,12 +169,17 @@ export default function Dashboard() {
 
               <div className="space-y-3 mb-5">
                 <button
-                  onClick={() => setGameMode("ranked")}
-                  disabled={attemptsUsed >= maxAttempts}
-                  className="w-full py-4 rounded-xl gradient-primary text-primary-foreground font-bold text-lg neon-border flex items-center justify-center gap-2 disabled:opacity-50"
+                  onClick={() => {
+                    if (attemptsUsed >= maxAttempts) {
+                      setShowBuyDialog(true);
+                      return;
+                    }
+                    setGameMode("ranked");
+                  }}
+                  className="w-full py-4 rounded-xl gradient-primary text-primary-foreground font-bold text-lg neon-border flex items-center justify-center gap-2"
                 >
                   <Gamepad2 className="w-5 h-5" />
-                  {t("rankedGame")}
+                  {attemptsUsed >= maxAttempts ? "অ্যাটেম্পট কিনুন" : t("rankedGame")}
                 </button>
                 <button
                   onClick={() => setGameMode("practice")}
@@ -191,7 +196,7 @@ export default function Dashboard() {
               >
                 <ShoppingCart className="w-5 h-5 text-accent" />
                 <span className="font-semibold text-foreground">অতিরিক্ত অ্যাটেম্পট কিনুন</span>
-                <span className="font-display font-bold text-accent">৩০৳ থেকে</span>
+                <span className="font-display font-bold text-accent">১০০৳ থেকে</span>
               </button>
 
               {/* Attempt History - Real Data */}
