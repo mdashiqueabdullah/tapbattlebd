@@ -49,7 +49,7 @@ export default function Admin() {
     setLoadingPurchases(true);
     let query = supabase
       .from("attempt_purchases")
-      .select("*, profiles!attempt_purchases_user_id_fkey(username)")
+      .select("*")
       .order("created_at", { ascending: false })
       .limit(100);
 
