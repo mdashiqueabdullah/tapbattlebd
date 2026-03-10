@@ -267,7 +267,7 @@ export default function TapGame({ isPractice, attemptsRemaining, onGameEnd, onCa
         <div className="max-w-md mx-auto px-4">
           <BannerAd />
         </div>
-        <p className="text-muted-foreground/50 text-xs text-center mt-1">ট্যাপ করতে থাকো • ৫ মিনিট নিষ্ক্রিয় থাকলে সেশন শেষ</p>
+        <p className="text-muted-foreground/50 text-xs text-center mt-1">ট্যাপ করতে থাকো • {INACTIVITY_TIMEOUT_SECONDS}s নিষ্ক্রিয় থাকলে সেশন শেষ</p>
       </div>
     </div>
   );
