@@ -247,9 +247,9 @@ export default function Admin() {
       const { data: refreshed } = await supabase.from("monthly_winners").select("*").eq("contest_id", contestId).order("final_rank", { ascending: true });
       if (refreshed) {
         const uids = refreshed.map((w: any) => w.user_id);
-        const { data: profiles } = await supabase.from("profiles").select("id, username").in("id", uids);
-        const m = new Map((profiles || []).map((p: any) => [p.id, p.username]));
-        setWinners(refreshed.map((w: any) => ({ ...w, username: m.get(w.user_id) || "Unknown" })));
+        const { data: profiles } = await supabase.from("profiles").select("id, username, phone_number").in("id", uids);
+        const m = new Map((profiles || []).map((p: any) => [p.id, p]));
+        setWinners(refreshed.map((w: any) => ({ ...w, username: m.get(w.user_id)?.username || "Unknown", phone_number: m.get(w.user_id)?.phone_number || "—" })));
       }
     } catch (e) {
       toast.error("একটি ত্রুটি ঘটেছে");
