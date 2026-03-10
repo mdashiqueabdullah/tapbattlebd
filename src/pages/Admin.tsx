@@ -444,6 +444,8 @@ export default function Admin() {
             </div>
           )}
 
+          {activeTab === "anticheat" && <AntiCheatPanel />}
+
           {activeTab === "referrals" && (
             <div>
               <div className="flex items-center justify-between mb-4">
