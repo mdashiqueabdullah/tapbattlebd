@@ -59,9 +59,9 @@ export default function Dashboard() {
           <BannerAd className="mb-4" />
 
           {/* Welcome */}
-          <div className="mb-6">
-            <h1 className="text-xl font-bold text-foreground">স্বাগতম, <span className="text-primary">{userData.username}</span>!</h1>
-            <p className="text-sm text-muted-foreground mt-1">{t("contestEnds")}: <CountdownTimer compact /></p>
+          <div className="mb-6 mt-2">
+            <h1 className="text-xl font-bold text-foreground leading-tight">স্বাগতম, <span className="text-primary">{userData.username}</span>!</h1>
+            <p className="text-sm text-muted-foreground mt-2">{t("contestEnds")}: <CountdownTimer compact /></p>
           </div>
 
           {/* Dashboard Tabs */}
