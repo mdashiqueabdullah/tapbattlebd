@@ -85,10 +85,10 @@ export default function Index() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5 max-w-5xl mx-auto">
             {[
-              { icon: Users, title: "ফ্রি রেজিস্ট্রেশন করুন", step: "ধাপ ১", color: "text-primary", glow: "shadow-[0_0_20px_hsl(var(--primary)/0.15)]", borderGlow: "hover:border-primary/40", note: null },
-              { icon: Gamepad2, title: "যত খুশি ট্যাপ করুন", step: "ধাপ ২", color: "text-secondary", glow: "shadow-[0_0_20px_hsl(var(--neon-purple)/0.15)]", borderGlow: "hover:border-secondary/40", note: "সেশন চলবে যতক্ষণ আপনি ট্যাপ করতে থাকবেন। নির্দিষ্ট সময় ট্যাপ বন্ধ থাকলে সেশন শেষ হবে।" },
-              { icon: Star, title: "লিডারবোর্ডে উঠুন", step: "ধাপ ৩", color: "text-accent", glow: "shadow-[0_0_20px_hsl(var(--neon-gold)/0.15)]", borderGlow: "hover:border-accent/40", note: null },
-              { icon: Gift, title: "পুরস্কার জিতুন!", step: "ধাপ ৪", color: "text-neon-pink", glow: "shadow-[0_0_20px_hsl(var(--neon-pink)/0.15)]", borderGlow: "hover:border-neon-pink/40", note: null },
+              { icon: Users, title: "ফ্রি রেজিস্ট্রেশন করুন", step: "ধাপ ১", color: "text-primary", glow: "shadow-[0_0_20px_hsl(var(--primary)/0.15)]", borderGlow: "hover:border-primary/40", note: "অ্যাকাউন্ট তৈরি করে সহজেই গেম শুরু করুন এবং প্রতিযোগিতায় অংশ নিন।" },
+              { icon: Gamepad2, title: "যত খুশি ট্যাপ করুন", step: "ধাপ ২", color: "text-secondary", glow: "shadow-[0_0_20px_hsl(var(--neon-purple)/0.15)]", borderGlow: "hover:border-secondary/40", note: "আপনি যতক্ষণ ট্যাপ করতে থাকবেন গেম চলবে। যদি ৫ মিনিট ট্যাপ বন্ধ থাকে তাহলে সেশন স্বয়ংক্রিয়ভাবে শেষ হয়ে যাবে।" },
+              { icon: Star, title: "লিডারবোর্ডে উঠুন", step: "ধাপ ৩", color: "text-accent", glow: "shadow-[0_0_20px_hsl(var(--neon-gold)/0.15)]", borderGlow: "hover:border-accent/40", note: "বেশি স্কোর করে লিডারবোর্ডে উপরে উঠুন এবং অন্য খেলোয়াড়দের সাথে প্রতিযোগিতা করুন।" },
+              { icon: Gift, title: "পুরস্কার জিতুন!", step: "ধাপ ৪", color: "text-neon-pink", glow: "shadow-[0_0_20px_hsl(var(--neon-pink)/0.15)]", borderGlow: "hover:border-neon-pink/40", note: "মাসের শেষে সেরা খেলোয়াড়রা পুরস্কার জিতে নেবে।" },
             ].map((step, i) => (
               <motion.div
                 key={i}
@@ -96,16 +96,14 @@ export default function Index() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.12, duration: 0.5 }}
-                className={`glass-card p-6 md:p-7 text-center flex flex-col items-center transition-all duration-300 ${step.glow} ${step.borderGlow} hover:scale-[1.03] hover:-translate-y-1`}
+                className={`glass-card p-5 md:p-6 text-center flex flex-col items-center transition-all duration-300 ${step.glow} ${step.borderGlow} hover:scale-[1.03] hover:-translate-y-1`}
               >
-                <span className="font-display text-[10px] tracking-widest uppercase text-muted-foreground mb-4">{step.step}</span>
-                <div className={`w-14 h-14 rounded-2xl bg-muted/60 border border-border/40 flex items-center justify-center mb-5 ${step.color}`}>
+                <span className="font-display text-[10px] tracking-widest uppercase text-muted-foreground mb-3">{step.step}</span>
+                <div className={`w-14 h-14 rounded-2xl bg-muted/60 border border-border/40 flex items-center justify-center mb-4 ${step.color}`}>
                   <step.icon className="w-7 h-7" />
                 </div>
-                <h3 className="text-base font-bold text-foreground leading-snug mb-1">{step.title}</h3>
-                {step.note && (
-                  <p className="text-[11px] leading-relaxed text-muted-foreground mt-2 max-w-[200px]">{step.note}</p>
-                )}
+                <h3 className="text-base font-bold text-foreground leading-snug mb-2">{step.title}</h3>
+                <p className="text-[11px] leading-relaxed text-muted-foreground mt-auto">{step.note}</p>
               </motion.div>
             ))}
           </div>
