@@ -330,9 +330,10 @@ export default function Admin() {
                     <table className="w-full text-sm">
                       <thead>
                         <tr className="border-b border-border/30 text-muted-foreground">
-                          <th className="text-left p-3">ইউজার</th>
+                         <th className="text-left p-3">ইউজার</th>
                           <th className="text-left p-3">মেথড</th>
                           <th className="text-left p-3">ট্রানজেকশন ID</th>
+                          <th className="text-right p-3">অ্যাটেম্পট</th>
                           <th className="text-right p-3">পরিমাণ</th>
                           <th className="text-left p-3">তারিখ</th>
                           <th className="text-right p-3">অ্যাকশন</th>
