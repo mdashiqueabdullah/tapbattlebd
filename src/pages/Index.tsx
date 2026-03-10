@@ -63,6 +63,11 @@ export default function Index() {
         </div>
       </section>
 
+      {/* ADSENSE: Banner ad below hero */}
+      <div className="container max-w-lg px-4">
+        <BannerAd />
+      </div>
+
       {/* How It Works */}
       <section className="py-12 px-4">
         <div className="container">
