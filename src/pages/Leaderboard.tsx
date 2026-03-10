@@ -46,7 +46,7 @@ export default function Leaderboard() {
           </div>
 
           {/* Top 3 */}
-          <div className="flex justify-center items-end gap-3 mb-6">
+          <div className="flex justify-center items-end gap-2 sm:gap-3 mb-6 px-2">
             {[1, 0, 2].map(idx => {
               const entry = mockLeaderboard[idx];
               const isFirst = idx === 0;
