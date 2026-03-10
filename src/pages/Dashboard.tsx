@@ -100,7 +100,7 @@ export default function Dashboard() {
                   </div>
                 ))}
               </div>
-              <div className="grid grid-cols-2 gap-3 mb-6">
+              <div className="grid grid-cols-2 gap-3 mb-5">
                 {[
                   { icon: Trophy, label: t("currentRank"), value: `#${userData.currentRank}`, color: "text-accent" },
                   { icon: Clock, label: t("attemptsUsed"), value: `${userData.attemptsUsed}/${totalAttempts}`, color: "text-secondary" },
