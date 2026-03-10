@@ -609,29 +609,31 @@ export default function TapGame({ isPractice, attemptsRemaining, onGameEnd, onCa
       )}
 
       {/* HUD */}
-      <div className="absolute top-0 left-0 right-0 flex items-center justify-between px-4 py-3 z-10">
-        <button onClick={endSession} className="glass-card px-3 py-1.5 rounded-full text-xs text-muted-foreground">
-          ✕ বাতিল
-        </button>
-        <div ref={scoreAreaRef} className="glass-card px-4 py-2 rounded-full flex items-center gap-2">
-          <motion.span
-            key={score}
-            initial={{ scale: 1.4 }}
-            animate={{ scale: 1 }}
-            className="font-display text-xl font-bold text-primary"
-          >
-            {score}
-          </motion.span>
+      <div className="absolute top-0 left-0 right-0 z-10 safe-area-top">
+        <div className="flex items-center justify-between px-4 pt-3 pb-2">
+          <button onClick={endSession} className="glass-card px-3 py-1.5 rounded-full text-xs text-muted-foreground">
+            ✕ বাতিল
+          </button>
+          <div ref={scoreAreaRef} className="glass-card px-4 py-2 rounded-full flex items-center gap-2">
+            <motion.span
+              key={score}
+              initial={{ scale: 1.4 }}
+              animate={{ scale: 1 }}
+              className="font-display text-xl font-bold text-primary"
+            >
+              {score}
+            </motion.span>
+          </div>
+          {isPractice ? (
+            <div className="glass-card px-3 py-1.5 rounded-full">
+              <span className="text-secondary text-xs font-semibold">প্র্যাকটিস</span>
+            </div>
+          ) : (
+            <div className="glass-card px-3 py-1.5 rounded-full">
+              <span className="text-accent text-xs font-semibold">র‍্যাংকড</span>
+            </div>
+          )}
         </div>
-        {isPractice ? (
-          <div className="glass-card px-3 py-1.5 rounded-full">
-            <span className="text-secondary text-xs font-semibold">প্র্যাকটিস</span>
-          </div>
-        ) : (
-          <div className="glass-card px-3 py-1.5 rounded-full">
-            <span className="text-accent text-xs font-semibold">র‍্যাংকড</span>
-          </div>
-        )}
       </div>
 
       {/* Combo indicator */}
