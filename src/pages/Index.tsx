@@ -86,7 +86,7 @@ export default function Index() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.1 }}
-                className="glass-card p-4 text-center"
+                className="glass-card p-4 md:p-5 text-center"
               >
                 <div className={`w-12 h-12 rounded-full bg-muted flex items-center justify-center mx-auto mb-3 ${step.color}`}>
                   <step.icon className="w-6 h-6" />
