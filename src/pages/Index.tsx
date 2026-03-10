@@ -137,7 +137,7 @@ export default function Index() {
       </section>
 
       {/* Trust Section */}
-      <section className="py-12 px-4 bg-muted/10">
+      <section className="py-12 md:py-16 px-4 bg-muted/10">
         <div className="container max-w-2xl">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {[
