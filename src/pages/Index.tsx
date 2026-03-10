@@ -72,8 +72,8 @@ export default function Index() {
       {/* How It Works */}
       <section className="py-12 md:py-16 px-4">
         <div className="container">
-          <h2 className="text-2xl font-bold text-center text-foreground mb-8">{t("howItWorks")}</h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl mx-auto">
+          <h2 className="text-2xl font-bold text-center text-foreground mb-8 md:mb-10">{t("howItWorks")}</h2>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 max-w-3xl mx-auto">
             {[
               { icon: Users, text: t("howStep1"), color: "text-primary" },
               { icon: Gamepad2, text: t("howStep2"), color: "text-secondary" },
