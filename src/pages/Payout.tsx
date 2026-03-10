@@ -35,7 +35,7 @@ export default function Payout() {
 
           <div className="glass-card p-4 mb-6 border-l-4 border-accent">
             <p className="text-sm text-foreground font-medium">🎉 অভিনন্দন!</p>
-            <p className="text-xs text-muted-foreground mt-1">আপনি এই সপ্তাহে ১৫০ টাকা জিতেছেন। পেআউট পেতে নিচের ফর্ম পূরণ করুন।</p>
+            <p className="text-xs text-muted-foreground mt-1">আপনি এই মাসে ১৫০ টাকা জিতেছেন। পেআউট পেতে নিচের ফর্ম পূরণ করুন।</p>
           </div>
 
           <form onSubmit={e => { e.preventDefault(); setSubmitted(true); }} className="space-y-4">

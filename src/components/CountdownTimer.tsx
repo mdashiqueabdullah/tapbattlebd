@@ -1,19 +1,17 @@
 import { useState, useEffect } from "react";
 
-function getNextSundayEnd(): Date {
+function getMonthEnd(): Date {
   const now = new Date();
   const bdtOffset = 6 * 60;
   const utc = now.getTime() + now.getTimezoneOffset() * 60000;
   const bdt = new Date(utc + bdtOffset * 60000);
   
-  const day = bdt.getDay();
-  const daysUntilSunday = day === 0 ? 0 : 7 - day;
-  const sunday = new Date(bdt);
-  sunday.setDate(bdt.getDate() + daysUntilSunday);
-  sunday.setHours(23, 59, 59, 999);
+  // Last day of current month at 23:59:59.999 BDT
+  const endOfMonth = new Date(bdt.getFullYear(), bdt.getMonth() + 1, 0);
+  endOfMonth.setHours(23, 59, 59, 999);
   
   // Convert back to UTC
-  return new Date(sunday.getTime() - bdtOffset * 60000);
+  return new Date(endOfMonth.getTime() - bdtOffset * 60000);
 }
 
 export default function CountdownTimer({ compact = false }: { compact?: boolean }) {
@@ -21,7 +19,7 @@ export default function CountdownTimer({ compact = false }: { compact?: boolean 
 
   useEffect(() => {
     const tick = () => {
-      const end = getNextSundayEnd();
+      const end = getMonthEnd();
       const diff = Math.max(0, end.getTime() - Date.now());
       setTimeLeft({
         days: Math.floor(diff / 86400000),

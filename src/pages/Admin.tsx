@@ -193,7 +193,7 @@ export default function Admin() {
           {activeTab === "leaderboard" && (
             <div>
               <h2 className="text-xl font-bold text-foreground mb-4">লিডারবোর্ড ম্যানেজমেন্ট</h2>
-              <p className="text-sm text-muted-foreground">চলতি সপ্তাহের লিডারবোর্ড এখানে দেখুন এবং প্রয়োজনে স্কোর অ্যাডজাস্ট করুন।</p>
+              <p className="text-sm text-muted-foreground">চলতি মাসের লিডারবোর্ড এখানে দেখুন এবং প্রয়োজনে স্কোর অ্যাডজাস্ট করুন।</p>
             </div>
           )}
 

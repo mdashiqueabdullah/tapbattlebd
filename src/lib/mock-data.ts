@@ -17,16 +17,16 @@ export const mockLeaderboard = [
 ];
 
 export const mockPastWinners = [
-  { week: "সপ্তাহ ৪", rank: 1, username: "TapKing_BD", prize: 3000, status: "paid" as const },
-  { week: "সপ্তাহ ৪", rank: 2, username: "SpeedTapper", prize: 2000, status: "paid" as const },
-  { week: "সপ্তাহ ৪", rank: 3, username: "RajuGamer", prize: 1000, status: "approved" as const },
-  { week: "সপ্তাহ ৩", rank: 1, username: "ProTapper", prize: 3000, status: "paid" as const },
-  { week: "সপ্তাহ ৩", rank: 2, username: "NeonFingers", prize: 2000, status: "paid" as const },
+  { month: "ফেব্রুয়ারি ২০২৬", rank: 1, username: "TapKing_BD", prize: 3000, status: "paid" as const },
+  { month: "ফেব্রুয়ারি ২০২৬", rank: 2, username: "SpeedTapper", prize: 2000, status: "paid" as const },
+  { month: "ফেব্রুয়ারি ২০২৬", rank: 3, username: "RajuGamer", prize: 1000, status: "approved" as const },
+  { month: "জানুয়ারি ২০২৬", rank: 1, username: "ProTapper", prize: 3000, status: "paid" as const },
+  { month: "জানুয়ারি ২০২৬", rank: 2, username: "NeonFingers", prize: 2000, status: "paid" as const },
 ];
 
 export function getMockCountdown() {
   const now = new Date();
-  const dayOfWeek = now.getUTCDay();
-  const daysUntilSunday = dayOfWeek === 0 ? 0 : 7 - dayOfWeek;
-  return { days: daysUntilSunday, hours: 23 - now.getUTCHours(), minutes: 59 - now.getUTCMinutes() };
+  const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+  const daysLeft = lastDay.getDate() - now.getDate();
+  return { days: daysLeft, hours: 23 - now.getUTCHours(), minutes: 59 - now.getUTCMinutes() };
 }

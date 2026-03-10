@@ -8,8 +8,8 @@ import { Trophy, Search } from "lucide-react";
 import { BannerAd, RectangleAd } from "@/components/ads/AdContainer";
 
 const tabs = [
-  { key: "current", label: "চলতি সপ্তাহ" },
-  { key: "previous", label: "আগের সপ্তাহ" },
+  { key: "current", label: "চলতি মাস" },
+  { key: "previous", label: "আগের মাস" },
   { key: "mine", label: "আমার র‍্যাঙ্কিং" },
 ];
 
@@ -26,7 +26,7 @@ export default function Leaderboard() {
 
           <div className="flex items-center gap-2 mb-2">
             <Trophy className="w-6 h-6 text-accent" />
-            <h1 className="text-xl font-bold text-foreground">{t("leaderboard")}</h1>
+            <h1 className="text-xl font-bold text-foreground">মাসিক লিডারবোর্ড</h1>
           </div>
           <p className="text-sm text-muted-foreground mb-4">{t("contestEnds")}: <CountdownTimer compact /></p>
 

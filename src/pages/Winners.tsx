@@ -21,6 +21,9 @@ const statusLabels: Record<string, string> = {
   rejected: "প্রত্যাখ্যাত",
 };
 
+// Get unique months
+const months = [...new Set(mockPastWinners.map(w => w.month))];
+
 export default function Winners() {
   return (
     <div className="min-h-screen bg-background">
@@ -32,16 +35,16 @@ export default function Winners() {
 
           <div className="flex items-center gap-2 mb-6">
             <Award className="w-6 h-6 text-accent" />
-            <h1 className="text-xl font-bold text-foreground">সাপ্তাহিক বিজয়ী</h1>
+            <h1 className="text-xl font-bold text-foreground">মাসিক বিজয়ী</h1>
           </div>
 
-          {/* Group by week */}
-          {["সপ্তাহ ৪", "সপ্তাহ ৩"].map(week => (
-            <div key={week} className="mb-6">
-              <h3 className="text-sm font-semibold text-muted-foreground mb-2">{week}</h3>
+          {/* Group by month */}
+          {months.map(month => (
+            <div key={month} className="mb-6">
+              <h3 className="text-sm font-semibold text-muted-foreground mb-2">{month}</h3>
               <div className="glass-card divide-y divide-border/20 rounded-xl overflow-hidden">
                 {mockPastWinners
-                  .filter(w => w.week === week)
+                  .filter(w => w.month === month)
                   .map((w, i) => (
                     <div key={i} className="flex items-center px-4 py-3">
                       <span className="text-lg mr-3">
