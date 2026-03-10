@@ -10,17 +10,21 @@ export default function PrizeTable() {
       </div>
       <div className="divide-y divide-border/20">
         {PRIZE_DISTRIBUTION.map((p, i) => (
-          <div key={i} className={`flex items-center justify-between px-4 py-3 ${i < 3 ? "bg-accent/5" : ""}`}>
-            <div className="flex items-center gap-3">
-              {i === 0 && <span className="text-2xl">🥇</span>}
-              {i === 1 && <span className="text-2xl">🥈</span>}
-              {i === 2 && <span className="text-2xl">🥉</span>}
-              {i > 2 && <span className="text-muted-foreground text-sm w-8">#{p.rankRange}</span>}
-              <span className="text-foreground font-medium">র‍্যাঙ্ক {p.rankRange}</span>
+          <div key={i} className={`flex items-center justify-between px-4 py-3.5 ${i < 3 ? "bg-accent/5" : ""}`}>
+            <div className="flex items-center gap-3 min-w-0">
+              {i === 0 && <span className="text-2xl flex-shrink-0 w-9 text-center">🥇</span>}
+              {i === 1 && <span className="text-2xl flex-shrink-0 w-9 text-center">🥈</span>}
+              {i === 2 && <span className="text-2xl flex-shrink-0 w-9 text-center">🥉</span>}
+              {i > 2 && (
+                <span className="text-[10px] leading-tight text-muted-foreground flex-shrink-0 w-9 text-center font-mono">
+                  #{p.rankRange}
+                </span>
+              )}
+              <span className="text-foreground font-medium text-sm">র‍্যাঙ্ক {p.rankRange}</span>
             </div>
-            <div className="text-right">
-              <span className="font-display font-bold text-accent">৳{p.amount.toLocaleString()}</span>
-              {p.count > 1 && <span className="text-xs text-muted-foreground ml-1">× {p.count} জন</span>}
+            <div className="flex items-center gap-2 flex-shrink-0 ml-3">
+              <span className="font-display font-bold text-accent text-sm">৳{p.amount.toLocaleString()}</span>
+              {p.count > 1 && <span className="text-xs text-muted-foreground whitespace-nowrap">× {p.count} জন</span>}
             </div>
           </div>
         ))}
