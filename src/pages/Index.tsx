@@ -107,6 +107,11 @@ export default function Index() {
         </div>
       </section>
 
+      {/* ADSENSE: Rectangle ad below How It Works */}
+      <div className="container max-w-lg px-4">
+        <RectangleAd />
+      </div>
+
       {/* Live Leaderboard Preview */}
       <section className="py-12 px-4">
         <div className="container max-w-lg">
