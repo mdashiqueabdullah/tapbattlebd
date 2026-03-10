@@ -183,25 +183,13 @@ export default function TapGame({ isPractice, attemptsRemaining, onGameEnd, onCa
     setBallType(pickBallType());
   }, []);
 
-  // Ball movement interval
+  // Start inactivity timer when playing begins
   useEffect(() => {
     if (phase === "playing") {
       resetInactivityTimer();
-      // Move ball every 2-3.5 seconds
-      const scheduleMove = () => {
-        const delay = 2000 + Math.random() * 1500;
-        moveTimerRef.current = setTimeout(() => {
-          moveBall();
-          scheduleMove();
-        }, delay);
-      };
-      scheduleMove();
     }
-    return () => {
-      clearInactivityTimer();
-      if (moveTimerRef.current) { clearTimeout(moveTimerRef.current); moveTimerRef.current = null; }
-    };
-  }, [phase, resetInactivityTimer, clearInactivityTimer, moveBall]);
+    return () => clearInactivityTimer();
+  }, [phase, resetInactivityTimer, clearInactivityTimer]);
 
   // Spawn particles
   const spawnParticles = useCallback((x: number, y: number, color: string) => {
