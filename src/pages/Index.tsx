@@ -15,7 +15,7 @@ export default function Index() {
       <Navbar />
 
       {/* Hero */}
-      <section className="pt-20 pb-12 px-4 relative overflow-hidden">
+      <section className="pt-24 pb-12 px-4 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-transparent to-transparent" />
         <div className="absolute top-20 left-1/4 w-64 h-64 bg-primary/10 rounded-full blur-3xl" />
         <div className="absolute bottom-0 right-1/4 w-48 h-48 bg-secondary/10 rounded-full blur-3xl" />
@@ -31,7 +31,7 @@ export default function Index() {
               <span className="text-sm text-primary font-medium">{t("freeToPlay")}</span>
             </div>
 
-            <h1 className="font-display text-4xl md:text-6xl font-black text-foreground mb-4">
+            <h1 className="font-display text-3xl md:text-5xl lg:text-6xl font-black text-foreground mb-4 leading-tight">
               <span className="text-primary neon-text">TAP</span>{" "}
               <span className="text-accent neon-text-gold">BATTLE</span>{" "}
               <span className="text-secondary neon-text-purple">BD</span>
@@ -70,10 +70,10 @@ export default function Index() {
       </div>
 
       {/* How It Works */}
-      <section className="py-12 px-4">
+      <section className="py-12 md:py-16 px-4">
         <div className="container">
-          <h2 className="text-2xl font-bold text-center text-foreground mb-8">{t("howItWorks")}</h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl mx-auto">
+          <h2 className="text-2xl font-bold text-center text-foreground mb-8 md:mb-10">{t("howItWorks")}</h2>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 max-w-3xl mx-auto">
             {[
               { icon: Users, text: t("howStep1"), color: "text-primary" },
               { icon: Gamepad2, text: t("howStep2"), color: "text-secondary" },
@@ -86,7 +86,7 @@ export default function Index() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.1 }}
-                className="glass-card p-4 text-center"
+                className="glass-card p-4 md:p-5 text-center"
               >
                 <div className={`w-12 h-12 rounded-full bg-muted flex items-center justify-center mx-auto mb-3 ${step.color}`}>
                   <step.icon className="w-6 h-6" />
@@ -100,10 +100,10 @@ export default function Index() {
       </section>
 
       {/* Prize Section */}
-      <section className="py-12 px-4 bg-muted/20">
+      <section className="py-12 md:py-16 px-4 bg-muted/20">
         <div className="container max-w-lg">
-          <h2 className="text-2xl font-bold text-center text-foreground mb-2">{t("prizeBreakdown")}</h2>
-          <p className="text-center text-muted-foreground mb-6">প্রতি মাসে টপ ১০০ জন পুরস্কার পায়</p>
+          <h2 className="text-2xl font-bold text-center text-foreground mb-3">{t("prizeBreakdown")}</h2>
+          <p className="text-center text-muted-foreground mb-8">প্রতি মাসে টপ ১০০ জন পুরস্কার পায়</p>
           <PrizeTable />
         </div>
       </section>
@@ -114,7 +114,7 @@ export default function Index() {
       </div>
 
       {/* Live Leaderboard Preview */}
-      <section className="py-12 px-4">
+      <section className="py-12 md:py-16 px-4">
         <div className="container max-w-lg">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-xl font-bold text-foreground">🔥 লাইভ লিডারবোর্ড</h2>
@@ -137,7 +137,7 @@ export default function Index() {
       </section>
 
       {/* Trust Section */}
-      <section className="py-12 px-4 bg-muted/10">
+      <section className="py-12 md:py-16 px-4 bg-muted/10">
         <div className="container max-w-2xl">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {[
@@ -145,7 +145,7 @@ export default function Index() {
               { icon: Trophy, title: t("trustWinners"), desc: "bKash/Nagad দিয়ে পেআউট" },
               { icon: Zap, title: t("trustSecure"), desc: "অ্যান্টি-চিট সিস্টেম" },
             ].map((item, i) => (
-              <div key={i} className="glass-card p-5 text-center">
+              <div key={i} className="glass-card p-5 md:p-6 text-center">
                 <item.icon className="w-8 h-8 text-primary mx-auto mb-2" />
                 <h3 className="font-bold text-foreground mb-1">{item.title}</h3>
                 <p className="text-sm text-muted-foreground">{item.desc}</p>
@@ -156,7 +156,7 @@ export default function Index() {
       </section>
 
       {/* CTA */}
-      <section className="py-16 px-4 text-center">
+      <section className="py-16 md:py-20 px-4 text-center">
         <div className="container max-w-md">
           <h2 className="text-2xl font-bold text-foreground mb-2">আজই শুরু করুন!</h2>
           <p className="text-muted-foreground mb-6">ফ্রি রেজিস্টার করুন এবং এই মাসের কনটেস্টে অংশ নিন</p>

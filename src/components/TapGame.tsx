@@ -609,29 +609,31 @@ export default function TapGame({ isPractice, attemptsRemaining, onGameEnd, onCa
       )}
 
       {/* HUD */}
-      <div className="absolute top-0 left-0 right-0 flex items-center justify-between px-4 py-3 z-10">
-        <button onClick={endSession} className="glass-card px-3 py-1.5 rounded-full text-xs text-muted-foreground">
-          ✕ বাতিল
-        </button>
-        <div ref={scoreAreaRef} className="glass-card px-4 py-2 rounded-full flex items-center gap-2">
-          <motion.span
-            key={score}
-            initial={{ scale: 1.4 }}
-            animate={{ scale: 1 }}
-            className="font-display text-xl font-bold text-primary"
-          >
-            {score}
-          </motion.span>
+      <div className="absolute top-0 left-0 right-0 z-10 safe-area-top">
+        <div className="flex items-center justify-between px-4 pt-3 pb-2">
+          <button onClick={endSession} className="glass-card px-3 py-1.5 rounded-full text-xs text-muted-foreground">
+            ✕ বাতিল
+          </button>
+          <div ref={scoreAreaRef} className="glass-card px-4 py-2 rounded-full flex items-center gap-2">
+            <motion.span
+              key={score}
+              initial={{ scale: 1.4 }}
+              animate={{ scale: 1 }}
+              className="font-display text-xl font-bold text-primary"
+            >
+              {score}
+            </motion.span>
+          </div>
+          {isPractice ? (
+            <div className="glass-card px-3 py-1.5 rounded-full">
+              <span className="text-secondary text-xs font-semibold">প্র্যাকটিস</span>
+            </div>
+          ) : (
+            <div className="glass-card px-3 py-1.5 rounded-full">
+              <span className="text-accent text-xs font-semibold">র‍্যাংকড</span>
+            </div>
+          )}
         </div>
-        {isPractice ? (
-          <div className="glass-card px-3 py-1.5 rounded-full">
-            <span className="text-secondary text-xs font-semibold">প্র্যাকটিস</span>
-          </div>
-        ) : (
-          <div className="glass-card px-3 py-1.5 rounded-full">
-            <span className="text-accent text-xs font-semibold">র‍্যাংকড</span>
-          </div>
-        )}
       </div>
 
       {/* Combo indicator */}
@@ -641,7 +643,7 @@ export default function TapGame({ isPractice, attemptsRemaining, onGameEnd, onCa
             initial={{ scale: 0, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0, opacity: 0 }}
-            className="absolute top-16 left-1/2 -translate-x-1/2 z-10"
+            className="absolute top-[72px] left-1/2 -translate-x-1/2 z-10"
           >
             <div className={`glass-card neon-border px-4 py-1.5 rounded-full ${
               isFrenzy ? "border-secondary" : comboMultiplier >= 3 ? "border-neon-pink" : ""
@@ -664,7 +666,7 @@ export default function TapGame({ isPractice, attemptsRemaining, onGameEnd, onCa
             initial={{ y: -50, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: -50, opacity: 0 }}
-            className="absolute top-28 left-1/2 -translate-x-1/2 z-10"
+            className="absolute top-[110px] left-1/2 -translate-x-1/2 z-10"
           >
             <div className={`glass-card px-5 py-2 rounded-full ${isFrenzy ? "neon-border" : "neon-border-gold"}`}>
               <span className={`font-display text-sm font-bold ${isFrenzy ? "text-secondary" : "text-accent neon-text-gold"}`}>
@@ -677,8 +679,8 @@ export default function TapGame({ isPractice, attemptsRemaining, onGameEnd, onCa
 
       {/* Double score indicator */}
       {isDoubleScore && (
-        <div className="absolute top-3 left-1/2 -translate-x-1/2 z-[5]">
-          <div className="w-full h-1 bg-accent/30 rounded-full overflow-hidden" style={{ width: 120 }}>
+        <div className="absolute top-[60px] left-1/2 -translate-x-1/2 z-[5]">
+          <div className="h-1 bg-accent/30 rounded-full overflow-hidden" style={{ width: 120 }}>
             <motion.div
               initial={{ width: "100%" }}
               animate={{ width: "0%" }}
@@ -691,8 +693,8 @@ export default function TapGame({ isPractice, attemptsRemaining, onGameEnd, onCa
 
       {/* Frenzy timer bar */}
       {isFrenzy && (
-        <div className="absolute top-3 left-1/2 -translate-x-1/2 z-[5]">
-          <div className="w-full h-1.5 bg-secondary/30 rounded-full overflow-hidden" style={{ width: 140 }}>
+        <div className="absolute top-[60px] left-1/2 -translate-x-1/2 z-[5]">
+          <div className="h-1.5 bg-secondary/30 rounded-full overflow-hidden" style={{ width: 140 }}>
             <motion.div
               initial={{ width: "100%" }}
               animate={{ width: "0%" }}

@@ -5,7 +5,7 @@ export default function Privacy() {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      <div className="container pt-20 pb-8 px-4">
+      <div className="container pt-24 pb-10 px-4">
         <div className="max-w-lg mx-auto prose prose-invert prose-sm">
           <h1 className="text-xl font-bold text-foreground mb-6">গোপনীয়তা নীতি</h1>
           <div className="glass-card p-6 space-y-4 text-sm text-muted-foreground">

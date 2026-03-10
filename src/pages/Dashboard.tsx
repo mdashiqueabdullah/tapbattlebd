@@ -53,15 +53,15 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      <div className="container pt-20 pb-8 px-4">
-        <div className="max-w-lg mx-auto">
+      <div className="container pt-24 pb-10 px-4">
+        <div className="max-w-lg mx-auto space-y-0">
           {/* ADSENSE: Banner ad top of dashboard */}
           <BannerAd className="mb-4" />
 
           {/* Welcome */}
-          <div className="mb-6">
-            <h1 className="text-xl font-bold text-foreground">স্বাগতম, <span className="text-primary">{userData.username}</span>!</h1>
-            <p className="text-sm text-muted-foreground mt-1">{t("contestEnds")}: <CountdownTimer compact /></p>
+          <div className="mb-6 mt-2">
+            <h1 className="text-xl font-bold text-foreground leading-tight">স্বাগতম, <span className="text-primary">{userData.username}</span>!</h1>
+            <p className="text-sm text-muted-foreground mt-2">{t("contestEnds")}: <CountdownTimer compact /></p>
           </div>
 
           {/* Dashboard Tabs */}
@@ -87,28 +87,28 @@ export default function Dashboard() {
           {activeTab === "main" && (
             <>
               {/* Stats Grid */}
-              <div className="grid grid-cols-3 gap-3 mb-6">
+              <div className="grid grid-cols-3 gap-3 mb-5">
                 {[
                   { icon: Target, label: "গেম স্কোর", value: userData.gameScore, color: "text-primary" },
                   { icon: Gift, label: "রেফার পয়েন্ট", value: userData.referralPoints, color: "text-neon-pink" },
                   { icon: BarChart3, label: "মোট স্কোর", value: userData.totalScore, color: "text-accent" },
                 ].map((stat, i) => (
                   <div key={i} className="glass-card p-4">
-                    <stat.icon className={`w-5 h-5 ${stat.color} mb-2`} />
-                    <p className="text-xs text-muted-foreground">{stat.label}</p>
-                    <p className={`font-display text-2xl font-bold ${stat.color}`}>{stat.value}</p>
+                    <stat.icon className={`w-5 h-5 ${stat.color} mb-1.5`} />
+                    <p className="text-[11px] text-muted-foreground leading-tight">{stat.label}</p>
+                    <p className={`font-display text-xl font-bold ${stat.color} mt-0.5`}>{stat.value}</p>
                   </div>
                 ))}
               </div>
-              <div className="grid grid-cols-2 gap-3 mb-6">
+              <div className="grid grid-cols-2 gap-3 mb-5">
                 {[
                   { icon: Trophy, label: t("currentRank"), value: `#${userData.currentRank}`, color: "text-accent" },
                   { icon: Clock, label: t("attemptsUsed"), value: `${userData.attemptsUsed}/${totalAttempts}`, color: "text-secondary" },
                 ].map((stat, i) => (
                   <div key={i} className="glass-card p-4">
-                    <stat.icon className={`w-5 h-5 ${stat.color} mb-2`} />
-                    <p className="text-xs text-muted-foreground">{stat.label}</p>
-                    <p className={`font-display text-2xl font-bold ${stat.color}`}>{stat.value}</p>
+                    <stat.icon className={`w-5 h-5 ${stat.color} mb-1.5`} />
+                    <p className="text-[11px] text-muted-foreground leading-tight">{stat.label}</p>
+                    <p className={`font-display text-xl font-bold ${stat.color} mt-0.5`}>{stat.value}</p>
                   </div>
                 ))}
               </div>
@@ -124,12 +124,12 @@ export default function Dashboard() {
               )}
 
               {/* Daily Streak */}
-              <div className="mb-6">
+              <div className="mb-5">
                 <DailyStreak />
               </div>
 
               {/* Play Buttons */}
-              <div className="space-y-3 mb-6">
+              <div className="space-y-3 mb-5">
                 <button
                   onClick={() => setGameMode("ranked")}
                   disabled={userData.attemptsUsed >= totalAttempts}

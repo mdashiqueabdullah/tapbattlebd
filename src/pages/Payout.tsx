@@ -10,7 +10,7 @@ export default function Payout() {
     return (
       <div className="min-h-screen bg-background">
         <Navbar />
-        <div className="container pt-20 pb-8 px-4">
+        <div className="container pt-24 pb-10 px-4">
           <div className="max-w-sm mx-auto text-center mt-12">
             <div className="w-16 h-16 rounded-full gradient-primary flex items-center justify-center mx-auto mb-4">
               <Check className="w-8 h-8 text-primary-foreground" />
@@ -27,7 +27,7 @@ export default function Payout() {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      <div className="container pt-20 pb-8 px-4">
+      <div className="container pt-24 pb-10 px-4">
         <div className="max-w-lg mx-auto">
           <h1 className="text-xl font-bold text-foreground mb-6 flex items-center gap-2">
             <CreditCard className="w-5 h-5 text-neon-pink" /> পেআউট অনুরোধ
