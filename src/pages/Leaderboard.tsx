@@ -82,6 +82,9 @@ export default function Leaderboard() {
             ))}
           </div>
 
+          {/* ADSENSE: Rectangle ad below leaderboard */}
+          <RectangleAd className="mt-4" />
+
           <div className="mt-4 text-center">
             <p className="text-xs text-muted-foreground">টপ ১০০ জন পুরস্কার পায় • র‍্যাঙ্কিং প্রতি মিনিটে আপডেট হয়</p>
           </div>
