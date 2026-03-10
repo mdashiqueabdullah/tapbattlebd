@@ -41,6 +41,9 @@ export default function Admin() {
   const [loading, setLoading] = useState(true);
   const [winners, setWinners] = useState<any[]>([]);
   const [finalizingWinners, setFinalizingWinners] = useState(false);
+  const [showContestPicker, setShowContestPicker] = useState(false);
+  const [availableContests, setAvailableContests] = useState<any[]>([]);
+  const [contestsLoading, setContestsLoading] = useState(false);
 
   // Check admin
   useEffect(() => {
