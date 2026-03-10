@@ -2,26 +2,24 @@ import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import { Flame, Gift, Check, ChevronRight } from "lucide-react";
+import { Flame, Gift, Check } from "lucide-react";
 
 const STREAK_REWARDS: Record<number, number> = {
   1: 5,
   2: 10,
   3: 15,
+  4: 10,
   5: 25,
+  6: 10,
   7: 50,
 };
 
 function getRewardForDay(day: number): number {
-  // Find exact match or fallback to base
-  if (STREAK_REWARDS[day]) return STREAK_REWARDS[day];
-  // For days beyond 7, give 50 every 7th day, 5 otherwise
-  if (day % 7 === 0) return 50;
-  return 5;
+  const cycleDay = ((day - 1) % 7) + 1;
+  return STREAK_REWARDS[cycleDay] ?? 5;
 }
 
 function getTodayBDT(): string {
-  // Bangladesh Standard Time = UTC+6
   const now = new Date();
   const bdt = new Date(now.getTime() + (6 * 60 - now.getTimezoneOffset()) * 60000);
   return bdt.toISOString().split("T")[0];
@@ -42,7 +40,7 @@ interface StreakData {
 }
 
 export default function DailyStreak() {
-  const { user, profile } = useAuth();
+  const { user, profile, refreshProfile } = useAuth();
   const [streakData, setStreakData] = useState<StreakData | null>(null);
   const [loading, setLoading] = useState(true);
   const [claiming, setClaiming] = useState(false);
@@ -54,20 +52,33 @@ export default function DailyStreak() {
 
   const fetchStreak = useCallback(async () => {
     if (!user) return;
-    const { data } = await supabase
-      .from("daily_streaks" as any)
-      .select("*")
+    const { data, error } = await supabase
+      .from("daily_streaks")
+      .select("current_streak, last_claimed_date, last_play_date, total_streak_points")
       .eq("user_id", user.id)
-      .single();
+      .maybeSingle();
+
+    if (error) {
+      console.error("Streak fetch error:", error);
+      setLoading(false);
+      return;
+    }
 
     if (data) {
-      const d = data as any;
-      // Check if streak should reset (missed a day)
-      if (d.last_play_date && d.last_play_date !== today && d.last_play_date !== yesterday) {
-        // Streak broken — reset
-        setStreakData({ ...d, current_streak: 0 });
+      // If streak is broken (missed a day), reset in DB
+      if (
+        data.last_claimed_date &&
+        data.last_claimed_date !== today &&
+        data.last_claimed_date !== yesterday &&
+        data.current_streak > 0
+      ) {
+        await supabase
+          .from("daily_streaks")
+          .update({ current_streak: 0, updated_at: new Date().toISOString() })
+          .eq("user_id", user.id);
+        setStreakData({ ...data, current_streak: 0 });
       } else {
-        setStreakData(d);
+        setStreakData(data);
       }
     } else {
       setStreakData(null);
@@ -81,7 +92,7 @@ export default function DailyStreak() {
 
   const alreadyClaimed = streakData?.last_claimed_date === today;
   const currentStreak = streakData?.current_streak ?? 0;
-  const nextDay = alreadyClaimed ? currentStreak + 1 : currentStreak + 1;
+  const nextDay = currentStreak + 1;
   const todayReward = getRewardForDay(nextDay);
 
   const handleClaim = async () => {
@@ -91,43 +102,49 @@ export default function DailyStreak() {
     const newStreak = currentStreak + 1;
     const reward = getRewardForDay(newStreak);
 
-    if (!streakData) {
-      // Create new streak record
-      await supabase.from("daily_streaks" as any).insert({
-        user_id: user.id,
-        current_streak: newStreak,
-        last_claimed_date: today,
-        last_play_date: today,
-        total_streak_points: reward,
-      } as any);
-    } else {
-      // Update existing
-      await supabase
-        .from("daily_streaks" as any)
-        .update({
+    try {
+      if (!streakData) {
+        const { error } = await supabase.from("daily_streaks").insert({
+          user_id: user.id,
           current_streak: newStreak,
           last_claimed_date: today,
           last_play_date: today,
-          total_streak_points: (streakData.total_streak_points || 0) + reward,
-          updated_at: new Date().toISOString(),
-        } as any)
-        .eq("user_id", user.id);
+          total_streak_points: reward,
+        });
+        if (error) throw error;
+      } else {
+        const { error } = await supabase
+          .from("daily_streaks")
+          .update({
+            current_streak: newStreak,
+            last_claimed_date: today,
+            last_play_date: today,
+            total_streak_points: (streakData.total_streak_points || 0) + reward,
+            updated_at: new Date().toISOString(),
+          })
+          .eq("user_id", user.id);
+        if (error) throw error;
+      }
+
+      // Add streak reward to profile referral_points
+      if (profile) {
+        await supabase
+          .from("profiles")
+          .update({ referral_points: (profile.referral_points || 0) + reward })
+          .eq("id", user.id);
+      }
+
+      setClaimedReward(reward);
+      setJustClaimed(true);
+      await fetchStreak();
+      await refreshProfile();
+
+      setTimeout(() => setJustClaimed(false), 3000);
+    } catch (err) {
+      console.error("Claim error:", err);
+    } finally {
+      setClaiming(false);
     }
-
-    // Also add to profile referral_points (streak points go to total)
-    if (profile) {
-      await supabase
-        .from("profiles")
-        .update({ referral_points: (profile.referral_points || 0) + reward })
-        .eq("id", user.id);
-    }
-
-    setClaimedReward(reward);
-    setJustClaimed(true);
-    setClaiming(false);
-    fetchStreak();
-
-    setTimeout(() => setJustClaimed(false), 3000);
   };
 
   if (loading || !user) {
@@ -158,8 +175,7 @@ export default function DailyStreak() {
         {upcomingDays.map((day) => {
           const reward = STREAK_REWARDS[day];
           const isCompleted = currentStreak >= day;
-          const isCurrent = !alreadyClaimed && currentStreak + 1 === day;
-          const isNext = alreadyClaimed && currentStreak + 1 === day;
+          const isCurrent = !alreadyClaimed && nextDay === day;
 
           return (
             <div
@@ -190,7 +206,7 @@ export default function DailyStreak() {
       <div className="flex items-center justify-between">
         <div>
           <p className="text-xs text-muted-foreground">আজকের বোনাস</p>
-          <p className="font-display text-lg font-bold text-primary">+{todayReward} পয়েন্ট</p>
+          <p className="font-display text-lg font-bold text-primary">+{alreadyClaimed ? claimedReward || getRewardForDay(currentStreak) : todayReward} পয়েন্ট</p>
         </div>
 
         {alreadyClaimed ? (
@@ -205,7 +221,7 @@ export default function DailyStreak() {
             className="px-5 py-2.5 rounded-xl gradient-primary text-primary-foreground font-bold text-sm neon-border disabled:opacity-50 flex items-center gap-1.5"
           >
             <Gift className="w-4 h-4" />
-            ক্লেইম করুন
+            {claiming ? "..." : "ক্লেইম করুন"}
           </button>
         )}
       </div>
