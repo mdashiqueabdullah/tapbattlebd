@@ -42,6 +42,7 @@ export default function Admin() {
   const [activeTab, setActiveTab] = useState("overview");
   const [purchases, setPurchases] = useState<PurchaseRow[]>([]);
   const [purchaseFilter, setPurchaseFilter] = useState<"pending" | "approved" | "rejected" | "all">("pending");
+  const [purchaseMethodFilter, setPurchaseMethodFilter] = useState<"all" | "bkash" | "nagad">("all");
   const [loadingPurchases, setLoadingPurchases] = useState(false);
   const { user } = useAuth();
 
