@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link, useSearchParams, useNavigate } from "react-router-dom";
+import { Link, useSearchParams, useNavigate, useLocation } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import { useAuth } from "@/hooks/useAuth";
 import { t } from "@/lib/i18n";
@@ -7,7 +7,8 @@ import { Mail, Lock, User, Eye, EyeOff, Phone } from "lucide-react";
 import { toast } from "sonner";
 
 export default function Login() {
-  const [isRegister, setIsRegister] = useState(false);
+  const location = useLocation();
+  const [isRegister, setIsRegister] = useState(location.pathname === "/register");
   const [showPw, setShowPw] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -20,10 +21,10 @@ export default function Login() {
 
   const referralCode = searchParams.get("ref") || "";
 
-  // If route is /register, default to register mode
+  // Sync mode with route changes
   useEffect(() => {
-    if (window.location.pathname === "/register") setIsRegister(true);
-  }, []);
+    setIsRegister(location.pathname === "/register");
+  }, [location.pathname]);
 
   useEffect(() => {
     if (user) navigate("/dashboard", { replace: true });
