@@ -149,9 +149,9 @@ export default function Admin() {
       if (data) {
         const uids = [...new Set(data.map((w: any) => w.user_id))];
         if (uids.length > 0) {
-          const { data: profiles } = await supabase.from("profiles").select("id, username").in("id", uids);
-          const m = new Map((profiles || []).map((p: any) => [p.id, p.username]));
-          setWinners(data.map((w: any) => ({ ...w, username: m.get(w.user_id) || "Unknown" })));
+          const { data: profiles } = await supabase.from("profiles").select("id, username, phone_number").in("id", uids);
+          const m = new Map((profiles || []).map((p: any) => [p.id, p]));
+          setWinners(data.map((w: any) => ({ ...w, username: m.get(w.user_id)?.username || "Unknown", phone_number: m.get(w.user_id)?.phone_number || "—" })));
         } else {
           setWinners([]);
         }
