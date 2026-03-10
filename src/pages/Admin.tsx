@@ -256,6 +256,21 @@ export default function Admin() {
     }
     setFinalizingWinners(false);
   };
+  const handleResetWinners = async (contestId: string, contestLabel: string) => {
+    if (!user) return;
+    const confirmed = window.confirm(`আপনি কি নিশ্চিত? "${contestLabel}" এর সকল বিজয়ী মুছে ফেলা হবে এবং আবার নির্ধারণ করা যাবে।`);
+    if (!confirmed) return;
+    try {
+      const { error } = await supabase.from("monthly_winners").delete().eq("contest_id", contestId);
+      if (error) { toast.error("বিজয়ী মুছতে ব্যর্থ: " + error.message); return; }
+      await supabase.from("monthly_contests").update({ status: "active" }).eq("id", contestId);
+      toast.success(`"${contestLabel}" এর বিজয়ী রিসেট করা হয়েছে!`);
+      setWinners([]);
+      openContestPicker();
+    } catch (e) {
+      toast.error("একটি ত্রুটি ঘটেছে");
+    }
+  };
 
   const handleBanToggle = async (userId: string, currentBanned: boolean) => {
     await supabase.from("profiles").update({ is_banned: !currentBanned } as any).eq("id", userId);
@@ -520,26 +535,35 @@ export default function Admin() {
                   ) : (
                     <div className="space-y-2 max-h-80 overflow-y-auto">
                       {availableContests.map((c: any) => (
-                        <button
-                          key={c.id}
-                          disabled={c.hasWinners}
-                          onClick={() => handleFinalizeForContest(c.id, c.label)}
-                          className={`w-full flex items-center justify-between p-3 rounded-lg border transition-colors text-left ${
-                            c.hasWinners
-                              ? "border-border/30 opacity-50 cursor-not-allowed bg-muted/20"
-                              : "border-border/30 hover:border-primary/50 hover:bg-primary/5 cursor-pointer"
-                          }`}
-                        >
+                        <div key={c.id} className={`flex items-center justify-between p-3 rounded-lg border transition-colors ${
+                          c.hasWinners
+                            ? "border-border/30 bg-muted/10"
+                            : "border-border/30 hover:border-primary/50 hover:bg-primary/5"
+                        }`}>
                           <div>
                             <p className="font-medium text-foreground">{c.label}</p>
                             <p className="text-xs text-muted-foreground">
                               {c.hasWinners ? "✅ বিজয়ী নির্ধারিত" : c.status === "active" ? "🟢 চলমান" : c.status}
                             </p>
                           </div>
-                          {!c.hasWinners && (
-                            <span className="text-xs bg-primary/20 text-primary px-2 py-1 rounded-full">নির্বাচন করুন</span>
-                          )}
-                        </button>
+                          <div className="flex gap-2">
+                            {c.hasWinners ? (
+                              <button
+                                onClick={() => handleResetWinners(c.id, c.label)}
+                                className="text-xs bg-destructive/20 text-destructive px-3 py-1 rounded-full hover:bg-destructive/30 transition-colors"
+                              >
+                                রিসেট করুন
+                              </button>
+                            ) : (
+                              <button
+                                onClick={() => handleFinalizeForContest(c.id, c.label)}
+                                className="text-xs bg-primary/20 text-primary px-3 py-1 rounded-full hover:bg-primary/30 transition-colors"
+                              >
+                                নির্বাচন করুন
+                              </button>
+                            )}
+                          </div>
+                        </div>
                       ))}
                     </div>
                   )}
