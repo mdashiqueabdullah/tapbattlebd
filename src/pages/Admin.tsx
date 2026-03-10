@@ -600,13 +600,14 @@ export default function Admin() {
                   <div className="overflow-x-auto">
                     <table className="w-full text-sm">
                       <thead><tr className="border-b border-border/30 text-muted-foreground">
-                        <th className="text-left p-3">র‍্যাঙ্ক</th><th className="text-left p-3">ইউজার</th><th className="text-right p-3">পুরস্কার (৳)</th><th className="text-right p-3">পেআউট স্ট্যাটাস</th>
+                        <th className="text-left p-3">র‍্যাঙ্ক</th><th className="text-left p-3">ইউজার</th><th className="text-left p-3">ফোন</th><th className="text-right p-3">পুরস্কার (৳)</th><th className="text-right p-3">পেআউট স্ট্যাটাস</th>
                       </tr></thead>
                       <tbody className="divide-y divide-border/20">
                         {winners.map((w: any) => (
                           <tr key={w.id}>
                             <td className="p-3 font-display font-bold text-accent">#{w.final_rank}</td>
                             <td className="p-3 text-foreground font-medium">{w.username}</td>
+                            <td className="p-3 text-muted-foreground">{w.phone_number}</td>
                             <td className="p-3 text-right font-display text-primary">৳{w.prize_amount}</td>
                             <td className="p-3 text-right">
                               <span className={`text-xs px-2 py-0.5 rounded-full ${w.payout_status === "paid" ? "bg-primary/20 text-primary" : w.payout_status === "pending" ? "bg-secondary/20 text-secondary" : "bg-accent/20 text-accent"}`}>
