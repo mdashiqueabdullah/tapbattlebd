@@ -177,6 +177,7 @@ export default function DailyStreak({ onClaim }: { onClaim?: () => Promise<void>
       setJustClaimed(true);
       await fetchStreak();
       await refreshProfile();
+      if (onClaim) await onClaim();
 
       setTimeout(() => setJustClaimed(false), 3000);
     } catch (err) {
