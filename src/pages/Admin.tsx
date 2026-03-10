@@ -149,9 +149,9 @@ export default function Admin() {
       if (data) {
         const uids = [...new Set(data.map((w: any) => w.user_id))];
         if (uids.length > 0) {
-          const { data: profiles } = await supabase.from("profiles").select("id, username").in("id", uids);
-          const m = new Map((profiles || []).map((p: any) => [p.id, p.username]));
-          setWinners(data.map((w: any) => ({ ...w, username: m.get(w.user_id) || "Unknown" })));
+          const { data: profiles } = await supabase.from("profiles").select("id, username, phone_number").in("id", uids);
+          const m = new Map((profiles || []).map((p: any) => [p.id, p]));
+          setWinners(data.map((w: any) => ({ ...w, username: m.get(w.user_id)?.username || "Unknown", phone_number: m.get(w.user_id)?.phone_number || "—" })));
         } else {
           setWinners([]);
         }
@@ -247,9 +247,9 @@ export default function Admin() {
       const { data: refreshed } = await supabase.from("monthly_winners").select("*").eq("contest_id", contestId).order("final_rank", { ascending: true });
       if (refreshed) {
         const uids = refreshed.map((w: any) => w.user_id);
-        const { data: profiles } = await supabase.from("profiles").select("id, username").in("id", uids);
-        const m = new Map((profiles || []).map((p: any) => [p.id, p.username]));
-        setWinners(refreshed.map((w: any) => ({ ...w, username: m.get(w.user_id) || "Unknown" })));
+        const { data: profiles } = await supabase.from("profiles").select("id, username, phone_number").in("id", uids);
+        const m = new Map((profiles || []).map((p: any) => [p.id, p]));
+        setWinners(refreshed.map((w: any) => ({ ...w, username: m.get(w.user_id)?.username || "Unknown", phone_number: m.get(w.user_id)?.phone_number || "—" })));
       }
     } catch (e) {
       toast.error("একটি ত্রুটি ঘটেছে");
@@ -509,14 +509,33 @@ export default function Admin() {
             <div>
               <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
                 <h2 className="text-xl font-bold text-foreground">বিজয়ী ম্যানেজমেন্ট</h2>
-                <button
-                  onClick={openContestPicker}
-                  disabled={finalizingWinners}
-                  className="gradient-primary text-primary-foreground px-4 py-2 rounded-lg text-sm font-medium disabled:opacity-50 inline-flex items-center gap-2"
-                >
-                  <Trophy className="w-4 h-4" />
-                  {finalizingWinners ? "প্রসেসিং..." : "বিজয়ী নির্ধারণ করুন (শীর্ষ ১০০)"}
-                </button>
+                <div className="flex gap-2 flex-wrap">
+                  {winners.length > 0 && (
+                    <button
+                      onClick={() => {
+                        const csv = ["র‍্যাঙ্ক,ইউজার,ফোন,পুরস্কার (৳),পেআউট স্ট্যাটাস"]
+                          .concat(winners.map((w: any) => `${w.final_rank},"${w.username}","${w.phone_number}",${w.prize_amount},${w.payout_status}`))
+                          .join("\n");
+                        const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement("a"); a.href = url; a.download = "winners.csv"; a.click();
+                        URL.revokeObjectURL(url);
+                      }}
+                      className="bg-accent/20 text-accent px-4 py-2 rounded-lg text-sm font-medium inline-flex items-center gap-2 hover:bg-accent/30 transition-colors"
+                    >
+                      <Download className="w-4 h-4" />
+                      CSV এক্সপোর্ট
+                    </button>
+                  )}
+                  <button
+                    onClick={openContestPicker}
+                    disabled={finalizingWinners}
+                    className="gradient-primary text-primary-foreground px-4 py-2 rounded-lg text-sm font-medium disabled:opacity-50 inline-flex items-center gap-2"
+                  >
+                    <Trophy className="w-4 h-4" />
+                    {finalizingWinners ? "প্রসেসিং..." : "বিজয়ী নির্ধারণ করুন (শীর্ষ ১০০)"}
+                  </button>
+                </div>
               </div>
 
               {/* Contest Picker Dialog */}
@@ -581,13 +600,14 @@ export default function Admin() {
                   <div className="overflow-x-auto">
                     <table className="w-full text-sm">
                       <thead><tr className="border-b border-border/30 text-muted-foreground">
-                        <th className="text-left p-3">র‍্যাঙ্ক</th><th className="text-left p-3">ইউজার</th><th className="text-right p-3">পুরস্কার (৳)</th><th className="text-right p-3">পেআউট স্ট্যাটাস</th>
+                        <th className="text-left p-3">র‍্যাঙ্ক</th><th className="text-left p-3">ইউজার</th><th className="text-left p-3">ফোন</th><th className="text-right p-3">পুরস্কার (৳)</th><th className="text-right p-3">পেআউট স্ট্যাটাস</th>
                       </tr></thead>
                       <tbody className="divide-y divide-border/20">
                         {winners.map((w: any) => (
                           <tr key={w.id}>
                             <td className="p-3 font-display font-bold text-accent">#{w.final_rank}</td>
                             <td className="p-3 text-foreground font-medium">{w.username}</td>
+                            <td className="p-3 text-muted-foreground">{w.phone_number}</td>
                             <td className="p-3 text-right font-display text-primary">৳{w.prize_amount}</td>
                             <td className="p-3 text-right">
                               <span className={`text-xs px-2 py-0.5 rounded-full ${w.payout_status === "paid" ? "bg-primary/20 text-primary" : w.payout_status === "pending" ? "bg-secondary/20 text-secondary" : "bg-accent/20 text-accent"}`}>
