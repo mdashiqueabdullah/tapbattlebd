@@ -10,6 +10,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { t } from "@/lib/i18n";
 import { MAX_RANKED_ATTEMPTS } from "@/lib/prizes";
 import { Gamepad2, Trophy, Award, Clock, Target, BarChart3, User, CreditCard, Users, Gift } from "lucide-react";
+import DailyStreak from "@/components/DailyStreak";
 
 export default function Dashboard() {
   const [gameMode, setGameMode] = useState<"none" | "ranked" | "practice">("none");
@@ -104,6 +105,11 @@ export default function Dashboard() {
                     <p className={`font-display text-2xl font-bold ${stat.color}`}>{stat.value}</p>
                   </div>
                 ))}
+              </div>
+
+              {/* Daily Streak */}
+              <div className="mb-6">
+                <DailyStreak />
               </div>
 
               {/* Play Buttons */}
