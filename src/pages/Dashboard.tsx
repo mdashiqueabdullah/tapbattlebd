@@ -153,8 +153,8 @@ export default function Dashboard() {
                 className="w-full py-3 rounded-xl glass-card border border-accent/30 hover:border-accent/60 transition-colors flex items-center justify-center gap-2 mb-6"
               >
                 <ShoppingCart className="w-5 h-5 text-accent" />
-                <span className="font-semibold text-foreground">৫টি অতিরিক্ত অ্যাটেম্পট কিনুন</span>
-                <span className="font-display font-bold text-accent">– ৩০৳</span>
+                <span className="font-semibold text-foreground">অতিরিক্ত অ্যাটেম্পট কিনুন</span>
+                <span className="font-display font-bold text-accent">৩০৳ থেকে</span>
               </button>
 
               {/* Purchase History */}

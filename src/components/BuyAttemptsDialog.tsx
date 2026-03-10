@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ShoppingCart, X, CreditCard, CheckCircle, Loader2, AlertTriangle } from "lucide-react";
+import { ShoppingCart, X, CreditCard, CheckCircle, Loader2, AlertTriangle, Package } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
@@ -11,17 +11,25 @@ interface BuyAttemptsDialogProps {
   onSuccess?: () => void;
 }
 
-type Step = "method" | "transaction" | "submitting" | "success";
+const PACKAGES = [
+  { attempts: 5, price: 30, label: "৫টি অ্যাটেম্পট", priceLabel: "৩০৳" },
+  { attempts: 10, price: 50, label: "১০টি অ্যাটেম্পট", priceLabel: "৫০৳", popular: true },
+  { attempts: 25, price: 100, label: "২৫টি অ্যাটেম্পট", priceLabel: "১০০৳", best: true },
+];
+
+type Step = "package" | "method" | "transaction" | "submitting" | "success";
 
 export default function BuyAttemptsDialog({ open, onClose, onSuccess }: BuyAttemptsDialogProps) {
   const { user } = useAuth();
-  const [step, setStep] = useState<Step>("method");
+  const [step, setStep] = useState<Step>("package");
+  const [selectedPkg, setSelectedPkg] = useState<typeof PACKAGES[0] | null>(null);
   const [paymentMethod, setPaymentMethod] = useState<"bkash" | "nagad" | null>(null);
   const [transactionId, setTransactionId] = useState("");
   const [error, setError] = useState<string | null>(null);
 
   const reset = () => {
-    setStep("method");
+    setStep("package");
+    setSelectedPkg(null);
     setPaymentMethod(null);
     setTransactionId("");
     setError(null);
@@ -33,7 +41,7 @@ export default function BuyAttemptsDialog({ open, onClose, onSuccess }: BuyAttem
   };
 
   const handleSubmit = async () => {
-    if (!user || !paymentMethod || !transactionId.trim()) return;
+    if (!user || !paymentMethod || !transactionId.trim() || !selectedPkg) return;
 
     const trimmedId = transactionId.trim();
     if (trimmedId.length < 5 || trimmedId.length > 30) {
@@ -50,8 +58,8 @@ export default function BuyAttemptsDialog({ open, onClose, onSuccess }: BuyAttem
         user_id: user.id,
         payment_method: paymentMethod,
         transaction_id: trimmedId,
-        amount: 30,
-        attempts_count: 5,
+        amount: selectedPkg.price,
+        attempts_count: selectedPkg.attempts,
       });
 
     if (insertError) {
@@ -93,13 +101,56 @@ export default function BuyAttemptsDialog({ open, onClose, onSuccess }: BuyAttem
 
           <div className="text-center mb-5">
             <ShoppingCart className="w-8 h-8 text-primary mx-auto mb-2" />
-            <h3 className="font-display text-lg font-bold text-foreground">৫টি অতিরিক্ত অ্যাটেম্পট কিনুন</h3>
-            <p className="text-accent font-display text-2xl font-bold mt-1">৩০৳</p>
+            <h3 className="font-display text-lg font-bold text-foreground">অতিরিক্ত অ্যাটেম্পট কিনুন</h3>
           </div>
 
-          {/* Step: Payment Method */}
-          {step === "method" && (
+          {/* Step: Package Selection */}
+          {step === "package" && (
             <div className="space-y-3">
+              <p className="text-sm text-muted-foreground text-center">প্যাকেজ নির্বাচন করুন</p>
+              <div className="space-y-2.5">
+                {PACKAGES.map(pkg => (
+                  <button
+                    key={pkg.attempts}
+                    onClick={() => {
+                      setSelectedPkg(pkg);
+                      setStep("method");
+                    }}
+                    className="w-full glass-card p-4 rounded-xl flex items-center justify-between transition-all hover:border-primary/40 group relative overflow-hidden"
+                  >
+                    {pkg.popular && (
+                      <span className="absolute top-0 right-0 bg-primary text-primary-foreground text-[10px] font-bold px-2 py-0.5 rounded-bl-lg">
+                        জনপ্রিয়
+                      </span>
+                    )}
+                    {pkg.best && (
+                      <span className="absolute top-0 right-0 bg-accent text-accent-foreground text-[10px] font-bold px-2 py-0.5 rounded-bl-lg">
+                        সেরা দাম
+                      </span>
+                    )}
+                    <div className="flex items-center gap-3">
+                      <Package className="w-5 h-5 text-primary" />
+                      <div className="text-left">
+                        <p className="font-semibold text-foreground">{pkg.label}</p>
+                        <p className="text-xs text-muted-foreground">
+                          প্রতি অ্যাটেম্পট ৳{(pkg.price / pkg.attempts).toFixed(0)}
+                        </p>
+                      </div>
+                    </div>
+                    <span className="font-display text-xl font-bold text-accent">{pkg.priceLabel}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Step: Payment Method */}
+          {step === "method" && selectedPkg && (
+            <div className="space-y-3">
+              <div className="glass-card p-3 rounded-lg text-center">
+                <p className="text-xs text-muted-foreground">নির্বাচিত প্যাকেজ</p>
+                <p className="font-semibold text-foreground">{selectedPkg.label} – <span className="text-accent">{selectedPkg.priceLabel}</span></p>
+              </div>
               <p className="text-sm text-muted-foreground text-center">পেমেন্ট মেথড নির্বাচন করুন</p>
               <div className="grid grid-cols-2 gap-3">
                 {(["bkash", "nagad"] as const).map(method => (
@@ -109,9 +160,7 @@ export default function BuyAttemptsDialog({ open, onClose, onSuccess }: BuyAttem
                       setPaymentMethod(method);
                       setStep("transaction");
                     }}
-                    className={`glass-card p-4 rounded-xl text-center transition-all hover:border-primary/40 ${
-                      paymentMethod === method ? "border-primary neon-border" : ""
-                    }`}
+                    className="glass-card p-4 rounded-xl text-center transition-all hover:border-primary/40"
                   >
                     <CreditCard className={`w-6 h-6 mx-auto mb-2 ${method === "bkash" ? "text-neon-pink" : "text-accent"}`} />
                     <span className="font-semibold text-foreground text-sm">
@@ -120,21 +169,29 @@ export default function BuyAttemptsDialog({ open, onClose, onSuccess }: BuyAttem
                   </button>
                 ))}
               </div>
+              <button
+                onClick={() => { setStep("package"); setSelectedPkg(null); }}
+                className="w-full py-2 text-sm text-muted-foreground hover:text-foreground"
+              >
+                প্যাকেজ পরিবর্তন করুন
+              </button>
             </div>
           )}
 
           {/* Step: Transaction ID */}
-          {step === "transaction" && paymentMethod && (
+          {step === "transaction" && paymentMethod && selectedPkg && (
             <div className="space-y-4">
               <div className="glass-card p-3 rounded-lg text-center">
-                <p className="text-xs text-muted-foreground">নির্বাচিত মেথড</p>
-                <p className="font-semibold text-foreground">{paymentMethod === "bkash" ? "bKash" : "Nagad"}</p>
+                <p className="text-xs text-muted-foreground">প্যাকেজ ও মেথড</p>
+                <p className="font-semibold text-foreground">
+                  {selectedPkg.label} – {selectedPkg.priceLabel} • {paymentMethod === "bkash" ? "bKash" : "Nagad"}
+                </p>
               </div>
 
               <div className="glass-card p-4 rounded-lg text-sm text-muted-foreground space-y-1">
                 <p className="font-semibold text-foreground text-center mb-2">পেমেন্ট নির্দেশনা</p>
                 <p>১. {paymentMethod === "bkash" ? "bKash" : "Nagad"} অ্যাপ খুলুন</p>
-                <p>২. ৩০৳ পাঠান: <span className="text-primary font-mono">01XXXXXXXXX</span></p>
+                <p>২. ৳{selectedPkg.price} পাঠান: <span className="text-primary font-mono">01XXXXXXXXX</span></p>
                 <p>৩. ট্রানজেকশন আইডি কপি করুন</p>
                 <p>৪. নিচে পেস্ট করুন</p>
               </div>
@@ -186,12 +243,12 @@ export default function BuyAttemptsDialog({ open, onClose, onSuccess }: BuyAttem
           )}
 
           {/* Step: Success */}
-          {step === "success" && (
+          {step === "success" && selectedPkg && (
             <div className="text-center py-4 space-y-3">
               <CheckCircle className="w-12 h-12 text-primary mx-auto" />
               <p className="font-semibold text-foreground">রিকোয়েস্ট সাবমিট হয়েছে!</p>
               <p className="text-sm text-muted-foreground">
-                অ্যাডমিন অনুমোদন করলে ৫টি অতিরিক্ত অ্যাটেম্পট যোগ হবে।
+                অ্যাডমিন অনুমোদন করলে {selectedPkg.label} যোগ হবে।
               </p>
               <button
                 onClick={handleClose}

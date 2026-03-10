@@ -42,6 +42,7 @@ export default function Admin() {
   const [activeTab, setActiveTab] = useState("overview");
   const [purchases, setPurchases] = useState<PurchaseRow[]>([]);
   const [purchaseFilter, setPurchaseFilter] = useState<"pending" | "approved" | "rejected" | "all">("pending");
+  const [purchaseMethodFilter, setPurchaseMethodFilter] = useState<"all" | "bkash" | "nagad">("all");
   const [loadingPurchases, setLoadingPurchases] = useState(false);
   const { user } = useAuth();
 
@@ -56,6 +57,9 @@ export default function Admin() {
     if (purchaseFilter !== "all") {
       query = query.eq("status", purchaseFilter);
     }
+    if (purchaseMethodFilter !== "all") {
+      query = query.eq("payment_method", purchaseMethodFilter);
+    }
 
     const { data, error } = await query;
     if (!error && data) {
@@ -68,7 +72,7 @@ export default function Admin() {
     if (activeTab === "purchases") {
       fetchPurchases();
     }
-  }, [activeTab, purchaseFilter]);
+  }, [activeTab, purchaseFilter, purchaseMethodFilter]);
 
   const handlePurchaseAction = async (purchaseId: string, action: "approved" | "rejected", purchaseUserId: string, attemptsCount: number) => {
     if (!user) return;
@@ -300,6 +304,19 @@ export default function Admin() {
                   </button>
                 ))}
               </div>
+              <div className="flex gap-2 mb-4 flex-wrap">
+                {(["all", "bkash", "nagad"] as const).map(f => (
+                  <button
+                    key={f}
+                    onClick={() => setPurchaseMethodFilter(f)}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                      purchaseMethodFilter === f ? "gradient-primary text-primary-foreground" : "glass-card text-muted-foreground"
+                    }`}
+                  >
+                    {f === "all" ? "সব মেথড" : f === "bkash" ? "bKash" : "Nagad"}
+                  </button>
+                ))}
+              </div>
 
               {loadingPurchases ? (
                 <div className="text-center py-8 text-muted-foreground">লোড হচ্ছে...</div>
@@ -313,9 +330,10 @@ export default function Admin() {
                     <table className="w-full text-sm">
                       <thead>
                         <tr className="border-b border-border/30 text-muted-foreground">
-                          <th className="text-left p-3">ইউজার</th>
+                         <th className="text-left p-3">ইউজার</th>
                           <th className="text-left p-3">মেথড</th>
                           <th className="text-left p-3">ট্রানজেকশন ID</th>
+                          <th className="text-right p-3">অ্যাটেম্পট</th>
                           <th className="text-right p-3">পরিমাণ</th>
                           <th className="text-left p-3">তারিখ</th>
                           <th className="text-right p-3">অ্যাকশন</th>
@@ -332,6 +350,9 @@ export default function Admin() {
                             </td>
                             <td className="p-3 text-muted-foreground font-mono text-xs">
                               {p.transaction_id}
+                            </td>
+                            <td className="p-3 text-right text-foreground font-semibold">
+                              {p.attempts_count}টি
                             </td>
                             <td className="p-3 text-right font-display text-accent">
                               ৳{p.amount}
