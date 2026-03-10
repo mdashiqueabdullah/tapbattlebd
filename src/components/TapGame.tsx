@@ -505,6 +505,9 @@ export default function TapGame({ isPractice, attemptsRemaining, onGameEnd, onCa
 
     setBallType(pickBallType());
 
+    // Record tap for anti-cheat
+    recordTap(currentType, basePts, multiplier);
+
     setTimeout(() => {
       const newScore = Math.max(0, scoreRef.current + basePts);
       scoreRef.current = newScore;
