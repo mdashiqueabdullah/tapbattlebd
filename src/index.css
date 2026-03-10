@@ -92,7 +92,7 @@
                  0 0 30px hsl(var(--neon-purple) / 0.4);
   }
   .glass-card {
-    @apply bg-card/80 backdrop-blur-xl border border-border/50 rounded-xl p-0;
+    @apply bg-card/80 backdrop-blur-xl border border-border/50 rounded-xl;
     box-shadow: 0 0 15px hsl(var(--neon-glow) / 0.05),
                 inset 0 1px 0 hsl(var(--foreground) / 0.05);
   }
