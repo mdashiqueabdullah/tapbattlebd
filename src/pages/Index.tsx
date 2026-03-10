@@ -145,7 +145,7 @@ export default function Index() {
               { icon: Trophy, title: t("trustWinners"), desc: "bKash/Nagad দিয়ে পেআউট" },
               { icon: Zap, title: t("trustSecure"), desc: "অ্যান্টি-চিট সিস্টেম" },
             ].map((item, i) => (
-              <div key={i} className="glass-card p-5 text-center">
+              <div key={i} className="glass-card p-5 md:p-6 text-center">
                 <item.icon className="w-8 h-8 text-primary mx-auto mb-2" />
                 <h3 className="font-bold text-foreground mb-1">{item.title}</h3>
                 <p className="text-sm text-muted-foreground">{item.desc}</p>
