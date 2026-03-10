@@ -620,8 +620,24 @@ export default function TapGame({ isPractice, attemptsRemaining, onGameEnd, onCa
     );
   }
 
+  // Submitting screen
+  if (phase === "submitting") {
+    return (
+      <div className="fixed inset-0 z-50 bg-background flex flex-col items-center justify-center p-6">
+        <div className="text-center max-w-sm">
+          <h2 className="font-display text-2xl font-bold text-primary neon-text mb-2">স্কোর যাচাই হচ্ছে...</h2>
+          <p className="text-muted-foreground text-sm mb-4">আপনার স্কোর সার্ভারে যাচাই করা হচ্ছে</p>
+          <div className="glass-card p-8 my-6">
+            <div className="w-12 h-12 border-4 border-primary/30 border-t-primary rounded-full animate-spin mx-auto" />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   // Done screen
   if (phase === "done") {
+    const displayScore = verifiedScore ?? scoreRef.current;
     return (
       <div className="fixed inset-0 z-50 bg-background flex flex-col items-center justify-center p-6">
         <div className="text-center max-w-sm">
@@ -629,8 +645,17 @@ export default function TapGame({ isPractice, attemptsRemaining, onGameEnd, onCa
           <p className="text-muted-foreground text-sm mb-4">{INACTIVITY_TIMEOUT_SECONDS} সেকেন্ড নিষ্ক্রিয়তার কারণে সেশন শেষ হয়েছে</p>
           <div className="glass-card neon-border-gold p-8 my-6">
             <p className="text-muted-foreground text-sm mb-1">{t("finalScore")}</p>
-            <p className="font-display text-6xl font-black text-accent neon-text-gold">{scoreRef.current}</p>
+            <p className="font-display text-6xl font-black text-accent neon-text-gold">{displayScore}</p>
+            {!isPractice && (
+              <p className="text-xs text-muted-foreground mt-2">✅ সার্ভার যাচাইকৃত</p>
+            )}
           </div>
+          {wasFlagged && !isPractice && (
+            <div className="glass-card border border-destructive/30 p-3 mb-4">
+              <p className="text-destructive text-sm font-medium">⚠️ এই সেশনটি রিভিউয়ের জন্য ফ্ল্যাগ করা হয়েছে</p>
+              <p className="text-muted-foreground text-xs mt-1">অ্যাডমিন রিভিউয়ের পর স্কোর নিশ্চিত হবে</p>
+            </div>
+          )}
           {isPractice && (
             <p className="text-secondary text-sm mb-4">এটি প্র্যাকটিস মোড — লিডারবোর্ডে যাবে না</p>
           )}
