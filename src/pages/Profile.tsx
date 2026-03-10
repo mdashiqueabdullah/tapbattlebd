@@ -138,7 +138,7 @@ export default function Profile() {
               { icon: Gamepad2, label: "র‍্যাঙ্কড খেলা", value: profile.total_ranked_games, color: "text-primary" },
               { icon: Target, label: "প্র্যাকটিস", value: profile.total_practice_games, color: "text-secondary" },
               { icon: Trophy, label: "সেরা স্কোর", value: profile.lifetime_best_score, color: "text-accent" },
-              { icon: CreditCard, label: "মোট জয়", value: profile.total_wins, color: "text-neon-pink" },
+              { icon: CreditCard, label: "মোট জয়", value: `${totalPrizeWon}৳`, color: "text-neon-pink" },
             ].map((s, i) => (
               <div key={i} className="glass-card p-4">
                 <s.icon className={`w-5 h-5 ${s.color} mb-1`} />
