@@ -5,6 +5,7 @@ import CountdownTimer from "@/components/CountdownTimer";
 import { t } from "@/lib/i18n";
 import { mockLeaderboard } from "@/lib/mock-data";
 import { Trophy, Search } from "lucide-react";
+import { BannerAd, RectangleAd } from "@/components/ads/AdContainer";
 
 const tabs = [
   { key: "current", label: "চলতি সপ্তাহ" },
@@ -20,6 +21,9 @@ export default function Leaderboard() {
       <Navbar />
       <div className="container pt-20 pb-8 px-4">
         <div className="max-w-lg mx-auto">
+          {/* ADSENSE: Banner ad top of leaderboard */}
+          <BannerAd className="mb-4" />
+
           <div className="flex items-center gap-2 mb-2">
             <Trophy className="w-6 h-6 text-accent" />
             <h1 className="text-xl font-bold text-foreground">{t("leaderboard")}</h1>
@@ -78,6 +82,9 @@ export default function Leaderboard() {
               </div>
             ))}
           </div>
+
+          {/* ADSENSE: Rectangle ad below leaderboard */}
+          <RectangleAd className="mt-4" />
 
           <div className="mt-4 text-center">
             <p className="text-xs text-muted-foreground">টপ ১০০ জন পুরস্কার পায় • র‍্যাঙ্কিং প্রতি মিনিটে আপডেট হয়</p>

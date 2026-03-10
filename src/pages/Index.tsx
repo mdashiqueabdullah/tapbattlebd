@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Gamepad2, Trophy, Shield, Zap, Star, Users, Gift, ChevronRight } from "lucide-react";
 import Navbar from "@/components/Navbar";
+import { BannerAd, RectangleAd } from "@/components/ads/AdContainer";
 import Footer from "@/components/Footer";
 import CountdownTimer from "@/components/CountdownTimer";
 import PrizeTable from "@/components/PrizeTable";
@@ -63,6 +64,11 @@ export default function Index() {
         </div>
       </section>
 
+      {/* ADSENSE: Banner ad below hero */}
+      <div className="container max-w-lg px-4">
+        <BannerAd />
+      </div>
+
       {/* How It Works */}
       <section className="py-12 px-4">
         <div className="container">
@@ -101,6 +107,11 @@ export default function Index() {
           <PrizeTable />
         </div>
       </section>
+
+      {/* ADSENSE: Rectangle ad below How It Works */}
+      <div className="container max-w-lg px-4">
+        <RectangleAd />
+      </div>
 
       {/* Live Leaderboard Preview */}
       <section className="py-12 px-4">
@@ -157,6 +168,11 @@ export default function Index() {
           </Link>
         </div>
       </section>
+
+      {/* ADSENSE: Banner ad before footer */}
+      <div className="container max-w-lg px-4">
+        <BannerAd />
+      </div>
 
       <Footer />
     </div>

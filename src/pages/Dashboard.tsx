@@ -7,6 +7,7 @@ import TapGame from "@/components/TapGame";
 import { t } from "@/lib/i18n";
 import { MAX_RANKED_ATTEMPTS } from "@/lib/prizes";
 import { Gamepad2, Trophy, Award, Clock, Target, BarChart3, User, CreditCard } from "lucide-react";
+import { BannerAd, RectangleAd } from "@/components/ads/AdContainer";
 
 export default function Dashboard() {
   const [gameMode, setGameMode] = useState<"none" | "ranked" | "practice">("none");
@@ -37,6 +38,9 @@ export default function Dashboard() {
       <Navbar />
       <div className="container pt-20 pb-8 px-4">
         <div className="max-w-lg mx-auto">
+          {/* ADSENSE: Banner ad top of dashboard */}
+          <BannerAd className="mb-4" />
+
           {/* Welcome */}
           <div className="mb-6">
             <h1 className="text-xl font-bold text-foreground">স্বাগতম, <span className="text-primary">{userData.username}</span>!</h1>
@@ -77,6 +81,9 @@ export default function Dashboard() {
               {t("practiceMode")}
             </button>
           </div>
+
+          {/* ADSENSE: Rectangle ad below stats */}
+          <RectangleAd className="mb-4" />
 
           {/* Navigation Cards */}
           <div className="grid grid-cols-2 gap-3">

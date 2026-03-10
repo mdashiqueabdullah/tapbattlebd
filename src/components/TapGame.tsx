@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { GOLDEN_TARGET_CHANCE, GOLDEN_TARGET_POINTS, NORMAL_TARGET_POINTS, INACTIVITY_TIMEOUT_MS } from "@/lib/prizes";
+import { BannerAd, RectangleAd } from "@/components/ads/AdContainer";
 import { t } from "@/lib/i18n";
 
 interface TapGameProps {
@@ -179,6 +180,9 @@ export default function TapGame({ isPractice, attemptsRemaining, onGameEnd, onCa
           {isPractice && (
             <p className="text-secondary text-sm mb-4">এটি প্র্যাকটিস মোড — লিডারবোর্ডে যাবে না</p>
           )}
+          {/* ADSENSE: Display ad on game over screen */}
+          <RectangleAd className="mb-4" />
+
           <button
             onClick={startGame}
             className="w-full py-3 rounded-xl gradient-primary text-primary-foreground font-bold mb-3"
@@ -258,9 +262,12 @@ export default function TapGame({ isPractice, attemptsRemaining, onGameEnd, onCa
         })}
       </AnimatePresence>
 
-      {/* Hint text */}
-      <div className="absolute bottom-8 left-0 right-0 text-center">
-        <p className="text-muted-foreground/50 text-xs">ট্যাপ করতে থাকো • ৫ মিনিট নিষ্ক্রিয় থাকলে সেশন শেষ</p>
+      {/* ADSENSE: Small banner at bottom, separated from gameplay */}
+      <div className="absolute bottom-0 left-0 right-0 pb-2 pt-10 pointer-events-auto z-0">
+        <div className="max-w-md mx-auto px-4">
+          <BannerAd />
+        </div>
+        <p className="text-muted-foreground/50 text-xs text-center mt-1">ট্যাপ করতে থাকো • ৫ মিনিট নিষ্ক্রিয় থাকলে সেশন শেষ</p>
       </div>
     </div>
   );

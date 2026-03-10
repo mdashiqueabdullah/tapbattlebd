@@ -3,6 +3,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { mockPastWinners } from "@/lib/mock-data";
 import { Trophy, Award } from "lucide-react";
+import { BannerAd, RectangleAd } from "@/components/ads/AdContainer";
 
 const statusColors: Record<string, string> = {
   paid: "bg-primary/20 text-primary",
@@ -26,6 +27,9 @@ export default function Winners() {
       <Navbar />
       <div className="container pt-20 pb-8 px-4">
         <div className="max-w-lg mx-auto">
+          {/* ADSENSE: Banner ad top of winners */}
+          <BannerAd className="mb-4" />
+
           <div className="flex items-center gap-2 mb-6">
             <Award className="w-6 h-6 text-accent" />
             <h1 className="text-xl font-bold text-foreground">সাপ্তাহিক বিজয়ী</h1>
@@ -58,6 +62,9 @@ export default function Winners() {
               </div>
             </div>
           ))}
+
+          {/* ADSENSE: Display ad after winners list */}
+          <RectangleAd className="mt-4" />
         </div>
       </div>
       <Footer />
