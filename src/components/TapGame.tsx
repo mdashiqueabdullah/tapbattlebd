@@ -542,8 +542,8 @@ export default function TapGame({ isPractice, attemptsRemaining, onGameEnd, onCa
   }, [phase, ballType, isDoubleScore, comboMultiplier, bonusEvent, isFrenzy, resetInactivityTimer, spawnParticles, spawnFloatingText, trySpawnLion, trySpawnChest, activateFrenzy]);
 
   useEffect(() => {
-    if (phase === "done") onGameEnd(scoreRef.current);
-  }, [phase, onGameEnd]);
+    if (phase === "done") onGameEnd(verifiedScore ?? scoreRef.current);
+  }, [phase, onGameEnd, verifiedScore]);
 
   const currentStyle = BALL_STYLES[ballType];
 
