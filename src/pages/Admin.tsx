@@ -495,7 +495,7 @@ export default function Admin() {
               <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
                 <h2 className="text-xl font-bold text-foreground">বিজয়ী ম্যানেজমেন্ট</h2>
                 <button
-                  onClick={handleFinalizeWinners}
+                  onClick={openContestPicker}
                   disabled={finalizingWinners}
                   className="gradient-primary text-primary-foreground px-4 py-2 rounded-lg text-sm font-medium disabled:opacity-50 inline-flex items-center gap-2"
                 >
@@ -503,6 +503,49 @@ export default function Admin() {
                   {finalizingWinners ? "প্রসেসিং..." : "বিজয়ী নির্ধারণ করুন (শীর্ষ ১০০)"}
                 </button>
               </div>
+
+              {/* Contest Picker Dialog */}
+              <Dialog open={showContestPicker} onOpenChange={setShowContestPicker}>
+                <DialogContent className="bg-background border-border max-w-md">
+                  <DialogHeader>
+                    <DialogTitle className="flex items-center gap-2 text-foreground">
+                      <Calendar className="w-5 h-5 text-primary" />
+                      কোন মাসের বিজয়ী নির্ধারণ করবেন?
+                    </DialogTitle>
+                  </DialogHeader>
+                  {contestsLoading ? (
+                    <div className="text-center py-6 text-muted-foreground">লোড হচ্ছে...</div>
+                  ) : availableContests.length === 0 ? (
+                    <div className="text-center py-6 text-muted-foreground">কোনো কনটেস্ট পাওয়া যায়নি</div>
+                  ) : (
+                    <div className="space-y-2 max-h-80 overflow-y-auto">
+                      {availableContests.map((c: any) => (
+                        <button
+                          key={c.id}
+                          disabled={c.hasWinners}
+                          onClick={() => handleFinalizeForContest(c.id, c.label)}
+                          className={`w-full flex items-center justify-between p-3 rounded-lg border transition-colors text-left ${
+                            c.hasWinners
+                              ? "border-border/30 opacity-50 cursor-not-allowed bg-muted/20"
+                              : "border-border/30 hover:border-primary/50 hover:bg-primary/5 cursor-pointer"
+                          }`}
+                        >
+                          <div>
+                            <p className="font-medium text-foreground">{c.label}</p>
+                            <p className="text-xs text-muted-foreground">
+                              {c.hasWinners ? "✅ বিজয়ী নির্ধারিত" : c.status === "active" ? "🟢 চলমান" : c.status}
+                            </p>
+                          </div>
+                          {!c.hasWinners && (
+                            <span className="text-xs bg-primary/20 text-primary px-2 py-1 rounded-full">নির্বাচন করুন</span>
+                          )}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </DialogContent>
+              </Dialog>
+
               {winners.length === 0 ? (
                 <div className="text-center py-8 text-muted-foreground glass-card rounded-xl">
                   <Trophy className="w-8 h-8 mx-auto mb-2 opacity-50" />
