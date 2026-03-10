@@ -2,21 +2,10 @@ import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import { Flame, Gift, Check, Info } from "lucide-react";
-
-const STREAK_REWARDS: Record<number, number> = {
-  1: 5,
-  2: 10,
-  3: 15,
-  4: 10,
-  5: 25,
-  6: 10,
-  7: 50,
-};
+import { Flame, Gift, Check, Info, Lock } from "lucide-react";
 
 function getRewardForDay(day: number): number {
-  const cycleDay = ((day - 1) % 7) + 1;
-  return STREAK_REWARDS[cycleDay] ?? 5;
+  return 2 + day;
 }
 
 function getTodayBDT(): string {
@@ -94,12 +83,13 @@ export default function DailyStreak() {
   const totalStreakPoints = streakData?.total_streak_points ?? 0;
   const nextDay = currentStreak + 1;
   const todayReward = getRewardForDay(nextDay);
+  const nextReward = getRewardForDay(Math.min(nextDay + 1, 30));
 
   const handleClaim = async () => {
     if (!user || claiming || alreadyClaimed) return;
     setClaiming(true);
 
-    const newStreak = currentStreak + 1;
+    const newStreak = Math.min(currentStreak + 1, 30);
     const reward = getRewardForDay(newStreak);
 
     try {
@@ -147,7 +137,7 @@ export default function DailyStreak() {
     );
   }
 
-  const upcomingDays = [1, 2, 3, 5, 7];
+  const days = Array.from({ length: 30 }, (_, i) => i + 1);
 
   return (
     <div className="glass-card p-4 relative overflow-hidden">
@@ -158,55 +148,20 @@ export default function DailyStreak() {
           <h3 className="font-display text-base font-bold text-foreground">দৈনিক স্ট্রিক</h3>
         </div>
         <div className="glass-card px-3 py-1 rounded-full">
-          <span className="text-xs font-bold text-accent">{currentStreak} দিন</span>
+          <span className="text-xs font-bold text-accent">{currentStreak}/৩০ দিন</span>
         </div>
       </div>
 
-      {/* Streak progress */}
-      <div className="flex gap-1.5 mb-3 overflow-x-auto pb-1">
-        {upcomingDays.map((day) => {
-          const reward = STREAK_REWARDS[day];
-          const isCompleted = currentStreak >= day;
-          const isCurrent = !alreadyClaimed && nextDay === day;
-
-          return (
-            <div
-              key={day}
-              className={`flex-shrink-0 flex flex-col items-center gap-1 p-2 rounded-lg text-center min-w-[52px] border transition-colors ${
-                isCompleted
-                  ? "bg-accent/20 border-accent/30"
-                  : isCurrent
-                  ? "bg-primary/10 border-primary/40 ring-1 ring-primary/30"
-                  : "bg-muted/20 border-border/30"
-              }`}
-            >
-              <span className="text-[10px] text-muted-foreground">Day {day}</span>
-              {isCompleted ? (
-                <Check className="w-4 h-4 text-accent" />
-              ) : (
-                <Gift className={`w-4 h-4 ${isCurrent ? "text-primary" : "text-muted-foreground/50"}`} />
-              )}
-              <span className={`text-[10px] font-bold ${isCompleted ? "text-accent" : isCurrent ? "text-primary" : "text-muted-foreground"}`}>
-                +{reward}
-              </span>
-            </div>
-          );
-        })}
-      </div>
-
-      {/* Total streak points */}
-      <div className="flex items-center gap-1.5 mb-3 px-1">
-        <Info className="w-3 h-3 text-muted-foreground flex-shrink-0" />
-        <p className="text-[11px] text-muted-foreground">
-          মোট স্ট্রিক পয়েন্ট: <span className="font-bold text-accent">{totalStreakPoints}</span> — লিডারবোর্ডে যোগ হয়
-        </p>
-      </div>
-
       {/* Claim section */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between mb-4 p-3 rounded-xl bg-muted/30 border border-border/30">
         <div>
           <p className="text-xs text-muted-foreground">আজকের বোনাস</p>
-          <p className="font-display text-lg font-bold text-primary">+{alreadyClaimed ? claimedReward || getRewardForDay(currentStreak) : todayReward} পয়েন্ট</p>
+          <p className="font-display text-lg font-bold text-primary">
+            +{alreadyClaimed ? claimedReward || getRewardForDay(currentStreak) : todayReward} পয়েন্ট
+          </p>
+          {!alreadyClaimed && nextDay < 30 && (
+            <p className="text-[10px] text-muted-foreground mt-0.5">পরের দিন: +{nextReward} পয়েন্ট</p>
+          )}
         </div>
 
         {alreadyClaimed ? (
@@ -224,6 +179,52 @@ export default function DailyStreak() {
             {claiming ? "..." : "ক্লেইম করুন"}
           </button>
         )}
+      </div>
+
+      {/* 30-day grid */}
+      <div className="grid grid-cols-6 gap-1.5 mb-3">
+        {days.map((day) => {
+          const reward = getRewardForDay(day);
+          const isCompleted = currentStreak >= day;
+          const isCurrent = !alreadyClaimed && nextDay === day;
+          const isLocked = day > currentStreak + 1 || (alreadyClaimed && day > currentStreak);
+
+          return (
+            <div
+              key={day}
+              className={`flex flex-col items-center justify-center py-1.5 rounded-lg text-center border transition-colors ${
+                isCompleted
+                  ? "bg-accent/20 border-accent/30"
+                  : isCurrent
+                  ? "bg-primary/10 border-primary/40 ring-1 ring-primary/30"
+                  : "bg-muted/10 border-border/20"
+              }`}
+            >
+              <span className="text-[8px] text-muted-foreground leading-none">Day</span>
+              <span className={`text-[10px] font-bold leading-tight ${isCompleted ? "text-accent" : isCurrent ? "text-primary" : "text-muted-foreground/60"}`}>
+                {day}
+              </span>
+              {isCompleted ? (
+                <Check className="w-3 h-3 text-accent" />
+              ) : isCurrent ? (
+                <Gift className="w-3 h-3 text-primary" />
+              ) : (
+                <Lock className="w-2.5 h-2.5 text-muted-foreground/30" />
+              )}
+              <span className={`text-[8px] font-bold leading-none ${isCompleted ? "text-accent" : isCurrent ? "text-primary" : "text-muted-foreground/40"}`}>
+                +{reward}
+              </span>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Total streak info */}
+      <div className="flex items-center gap-1.5 px-1">
+        <Info className="w-3 h-3 text-muted-foreground flex-shrink-0" />
+        <p className="text-[11px] text-muted-foreground">
+          মোট স্ট্রিক পয়েন্ট: <span className="font-bold text-accent">{totalStreakPoints}</span> — লিডারবোর্ডে যোগ হয়
+        </p>
       </div>
 
       {/* Just claimed animation */}
