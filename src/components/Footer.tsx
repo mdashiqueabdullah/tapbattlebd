@@ -10,7 +10,7 @@ export default function Footer() {
             <Gamepad2 className="w-5 h-5 text-primary" />
             <span className="font-display text-sm font-bold text-primary">TAP BATTLE BD</span>
           </div>
-          <div className="flex flex-wrap justify-center gap-4 text-sm text-muted-foreground">
+          <div className="flex flex-wrap justify-center gap-x-5 gap-y-2 text-sm text-muted-foreground">
              <Link to="/rules" className="hover:text-primary transition-colors">নিয়মাবলী</Link>
             <Link to="/referral-rules" className="hover:text-primary transition-colors">রেফার রুলস</Link>
             <Link to="/faq" className="hover:text-primary transition-colors">জিজ্ঞাসা</Link>
