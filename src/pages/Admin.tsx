@@ -351,6 +351,9 @@ export default function Admin() {
                             <td className="p-3 text-muted-foreground font-mono text-xs">
                               {p.transaction_id}
                             </td>
+                            <td className="p-3 text-right text-foreground font-semibold">
+                              {p.attempts_count}টি
+                            </td>
                             <td className="p-3 text-right font-display text-accent">
                               ৳{p.amount}
                             </td>
