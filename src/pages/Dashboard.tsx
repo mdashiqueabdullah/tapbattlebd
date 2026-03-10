@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
@@ -10,41 +10,64 @@ import BuyAttemptsDialog from "@/components/BuyAttemptsDialog";
 import PurchaseHistory from "@/components/PurchaseHistory";
 import { BannerAd, RectangleAd } from "@/components/ads/AdContainer";
 import { useAuth } from "@/hooks/useAuth";
+import { useContest } from "@/hooks/useContest";
+import { supabase } from "@/integrations/supabase/client";
 import { t } from "@/lib/i18n";
 import { MAX_RANKED_ATTEMPTS } from "@/lib/prizes";
-import { mockAttemptHistory } from "@/lib/mock-data";
 import { Gamepad2, Trophy, Award, Clock, Target, BarChart3, User, CreditCard, Users, Gift, ShoppingCart, Flame, ListOrdered, LogOut } from "lucide-react";
 import DailyStreak from "@/components/DailyStreak";
+
+interface AttemptRecord {
+  id: string;
+  attempt_number: number;
+  score: number;
+  created_at: string;
+}
 
 export default function Dashboard() {
   const [gameMode, setGameMode] = useState<"none" | "ranked" | "practice">("none");
   const [activeTab, setActiveTab] = useState<"main" | "referral">("main");
   const [showBuyDialog, setShowBuyDialog] = useState(false);
-  const { profile, refreshProfile, signOut } = useAuth();
+  const [attemptHistory, setAttemptHistory] = useState<AttemptRecord[]>([]);
+  const { profile, refreshProfile, signOut, user } = useAuth();
+  const { attemptsUsed, maxAttempts, attemptTotalScore, referralPoints, streakPoints, totalScore, currentRank, refreshContest, contest } = useContest();
   const navigate = useNavigate();
 
-  // Score breakdown
-  const attemptTotal = 95; // sum of all ranked attempt scores (mock)
-  const referralPoints = profile?.referral_points ?? 0;
-  const streakPoints = 15; // mock — from daily_streaks.total_streak_points
-  const totalScore = attemptTotal + referralPoints + streakPoints;
-  const extraAttempts = (profile as any)?.extra_attempts ?? 0;
-  const attemptsUsed = 3;
+  const extraAttempts = ((profile as any)?.extra_attempts ?? 0) + ((profile as any)?.bonus_attempts ?? 0);
 
-  const userData = {
-    username: profile?.username || "Player_BD",
-    currentRank: 28,
-  };
-
-  const totalAttempts = MAX_RANKED_ATTEMPTS + extraAttempts;
+  // Fetch attempt history
+  useEffect(() => {
+    if (!user || !contest) return;
+    (async () => {
+      const { data } = await supabase
+        .from("attempts")
+        .select("id, attempt_number, score, created_at")
+        .eq("user_id", user.id)
+        .eq("contest_id", contest.id)
+        .order("attempt_number", { ascending: true });
+      setAttemptHistory((data as AttemptRecord[]) || []);
+    })();
+  }, [user, contest]);
 
   if (gameMode !== "none") {
     return (
       <TapGame
         isPractice={gameMode === "practice"}
-        attemptsRemaining={totalAttempts - attemptsUsed}
-        onGameEnd={(score) => {
-          console.log("Game ended with score:", score);
+        attemptsRemaining={maxAttempts - attemptsUsed}
+        onGameEnd={async (score) => {
+          setGameMode("none");
+          await refreshContest();
+          await refreshProfile();
+          // Refetch attempt history
+          if (user && contest) {
+            const { data } = await supabase
+              .from("attempts")
+              .select("id, attempt_number, score, created_at")
+              .eq("user_id", user.id)
+              .eq("contest_id", contest.id)
+              .order("attempt_number", { ascending: true });
+            setAttemptHistory((data as AttemptRecord[]) || []);
+          }
         }}
         onCancel={() => setGameMode("none")}
       />
@@ -56,16 +79,13 @@ export default function Dashboard() {
       <Navbar />
       <div className="container pt-24 pb-10 px-4">
         <div className="max-w-lg mx-auto space-y-0">
-          {/* ADSENSE: Banner ad top of dashboard */}
           <BannerAd className="mb-4" />
 
-          {/* Welcome */}
           <div className="mb-6 mt-2">
-            <h1 className="text-xl font-bold text-foreground leading-tight">স্বাগতম, <span className="text-primary">{userData.username}</span>!</h1>
+            <h1 className="text-xl font-bold text-foreground leading-tight">স্বাগতম, <span className="text-primary">{profile?.username || "Player"}</span>!</h1>
             <p className="text-sm text-muted-foreground mt-2">{t("contestEnds")}: <CountdownTimer compact /></p>
           </div>
 
-          {/* Dashboard Tabs */}
           <div className="flex gap-1 mb-4 p-1 glass-card rounded-lg">
             <button
               onClick={() => setActiveTab("main")}
@@ -97,7 +117,7 @@ export default function Dashboard() {
                     <span className="text-muted-foreground flex items-center gap-1.5">
                       <Target className="w-3.5 h-3.5 text-primary" /> অ্যাটেম্পট স্কোর
                     </span>
-                    <span className="font-display font-bold text-primary">{attemptTotal}</span>
+                    <span className="font-display font-bold text-primary">{attemptTotalScore}</span>
                   </div>
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-muted-foreground flex items-center gap-1.5">
@@ -123,16 +143,17 @@ export default function Dashboard() {
                 <div className="glass-card p-4">
                   <Trophy className="w-5 h-5 text-accent mb-1.5" />
                   <p className="text-[11px] text-muted-foreground leading-tight">{t("currentRank")}</p>
-                  <p className="font-display text-xl font-bold text-accent mt-0.5">#{userData.currentRank}</p>
+                  <p className="font-display text-xl font-bold text-accent mt-0.5">
+                    {currentRank ? `#${currentRank}` : "—"}
+                  </p>
                 </div>
                 <div className="glass-card p-4">
                   <Clock className="w-5 h-5 text-secondary mb-1.5" />
                   <p className="text-[11px] text-muted-foreground leading-tight">{t("attemptsUsed")}</p>
-                  <p className="font-display text-xl font-bold text-secondary mt-0.5">{attemptsUsed}/{totalAttempts}</p>
+                  <p className="font-display text-xl font-bold text-secondary mt-0.5">{attemptsUsed}/{maxAttempts}</p>
                 </div>
               </div>
 
-              {/* Extra Attempts Info */}
               {extraAttempts > 0 && (
                 <div className="glass-card p-3 mb-4 rounded-lg flex items-center gap-2">
                   <ShoppingCart className="w-4 h-4 text-accent" />
@@ -142,16 +163,14 @@ export default function Dashboard() {
                 </div>
               )}
 
-              {/* Daily Streak */}
               <div className="mb-5">
-                <DailyStreak />
+                <DailyStreak onClaim={async () => { await refreshContest(); }} />
               </div>
 
-              {/* Play Buttons */}
               <div className="space-y-3 mb-5">
                 <button
                   onClick={() => setGameMode("ranked")}
-                  disabled={attemptsUsed >= totalAttempts}
+                  disabled={attemptsUsed >= maxAttempts}
                   className="w-full py-4 rounded-xl gradient-primary text-primary-foreground font-bold text-lg neon-border flex items-center justify-center gap-2 disabled:opacity-50"
                 >
                   <Gamepad2 className="w-5 h-5" />
@@ -166,7 +185,6 @@ export default function Dashboard() {
                 </button>
               </div>
 
-              {/* Buy Extra Attempts */}
               <button
                 onClick={() => setShowBuyDialog(true)}
                 className="w-full py-3 rounded-xl glass-card border border-accent/30 hover:border-accent/60 transition-colors flex items-center justify-center gap-2 mb-6"
@@ -176,41 +194,40 @@ export default function Dashboard() {
                 <span className="font-display font-bold text-accent">৩০৳ থেকে</span>
               </button>
 
-              {/* Attempt History */}
+              {/* Attempt History - Real Data */}
               <div className="glass-card p-4 mb-5">
                 <h3 className="text-sm font-bold text-foreground mb-3 flex items-center gap-2">
                   <ListOrdered className="w-4 h-4 text-secondary" /> অ্যাটেম্পট হিস্ট্রি
                 </h3>
-                {mockAttemptHistory.length === 0 ? (
+                {attemptHistory.length === 0 ? (
                   <p className="text-sm text-muted-foreground">কোনো অ্যাটেম্পট নেই</p>
                 ) : (
                   <div className="divide-y divide-border/20">
-                    {mockAttemptHistory.map((a) => (
-                      <div key={a.attempt} className="flex items-center justify-between py-2">
+                    {attemptHistory.map((a) => (
+                      <div key={a.id} className="flex items-center justify-between py-2">
                         <div>
-                          <span className="text-sm font-medium text-foreground">অ্যাটেম্পট #{a.attempt}</span>
-                          <p className="text-[11px] text-muted-foreground">{a.date}</p>
+                          <span className="text-sm font-medium text-foreground">অ্যাটেম্পট #{a.attempt_number}</span>
+                          <p className="text-[11px] text-muted-foreground">
+                            {new Date(a.created_at).toLocaleDateString("bn-BD")} {new Date(a.created_at).toLocaleTimeString("bn-BD", { hour: "2-digit", minute: "2-digit" })}
+                          </p>
                         </div>
                         <span className="font-display font-bold text-primary text-sm">+{a.score}</span>
                       </div>
                     ))}
                     <div className="pt-2 flex items-center justify-between">
                       <span className="text-sm font-semibold text-foreground">মোট অ্যাটেম্পট স্কোর</span>
-                      <span className="font-display font-bold text-primary">{mockAttemptHistory.reduce((s, a) => s + a.score, 0)}</span>
+                      <span className="font-display font-bold text-primary">{attemptHistory.reduce((s, a) => s + a.score, 0)}</span>
                     </div>
                   </div>
                 )}
               </div>
 
-              {/* Purchase History */}
               <div className="mb-6">
                 <PurchaseHistory />
               </div>
 
-              {/* ADSENSE: Rectangle ad below stats */}
               <RectangleAd className="mb-4" />
 
-              {/* Navigation Cards */}
               <div className="grid grid-cols-2 gap-3">
                 {[
                   { to: "/leaderboard", icon: Trophy, label: t("leaderboard"), color: "text-accent" },
@@ -230,7 +247,6 @@ export default function Dashboard() {
           {activeTab === "referral" && <ReferralSection />}
         </div>
       </div>
-      {/* Logout Button */}
       <div className="container px-4 pb-6">
         <button
           onClick={async () => { await signOut(); navigate("/"); }}
@@ -240,11 +256,10 @@ export default function Dashboard() {
         </button>
       </div>
       <Footer />
-
       <BuyAttemptsDialog
         open={showBuyDialog}
         onClose={() => setShowBuyDialog(false)}
-        onSuccess={() => refreshProfile()}
+        onSuccess={() => { refreshProfile(); refreshContest(); }}
       />
     </div>
   );
