@@ -500,41 +500,35 @@ export default function TapGame({ isPractice, attemptsRemaining, onGameEnd, onCa
         </div>
       )}
 
-      {/* Moving ball target */}
-      <motion.button
-        ref={targetRef}
-        onClick={handleTap}
-        onTouchStart={handleTap}
-        animate={{
-          left: `${ballPos.x}%`,
-          top: `${ballPos.y}%`,
-          scale: tapping ? 0.85 : 1,
-        }}
-        transition={{
-          left: { type: "spring", stiffness: 120, damping: 20 },
-          top: { type: "spring", stiffness: 120, damping: 20 },
-          scale: { duration: 0.06 },
-        }}
-        className="absolute z-10 -ml-12 -mt-12 w-24 h-24 rounded-full"
-        style={{
-          background: currentStyle.gradient,
-          boxShadow: currentStyle.glow,
-        }}
-      >
-        {/* Pulse ring */}
-        <motion.div
-          animate={{ scale: [1, 1.3, 1], opacity: [0.4, 0, 0.4] }}
-          transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute inset-0 rounded-full border-2"
-          style={{ borderColor: ballType === "red" ? "hsl(0 84% 60% / 0.5)" : ballType === "golden" ? "hsl(45 100% 55% / 0.5)" : ballType === "mega" ? "hsl(280 100% 65% / 0.5)" : "hsl(160 100% 50% / 0.5)" }}
-        />
-        {/* Ball label */}
-        {ballType !== "normal" && (
-          <span className="absolute inset-0 flex items-center justify-center font-display text-xs font-bold text-primary-foreground drop-shadow-lg">
-            {ballType === "mega" ? "⭐" : ballType === "golden" ? "✦" : "✕"}
-          </span>
-        )}
-      </motion.button>
+      {/* Fixed center tap target */}
+      <div className="absolute inset-0 flex items-center justify-center">
+        <motion.button
+          ref={targetRef}
+          onClick={handleTap}
+          onTouchStart={handleTap}
+          animate={{ scale: tapping ? 0.85 : 1 }}
+          transition={{ scale: { duration: 0.06 } }}
+          className="w-24 h-24 rounded-full relative"
+          style={{
+            background: currentStyle.gradient,
+            boxShadow: currentStyle.glow,
+          }}
+        >
+          {/* Pulse ring */}
+          <motion.div
+            animate={{ scale: [1, 1.3, 1], opacity: [0.4, 0, 0.4] }}
+            transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+            className="absolute inset-0 rounded-full border-2"
+            style={{ borderColor: ballType === "red" ? "hsl(0 84% 60% / 0.5)" : ballType === "golden" ? "hsl(45 100% 55% / 0.5)" : ballType === "mega" ? "hsl(280 100% 65% / 0.5)" : "hsl(160 100% 50% / 0.5)" }}
+          />
+          {/* Ball label */}
+          {ballType !== "normal" && (
+            <span className="absolute inset-0 flex items-center justify-center font-display text-xs font-bold text-primary-foreground drop-shadow-lg">
+              {ballType === "mega" ? "⭐" : ballType === "golden" ? "✦" : "✕"}
+            </span>
+          )}
+        </motion.button>
+      </div>
 
       {/* Explosion particles */}
       <AnimatePresence>
