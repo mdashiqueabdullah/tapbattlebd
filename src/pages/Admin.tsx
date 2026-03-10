@@ -8,6 +8,7 @@ const tabs = [
   { key: "overview", label: "ওভারভিউ", icon: BarChart3 },
   { key: "users", label: "ইউজার", icon: Users },
   { key: "leaderboard", label: "লিডারবোর্ড", icon: Trophy },
+  { key: "anticheat", label: "অ্যান্টি-চিট", icon: Shield },
   { key: "payouts", label: "পেআউট", icon: CreditCard },
   { key: "purchases", label: "পার্চেজ", icon: ShoppingCart },
   { key: "referrals", label: "রেফারেল", icon: Share2 },
