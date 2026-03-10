@@ -72,7 +72,7 @@ export default function Admin() {
     if (activeTab === "purchases") {
       fetchPurchases();
     }
-  }, [activeTab, purchaseFilter]);
+  }, [activeTab, purchaseFilter, purchaseMethodFilter]);
 
   const handlePurchaseAction = async (purchaseId: string, action: "approved" | "rejected", purchaseUserId: string, attemptsCount: number) => {
     if (!user) return;
