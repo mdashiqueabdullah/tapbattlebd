@@ -18,6 +18,7 @@ import Terms from "./pages/Terms";
 import Contact from "./pages/Contact";
 import Admin from "./pages/Admin";
 import VerifyPhone from "./pages/VerifyPhone";
+import ReferralRules from "./pages/ReferralRules";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
