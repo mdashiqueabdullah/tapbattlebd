@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { GOLDEN_TARGET_CHANCE, GOLDEN_TARGET_POINTS, NORMAL_TARGET_POINTS, INACTIVITY_TIMEOUT_MS } from "@/lib/prizes";
+import { GOLDEN_TARGET_CHANCE, GOLDEN_TARGET_POINTS, NORMAL_TARGET_POINTS, INACTIVITY_TIMEOUT_MS, INACTIVITY_TIMEOUT_SECONDS } from "@/lib/prizes";
 import { BannerAd, RectangleAd } from "@/components/ads/AdContainer";
 import { t } from "@/lib/i18n";
 
