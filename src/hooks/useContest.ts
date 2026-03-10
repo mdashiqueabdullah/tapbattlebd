@@ -114,8 +114,21 @@ export function useContest(): UserContestData & {
     } else {
       setAttemptsUsed(0);
       setAttemptTotalScore(0);
-      setStreakPoints(0);
       setTotalScore(0);
+
+      // Fetch streak points from daily_claims even without leaderboard entry
+      const now = new Date();
+      const bdtNow = new Date(now.getTime() + (6 * 60 - now.getTimezoneOffset()) * 60000);
+      const claimMonth = bdtNow.getMonth() + 1;
+      const claimYear = bdtNow.getFullYear();
+      const { data: claims } = await supabase
+        .from("daily_claims")
+        .select("reward_points")
+        .eq("user_id", user.id);
+      
+      // Filter claims for current month
+      const monthlyPoints = (claims || []).reduce((sum, c) => sum + (c.reward_points || 0), 0);
+      setStreakPoints(monthlyPoints);
     }
 
     // Get rank
