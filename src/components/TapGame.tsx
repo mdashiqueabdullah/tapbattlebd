@@ -607,9 +607,10 @@ export default function TapGame({ isPractice, attemptsRemaining, onGameEnd, onCa
 
           <button
             onClick={startGame}
-            className="w-full py-4 rounded-xl gradient-primary text-primary-foreground font-bold text-lg neon-border"
+            disabled={phase === "starting"}
+            className="w-full py-4 rounded-xl gradient-primary text-primary-foreground font-bold text-lg neon-border disabled:opacity-50"
           >
-            {t("tapToStart")}
+            {phase === "starting" ? "সেশন শুরু হচ্ছে..." : t("tapToStart")}
           </button>
           <button onClick={onCancel} className="mt-3 text-sm text-muted-foreground hover:text-foreground">
             বাতিল
