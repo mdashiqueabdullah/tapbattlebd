@@ -168,12 +168,6 @@ export default function TapGame({ isPractice, attemptsRemaining, onGameEnd, onCa
     inactivityTimerRef.current = setTimeout(endSession, INACTIVITY_TIMEOUT_MS);
   }, [clearInactivityTimer, endSession]);
 
-  const moveBall = useCallback(() => {
-    const pos = randomPosition();
-    setBallPos(pos);
-    setBallType(pickBallType());
-  }, []);
-
   const startGame = useCallback(() => {
     setPhase("playing");
     setScore(0);
