@@ -305,7 +305,7 @@ export default function AntiCheatPanel() {
                 <p className="text-xs text-muted-foreground mb-2">ডিভাইস তথ্য</p>
                 <div className="text-xs space-y-1 text-foreground">
                   <p><span className="text-muted-foreground">IP:</span> {selectedSession.ip_address || "N/A"}</p>
-                  <p><span className="text-muted-foreground">স্ক্রিন:</span> {selectedSession.screen_width}×{selectedSession.screen_height}</p>
+                  <p><span className="text-muted-foreground">স্ক্রিন:</span> {(selectedSession as any).screen_width}×{(selectedSession as any).screen_height}</p>
                   <p className="break-all"><span className="text-muted-foreground">UA:</span> {selectedSession.user_agent?.slice(0, 100) || "N/A"}</p>
                 </div>
               </div>

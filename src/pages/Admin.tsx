@@ -3,6 +3,7 @@ import { Shield, Users, Trophy, CreditCard, BarChart3, AlertTriangle, Download, 
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
+import AntiCheatPanel from "@/components/AntiCheatPanel";
 
 const tabs = [
   { key: "overview", label: "ওভারভিউ", icon: BarChart3 },
