@@ -107,6 +107,11 @@ export default function Dashboard() {
                 ))}
               </div>
 
+              {/* Daily Streak */}
+              <div className="mb-6">
+                <DailyStreak />
+              </div>
+
               {/* Play Buttons */}
               <div className="space-y-3 mb-6">
                 <button
