@@ -17,12 +17,17 @@ export default function Dashboard() {
   const { profile } = useAuth();
 
   // Use profile data or fallback to mock
+  const gameScore = profile?.lifetime_best_score ?? 65;
+  const referralPoints = profile?.referral_points ?? 0;
+  const totalScore = gameScore + referralPoints;
+
   const userData = {
     username: profile?.username || "Player_BD",
     attemptsUsed: 3,
-    bestScore: profile?.lifetime_best_score ?? 65,
+    gameScore,
+    referralPoints,
+    totalScore,
     currentRank: 28,
-    referralPoints: profile?.referral_points ?? 0,
   };
 
   if (gameMode !== "none") {
