@@ -146,7 +146,6 @@ export default function TapGame({ isPractice, attemptsRemaining, onGameEnd, onCa
   const textIdRef = useRef(0);
   const particleIdRef = useRef(0);
   const inactivityTimerRef = useRef<NodeJS.Timeout | null>(null);
-  const moveTimerRef = useRef<NodeJS.Timeout | null>(null);
   const scoreAreaRef = useRef<HTMLDivElement>(null);
   const targetRef = useRef<HTMLButtonElement>(null);
   const tapLockRef = useRef(false);
