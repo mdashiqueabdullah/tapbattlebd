@@ -129,7 +129,7 @@ export default function Dashboard() {
               </div>
 
               {/* Play Buttons */}
-              <div className="space-y-3 mb-6">
+              <div className="space-y-3 mb-5">
                 <button
                   onClick={() => setGameMode("ranked")}
                   disabled={userData.attemptsUsed >= totalAttempts}
