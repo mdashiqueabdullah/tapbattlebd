@@ -197,7 +197,74 @@ export default function Admin() {
             </div>
           )}
 
-          {activeTab === "announcements" && (
+          {activeTab === "referrals" && (
+            <div>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl font-bold text-foreground">রেফারেল ম্যানেজমেন্ট</h2>
+                <button className="text-sm text-primary flex items-center gap-1">
+                  <Download className="w-4 h-4" /> CSV
+                </button>
+              </div>
+
+              {/* Top Referrers */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+                {[
+                  { label: "মোট রেফারেল", value: "156", color: "text-primary" },
+                  { label: "ভেরিফাইড", value: "124", color: "text-accent" },
+                  { label: "পেন্ডিং", value: "32", color: "text-secondary" },
+                  { label: "টপ রেফারার পয়েন্ট", value: "480", color: "text-neon-pink" },
+                ].map((s, i) => (
+                  <div key={i} className="glass-card p-4">
+                    <p className="text-xs text-muted-foreground">{s.label}</p>
+                    <p className={`font-display text-xl font-bold ${s.color}`}>{s.value}</p>
+                  </div>
+                ))}
+              </div>
+
+              {/* Top Referrers Table */}
+              <h3 className="text-sm font-semibold text-muted-foreground mb-2">টপ রেফারার</h3>
+              <div className="glass-card overflow-hidden rounded-xl mb-6">
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="border-b border-border/30 text-muted-foreground">
+                        <th className="text-left p-3">ইউজারনেম</th>
+                        <th className="text-right p-3">রেফারেল</th>
+                        <th className="text-right p-3">ভেরিফাইড</th>
+                        <th className="text-right p-3">পয়েন্ট</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-border/20">
+                      {[
+                        { username: "TapKing_BD", total: 24, verified: 22, points: 440 },
+                        { username: "SpeedTapper", total: 18, verified: 15, points: 300 },
+                        { username: "RajuGamer", total: 12, verified: 10, points: 200 },
+                      ].map((u, i) => (
+                        <tr key={i}>
+                          <td className="p-3 text-foreground font-medium">{u.username}</td>
+                          <td className="p-3 text-right text-foreground">{u.total}</td>
+                          <td className="p-3 text-right text-primary">{u.verified}</td>
+                          <td className="p-3 text-right font-display text-accent">{u.points}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              {/* Suspicious Referrals */}
+              <div className="glass-card p-4">
+                <h3 className="font-bold text-foreground mb-3 flex items-center gap-2">
+                  <AlertTriangle className="w-4 h-4 text-destructive" /> সন্দেহজনক রেফারেল
+                </h3>
+                <div className="text-sm text-muted-foreground space-y-1">
+                  <p>কোনো সন্দেহজনক রেফারেল পাওয়া যায়নি।</p>
+                </div>
+              </div>
+            </div>
+          )}
+
+
             <div>
               <h2 className="text-xl font-bold text-foreground mb-4">ঘোষণা</h2>
               <form onSubmit={e => e.preventDefault()} className="glass-card p-4 space-y-3">
