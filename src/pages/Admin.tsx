@@ -136,6 +136,24 @@ export default function Admin() {
     })();
   }, [activeTab, isAdmin]);
 
+  // Fetch winners
+  useEffect(() => {
+    if (activeTab !== "winners" || !isAdmin) return;
+    (async () => {
+      const { data } = await supabase.from("monthly_winners").select("*").order("final_rank", { ascending: true }).limit(100);
+      if (data) {
+        const uids = [...new Set(data.map((w: any) => w.user_id))];
+        if (uids.length > 0) {
+          const { data: profiles } = await supabase.from("profiles").select("id, username").in("id", uids);
+          const m = new Map((profiles || []).map((p: any) => [p.id, p.username]));
+          setWinners(data.map((w: any) => ({ ...w, username: m.get(w.user_id) || "Unknown" })));
+        } else {
+          setWinners([]);
+        }
+      }
+    })();
+  }, [activeTab, isAdmin]);
+
   const handlePurchaseAction = async (id: string, action: "approved" | "rejected", userId: string, attempts: number) => {
     if (!user) return;
     const { error } = await supabase.from("attempt_purchases").update({ status: action, reviewed_by: user.id, reviewed_at: new Date().toISOString() } as any).eq("id", id);
