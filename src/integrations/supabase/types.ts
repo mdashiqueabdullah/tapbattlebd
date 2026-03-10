@@ -14,6 +14,39 @@ export type Database = {
   }
   public: {
     Tables: {
+      daily_streaks: {
+        Row: {
+          created_at: string
+          current_streak: number
+          id: string
+          last_claimed_date: string | null
+          last_play_date: string | null
+          total_streak_points: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          current_streak?: number
+          id?: string
+          last_claimed_date?: string | null
+          last_play_date?: string | null
+          total_streak_points?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          current_streak?: number
+          id?: string
+          last_claimed_date?: string | null
+          last_play_date?: string | null
+          total_streak_points?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       otp_verifications: {
         Row: {
           created_at: string
