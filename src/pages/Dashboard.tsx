@@ -230,6 +230,15 @@ export default function Dashboard() {
           {activeTab === "referral" && <ReferralSection />}
         </div>
       </div>
+      {/* Logout Button */}
+      <div className="container px-4 pb-6">
+        <button
+          onClick={async () => { await signOut(); navigate("/"); }}
+          className="w-full py-3 rounded-xl border border-destructive/30 text-destructive font-semibold text-sm flex items-center justify-center gap-2 hover:bg-destructive/10 transition-colors"
+        >
+          <LogOut className="w-4 h-4" /> লগআউট
+        </button>
+      </div>
       <Footer />
 
       <BuyAttemptsDialog
