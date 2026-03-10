@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import { Flame, Gift, Check } from "lucide-react";
+import { Flame, Gift, Check, Info } from "lucide-react";
 
 const STREAK_REWARDS: Record<number, number> = {
   1: 5,
@@ -65,7 +65,6 @@ export default function DailyStreak() {
     }
 
     if (data) {
-      // If streak is broken (missed a day), reset in DB
       if (
         data.last_claimed_date &&
         data.last_claimed_date !== today &&
@@ -92,6 +91,7 @@ export default function DailyStreak() {
 
   const alreadyClaimed = streakData?.last_claimed_date === today;
   const currentStreak = streakData?.current_streak ?? 0;
+  const totalStreakPoints = streakData?.total_streak_points ?? 0;
   const nextDay = currentStreak + 1;
   const todayReward = getRewardForDay(nextDay);
 
@@ -124,14 +124,6 @@ export default function DailyStreak() {
           })
           .eq("user_id", user.id);
         if (error) throw error;
-      }
-
-      // Add streak reward to profile referral_points
-      if (profile) {
-        await supabase
-          .from("profiles")
-          .update({ referral_points: (profile.referral_points || 0) + reward })
-          .eq("id", user.id);
       }
 
       setClaimedReward(reward);
@@ -171,7 +163,7 @@ export default function DailyStreak() {
       </div>
 
       {/* Streak progress */}
-      <div className="flex gap-1.5 mb-4 overflow-x-auto pb-1">
+      <div className="flex gap-1.5 mb-3 overflow-x-auto pb-1">
         {upcomingDays.map((day) => {
           const reward = STREAK_REWARDS[day];
           const isCompleted = currentStreak >= day;
@@ -200,6 +192,14 @@ export default function DailyStreak() {
             </div>
           );
         })}
+      </div>
+
+      {/* Total streak points */}
+      <div className="flex items-center gap-1.5 mb-3 px-1">
+        <Info className="w-3 h-3 text-muted-foreground flex-shrink-0" />
+        <p className="text-[11px] text-muted-foreground">
+          মোট স্ট্রিক পয়েন্ট: <span className="font-bold text-accent">{totalStreakPoints}</span> — লিডারবোর্ডে যোগ হয়
+        </p>
       </div>
 
       {/* Claim section */}
@@ -244,7 +244,7 @@ export default function DailyStreak() {
                 🎉
               </motion.div>
               <p className="font-display text-xl font-bold text-accent">+{claimedReward} পয়েন্ট!</p>
-              <p className="text-xs text-muted-foreground mt-1">স্ট্রিক বোনাস যোগ হয়েছে</p>
+              <p className="text-xs text-muted-foreground mt-1">লিডারবোর্ড স্কোরে যোগ হয়েছে</p>
             </div>
           </motion.div>
         )}
