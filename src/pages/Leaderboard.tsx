@@ -69,8 +69,9 @@ export default function Leaderboard() {
             <div className="flex items-center px-4 py-2 text-xs text-muted-foreground font-medium bg-muted/30">
               <span className="w-10">#</span>
               <span className="flex-1">{t("username")}</span>
-              <span className="w-16 text-right">{t("score")}</span>
-              <span className="w-12 text-right">চেষ্টা</span>
+              <span className="w-14 text-right">গেম</span>
+              <span className="w-14 text-right">রেফার</span>
+              <span className="w-14 text-right">মোট</span>
             </div>
             {mockLeaderboard.map(entry => (
               <div key={entry.rank} className={`flex items-center px-4 py-3 ${entry.rank <= 3 ? "bg-accent/5" : ""}`}>
@@ -78,8 +79,9 @@ export default function Leaderboard() {
                   {entry.rank}
                 </span>
                 <span className="flex-1 font-medium text-foreground text-sm">{entry.username}</span>
-                <span className="w-16 text-right font-display font-bold text-primary text-sm">{entry.bestScore}</span>
-                <span className="w-12 text-right text-muted-foreground text-sm">{entry.attemptsUsed}</span>
+                <span className="w-14 text-right text-muted-foreground text-sm">{entry.bestScore}</span>
+                <span className="w-14 text-right text-neon-pink text-sm">{entry.referralPoints}</span>
+                <span className="w-14 text-right font-display font-bold text-primary text-sm">{entry.totalScore}</span>
               </div>
             ))}
           </div>
