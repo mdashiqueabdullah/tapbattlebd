@@ -81,6 +81,9 @@ export default function Dashboard() {
             </button>
           </div>
 
+          {/* ADSENSE: Rectangle ad below stats */}
+          <RectangleAd className="mb-4" />
+
           {/* Navigation Cards */}
           <div className="grid grid-cols-2 gap-3">
             {[
