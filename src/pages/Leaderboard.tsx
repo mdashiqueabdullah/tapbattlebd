@@ -52,10 +52,10 @@ export default function Leaderboard() {
               const isFirst = idx === 0;
               return (
                 <div key={idx} className={`text-center ${isFirst ? "order-2" : idx === 1 ? "order-1" : "order-3"}`}>
-                  <div className={`glass-card ${isFirst ? "neon-border-gold p-5" : "p-4"} rounded-2xl`}>
-                    <span className="text-2xl">{["🥇", "🥈", "🥉"][idx]}</span>
-                    <p className={`font-bold ${isFirst ? "text-lg" : "text-sm"} text-foreground mt-1`}>{entry.username}</p>
-                    <p className={`font-display font-bold ${isFirst ? "text-2xl text-accent neon-text-gold" : "text-lg text-primary"}`}>{entry.totalScore}</p>
+                  <div className={`glass-card ${isFirst ? "neon-border-gold p-4 sm:p-5" : "p-3 sm:p-4"} rounded-2xl`}>
+                    <span className="text-xl sm:text-2xl">{["🥇", "🥈", "🥉"][idx]}</span>
+                    <p className={`font-bold ${isFirst ? "text-base sm:text-lg" : "text-xs sm:text-sm"} text-foreground mt-1 truncate max-w-[80px] sm:max-w-[100px]`}>{entry.username}</p>
+                    <p className={`font-display font-bold ${isFirst ? "text-xl sm:text-2xl text-accent neon-text-gold" : "text-base sm:text-lg text-primary"}`}>{entry.totalScore}</p>
                     {entry.referralPoints > 0 && <p className="text-[10px] text-neon-pink">+{entry.referralPoints} রেফার</p>}
                     <p className="text-xs text-muted-foreground">৳{entry.prize?.toLocaleString()}</p>
                   </div>
