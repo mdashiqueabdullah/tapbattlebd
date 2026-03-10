@@ -35,7 +35,6 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
   }
 
   if (!user) return <Navigate to="/login" replace />;
-  if (profile && !profile.phone_verified) return <Navigate to="/verify-phone" replace />;
 
   return <>{children}</>;
 }
