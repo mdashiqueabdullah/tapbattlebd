@@ -14,6 +14,45 @@ export type Database = {
   }
   public: {
     Tables: {
+      attempt_purchases: {
+        Row: {
+          amount: number
+          attempts_count: number
+          created_at: string
+          id: string
+          payment_method: string
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string
+          transaction_id: string
+          user_id: string
+        }
+        Insert: {
+          amount?: number
+          attempts_count?: number
+          created_at?: string
+          id?: string
+          payment_method: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          transaction_id: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          attempts_count?: number
+          created_at?: string
+          id?: string
+          payment_method?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          transaction_id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       daily_streaks: {
         Row: {
           created_at: string
@@ -84,6 +123,7 @@ export type Database = {
           country: string | null
           created_at: string
           email: string | null
+          extra_attempts: number
           full_name: string | null
           id: string
           is_banned: boolean
@@ -107,6 +147,7 @@ export type Database = {
           country?: string | null
           created_at?: string
           email?: string | null
+          extra_attempts?: number
           full_name?: string | null
           id: string
           is_banned?: boolean
@@ -130,6 +171,7 @@ export type Database = {
           country?: string | null
           created_at?: string
           email?: string | null
+          extra_attempts?: number
           full_name?: string | null
           id?: string
           is_banned?: boolean
