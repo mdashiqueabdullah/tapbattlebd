@@ -9,11 +9,10 @@ export const PRIZE_DISTRIBUTION: { rankRange: string; amount: number; count: num
 
 export const TOTAL_PRIZE = 15000;
 export const MAX_RANKED_ATTEMPTS = 10;
-export const GAME_DURATION_SECONDS = 30;
+export const INACTIVITY_TIMEOUT_MS = 5 * 60 * 1000; // 5 minutes
 export const GOLDEN_TARGET_CHANCE = 0.15;
 export const GOLDEN_TARGET_POINTS = 3;
 export const NORMAL_TARGET_POINTS = 1;
-export const TARGET_DISPLAY_MS = 1200;
 
 export function formatBDT(amount: number): string {
   return `৳${amount.toLocaleString("bn-BD")}`;
