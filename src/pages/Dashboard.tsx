@@ -5,22 +5,26 @@ import Footer from "@/components/Footer";
 import CountdownTimer from "@/components/CountdownTimer";
 import TapGame from "@/components/TapGame";
 import ReferralSection from "@/components/ReferralSection";
+import BuyAttemptsDialog from "@/components/BuyAttemptsDialog";
+import PurchaseHistory from "@/components/PurchaseHistory";
 import { BannerAd, RectangleAd } from "@/components/ads/AdContainer";
 import { useAuth } from "@/hooks/useAuth";
 import { t } from "@/lib/i18n";
 import { MAX_RANKED_ATTEMPTS } from "@/lib/prizes";
-import { Gamepad2, Trophy, Award, Clock, Target, BarChart3, User, CreditCard, Users, Gift } from "lucide-react";
+import { Gamepad2, Trophy, Award, Clock, Target, BarChart3, User, CreditCard, Users, Gift, ShoppingCart } from "lucide-react";
 import DailyStreak from "@/components/DailyStreak";
 
 export default function Dashboard() {
   const [gameMode, setGameMode] = useState<"none" | "ranked" | "practice">("none");
   const [activeTab, setActiveTab] = useState<"main" | "referral">("main");
-  const { profile } = useAuth();
+  const [showBuyDialog, setShowBuyDialog] = useState(false);
+  const { profile, refreshProfile } = useAuth();
 
   // Use profile data or fallback to mock
   const gameScore = profile?.lifetime_best_score ?? 65;
   const referralPoints = profile?.referral_points ?? 0;
   const totalScore = gameScore + referralPoints;
+  const extraAttempts = (profile as any)?.extra_attempts ?? 0;
 
   const userData = {
     username: profile?.username || "Player_BD",
@@ -31,11 +35,13 @@ export default function Dashboard() {
     currentRank: 28,
   };
 
+  const totalAttempts = MAX_RANKED_ATTEMPTS + extraAttempts;
+
   if (gameMode !== "none") {
     return (
       <TapGame
         isPractice={gameMode === "practice"}
-        attemptsRemaining={MAX_RANKED_ATTEMPTS - userData.attemptsUsed}
+        attemptsRemaining={totalAttempts - userData.attemptsUsed}
         onGameEnd={(score) => {
           console.log("Game ended with score:", score);
         }}
@@ -97,7 +103,7 @@ export default function Dashboard() {
               <div className="grid grid-cols-2 gap-3 mb-6">
                 {[
                   { icon: Trophy, label: t("currentRank"), value: `#${userData.currentRank}`, color: "text-accent" },
-                  { icon: Clock, label: t("attemptsUsed"), value: `${userData.attemptsUsed}/${MAX_RANKED_ATTEMPTS}`, color: "text-secondary" },
+                  { icon: Clock, label: t("attemptsUsed"), value: `${userData.attemptsUsed}/${totalAttempts}`, color: "text-secondary" },
                 ].map((stat, i) => (
                   <div key={i} className="glass-card p-4">
                     <stat.icon className={`w-5 h-5 ${stat.color} mb-2`} />
@@ -106,6 +112,16 @@ export default function Dashboard() {
                   </div>
                 ))}
               </div>
+
+              {/* Extra Attempts Info */}
+              {extraAttempts > 0 && (
+                <div className="glass-card p-3 mb-4 rounded-lg flex items-center gap-2">
+                  <ShoppingCart className="w-4 h-4 text-accent" />
+                  <span className="text-sm text-muted-foreground">
+                    অতিরিক্ত অ্যাটেম্পট: <span className="font-bold text-accent">{extraAttempts}</span>
+                  </span>
+                </div>
+              )}
 
               {/* Daily Streak */}
               <div className="mb-6">
@@ -116,7 +132,7 @@ export default function Dashboard() {
               <div className="space-y-3 mb-6">
                 <button
                   onClick={() => setGameMode("ranked")}
-                  disabled={userData.attemptsUsed >= MAX_RANKED_ATTEMPTS}
+                  disabled={userData.attemptsUsed >= totalAttempts}
                   className="w-full py-4 rounded-xl gradient-primary text-primary-foreground font-bold text-lg neon-border flex items-center justify-center gap-2 disabled:opacity-50"
                 >
                   <Gamepad2 className="w-5 h-5" />
@@ -129,6 +145,21 @@ export default function Dashboard() {
                   <Target className="w-5 h-5" />
                   {t("practiceMode")}
                 </button>
+              </div>
+
+              {/* Buy Extra Attempts */}
+              <button
+                onClick={() => setShowBuyDialog(true)}
+                className="w-full py-3 rounded-xl glass-card border border-accent/30 hover:border-accent/60 transition-colors flex items-center justify-center gap-2 mb-6"
+              >
+                <ShoppingCart className="w-5 h-5 text-accent" />
+                <span className="font-semibold text-foreground">৫টি অতিরিক্ত অ্যাটেম্পট কিনুন</span>
+                <span className="font-display font-bold text-accent">– ৩০৳</span>
+              </button>
+
+              {/* Purchase History */}
+              <div className="mb-6">
+                <PurchaseHistory />
               </div>
 
               {/* ADSENSE: Rectangle ad below stats */}
@@ -155,6 +186,12 @@ export default function Dashboard() {
         </div>
       </div>
       <Footer />
+
+      <BuyAttemptsDialog
+        open={showBuyDialog}
+        onClose={() => setShowBuyDialog(false)}
+        onSuccess={() => refreshProfile()}
+      />
     </div>
   );
 }
