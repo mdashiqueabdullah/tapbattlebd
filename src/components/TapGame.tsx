@@ -132,7 +132,6 @@ export default function TapGame({ isPractice, attemptsRemaining, onGameEnd, onCa
   const [phase, setPhase] = useState<"ready" | "playing" | "done">("ready");
   const [score, setScore] = useState(0);
   const [ballType, setBallType] = useState<BallType>("normal");
-  const [ballPos, setBallPos] = useState({ x: 50, y: 50 });
   const [flyingCoins, setFlyingCoins] = useState<FlyingCoin[]>([]);
   const [floatingTexts, setFloatingTexts] = useState<FloatingText[]>([]);
   const [particles, setParticles] = useState<Particle[]>([]);
@@ -147,7 +146,6 @@ export default function TapGame({ isPractice, attemptsRemaining, onGameEnd, onCa
   const textIdRef = useRef(0);
   const particleIdRef = useRef(0);
   const inactivityTimerRef = useRef<NodeJS.Timeout | null>(null);
-  const moveTimerRef = useRef<NodeJS.Timeout | null>(null);
   const scoreAreaRef = useRef<HTMLDivElement>(null);
   const targetRef = useRef<HTMLButtonElement>(null);
   const tapLockRef = useRef(false);
@@ -161,7 +159,6 @@ export default function TapGame({ isPractice, attemptsRemaining, onGameEnd, onCa
 
   const endSession = useCallback(() => {
     clearInactivityTimer();
-    if (moveTimerRef.current) { clearInterval(moveTimerRef.current); moveTimerRef.current = null; }
     if (doubleScoreTimerRef.current) { clearTimeout(doubleScoreTimerRef.current); }
     setPhase("done");
   }, [clearInactivityTimer]);
@@ -170,12 +167,6 @@ export default function TapGame({ isPractice, attemptsRemaining, onGameEnd, onCa
     clearInactivityTimer();
     inactivityTimerRef.current = setTimeout(endSession, INACTIVITY_TIMEOUT_MS);
   }, [clearInactivityTimer, endSession]);
-
-  const moveBall = useCallback(() => {
-    const pos = randomPosition();
-    setBallPos(pos);
-    setBallType(pickBallType());
-  }, []);
 
   const startGame = useCallback(() => {
     setPhase("playing");
@@ -189,29 +180,16 @@ export default function TapGame({ isPractice, attemptsRemaining, onGameEnd, onCa
     comboCountRef.current = 0;
     setBonusEvent(null);
     setIsDoubleScore(false);
-    setBallPos({ x: 50, y: 50 });
     setBallType(pickBallType());
   }, []);
 
-  // Ball movement interval
+  // Start inactivity timer when playing begins
   useEffect(() => {
     if (phase === "playing") {
       resetInactivityTimer();
-      // Move ball every 2-3.5 seconds
-      const scheduleMove = () => {
-        const delay = 2000 + Math.random() * 1500;
-        moveTimerRef.current = setTimeout(() => {
-          moveBall();
-          scheduleMove();
-        }, delay);
-      };
-      scheduleMove();
     }
-    return () => {
-      clearInactivityTimer();
-      if (moveTimerRef.current) { clearTimeout(moveTimerRef.current); moveTimerRef.current = null; }
-    };
-  }, [phase, resetInactivityTimer, clearInactivityTimer, moveBall]);
+    return () => clearInactivityTimer();
+  }, [phase, resetInactivityTimer, clearInactivityTimer]);
 
   // Spawn particles
   const spawnParticles = useCallback((x: number, y: number, color: string) => {
@@ -321,9 +299,7 @@ export default function TapGame({ isPractice, attemptsRemaining, onGameEnd, onCa
       setFlyingCoins(prev => [...prev, { id: coinId, startX, startY, pts: basePts, type: currentType }]);
     }
 
-    // Move ball and pick new type immediately
-    const newPos = randomPosition();
-    setBallPos(newPos);
+    // Pick new ball type
     setBallType(pickBallType());
 
     // Score update
@@ -524,41 +500,35 @@ export default function TapGame({ isPractice, attemptsRemaining, onGameEnd, onCa
         </div>
       )}
 
-      {/* Moving ball target */}
-      <motion.button
-        ref={targetRef}
-        onClick={handleTap}
-        onTouchStart={handleTap}
-        animate={{
-          left: `${ballPos.x}%`,
-          top: `${ballPos.y}%`,
-          scale: tapping ? 0.85 : 1,
-        }}
-        transition={{
-          left: { type: "spring", stiffness: 120, damping: 20 },
-          top: { type: "spring", stiffness: 120, damping: 20 },
-          scale: { duration: 0.06 },
-        }}
-        className="absolute z-10 -ml-12 -mt-12 w-24 h-24 rounded-full"
-        style={{
-          background: currentStyle.gradient,
-          boxShadow: currentStyle.glow,
-        }}
-      >
-        {/* Pulse ring */}
-        <motion.div
-          animate={{ scale: [1, 1.3, 1], opacity: [0.4, 0, 0.4] }}
-          transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute inset-0 rounded-full border-2"
-          style={{ borderColor: ballType === "red" ? "hsl(0 84% 60% / 0.5)" : ballType === "golden" ? "hsl(45 100% 55% / 0.5)" : ballType === "mega" ? "hsl(280 100% 65% / 0.5)" : "hsl(160 100% 50% / 0.5)" }}
-        />
-        {/* Ball label */}
-        {ballType !== "normal" && (
-          <span className="absolute inset-0 flex items-center justify-center font-display text-xs font-bold text-primary-foreground drop-shadow-lg">
-            {ballType === "mega" ? "⭐" : ballType === "golden" ? "✦" : "✕"}
-          </span>
-        )}
-      </motion.button>
+      {/* Fixed center tap target */}
+      <div className="absolute inset-0 flex items-center justify-center">
+        <motion.button
+          ref={targetRef}
+          onClick={handleTap}
+          onTouchStart={handleTap}
+          animate={{ scale: tapping ? 0.85 : 1 }}
+          transition={{ scale: { duration: 0.06 } }}
+          className="w-24 h-24 rounded-full relative"
+          style={{
+            background: currentStyle.gradient,
+            boxShadow: currentStyle.glow,
+          }}
+        >
+          {/* Pulse ring */}
+          <motion.div
+            animate={{ scale: [1, 1.3, 1], opacity: [0.4, 0, 0.4] }}
+            transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+            className="absolute inset-0 rounded-full border-2"
+            style={{ borderColor: ballType === "red" ? "hsl(0 84% 60% / 0.5)" : ballType === "golden" ? "hsl(45 100% 55% / 0.5)" : ballType === "mega" ? "hsl(280 100% 65% / 0.5)" : "hsl(160 100% 50% / 0.5)" }}
+          />
+          {/* Ball label */}
+          {ballType !== "normal" && (
+            <span className="absolute inset-0 flex items-center justify-center font-display text-xs font-bold text-primary-foreground drop-shadow-lg">
+              {ballType === "mega" ? "⭐" : ballType === "golden" ? "✦" : "✕"}
+            </span>
+          )}
+        </motion.button>
+      </div>
 
       {/* Explosion particles */}
       <AnimatePresence>
