@@ -666,7 +666,7 @@ export default function TapGame({ isPractice, attemptsRemaining, onGameEnd, onCa
             initial={{ y: -50, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: -50, opacity: 0 }}
-            className="absolute top-28 left-1/2 -translate-x-1/2 z-10"
+            className="absolute top-[110px] left-1/2 -translate-x-1/2 z-10"
           >
             <div className={`glass-card px-5 py-2 rounded-full ${isFrenzy ? "neon-border" : "neon-border-gold"}`}>
               <span className={`font-display text-sm font-bold ${isFrenzy ? "text-secondary" : "text-accent neon-text-gold"}`}>
