@@ -159,7 +159,6 @@ export default function TapGame({ isPractice, attemptsRemaining, onGameEnd, onCa
 
   const endSession = useCallback(() => {
     clearInactivityTimer();
-    if (moveTimerRef.current) { clearInterval(moveTimerRef.current); moveTimerRef.current = null; }
     if (doubleScoreTimerRef.current) { clearTimeout(doubleScoreTimerRef.current); }
     setPhase("done");
   }, [clearInactivityTimer]);
