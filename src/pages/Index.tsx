@@ -100,7 +100,7 @@ export default function Index() {
       </section>
 
       {/* Prize Section */}
-      <section className="py-12 px-4 bg-muted/20">
+      <section className="py-12 md:py-16 px-4 bg-muted/20">
         <div className="container max-w-lg">
           <h2 className="text-2xl font-bold text-center text-foreground mb-2">{t("prizeBreakdown")}</h2>
           <p className="text-center text-muted-foreground mb-6">প্রতি মাসে টপ ১০০ জন পুরস্কার পায়</p>
