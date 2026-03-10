@@ -1,11 +1,12 @@
 import { useState } from "react";
-import { Shield, Users, Trophy, CreditCard, BarChart3, AlertTriangle, Download, Megaphone, Settings } from "lucide-react";
+import { Shield, Users, Trophy, CreditCard, BarChart3, AlertTriangle, Download, Megaphone, Settings, Share2 } from "lucide-react";
 
 const tabs = [
   { key: "overview", label: "ওভারভিউ", icon: BarChart3 },
   { key: "users", label: "ইউজার", icon: Users },
   { key: "leaderboard", label: "লিডারবোর্ড", icon: Trophy },
   { key: "payouts", label: "পেআউট", icon: CreditCard },
+  { key: "referrals", label: "রেফারেল", icon: Share2 },
   { key: "announcements", label: "ঘোষণা", icon: Megaphone },
 ];
 
