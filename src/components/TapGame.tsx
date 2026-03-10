@@ -258,9 +258,12 @@ export default function TapGame({ isPractice, attemptsRemaining, onGameEnd, onCa
         })}
       </AnimatePresence>
 
-      {/* Hint text */}
-      <div className="absolute bottom-8 left-0 right-0 text-center">
-        <p className="text-muted-foreground/50 text-xs">ট্যাপ করতে থাকো • ৫ মিনিট নিষ্ক্রিয় থাকলে সেশন শেষ</p>
+      {/* ADSENSE: Small banner at bottom, separated from gameplay */}
+      <div className="absolute bottom-0 left-0 right-0 pb-2 pt-10 pointer-events-auto z-0">
+        <div className="max-w-md mx-auto px-4">
+          <BannerAd />
+        </div>
+        <p className="text-muted-foreground/50 text-xs text-center mt-1">ট্যাপ করতে থাকো • ৫ মিনিট নিষ্ক্রিয় থাকলে সেশন শেষ</p>
       </div>
     </div>
   );
