@@ -156,7 +156,7 @@ export default function Index() {
       </section>
 
       {/* CTA */}
-      <section className="py-16 px-4 text-center">
+      <section className="py-16 md:py-20 px-4 text-center">
         <div className="container max-w-md">
           <h2 className="text-2xl font-bold text-foreground mb-2">আজই শুরু করুন!</h2>
           <p className="text-muted-foreground mb-6">ফ্রি রেজিস্টার করুন এবং এই মাসের কনটেস্টে অংশ নিন</p>

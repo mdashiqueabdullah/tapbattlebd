@@ -144,16 +144,16 @@ export default function Admin() {
         </div>
 
         {/* Mobile tabs */}
-        <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 glass-card border-t border-border/30 flex overflow-x-auto">
+        <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 glass-card border-t border-border/30 flex overflow-x-auto scrollbar-hide">
           {tabs.map(tab => (
             <button
               key={tab.key}
               onClick={() => setActiveTab(tab.key)}
-              className={`flex-1 py-3 flex flex-col items-center gap-1 text-xs min-w-[60px] ${
+              className={`flex-shrink-0 flex-1 py-3 flex flex-col items-center gap-1 text-[10px] min-w-[50px] ${
                 activeTab === tab.key ? "text-primary" : "text-muted-foreground"
               }`}
             >
-              <tab.icon className="w-4 h-4" />
+              <tab.icon className="w-3.5 h-3.5" />
               {tab.label}
             </button>
           ))}
