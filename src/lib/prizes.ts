@@ -12,9 +12,22 @@ export const MAX_RANKED_ATTEMPTS = 10;
 // Inactivity timeout — change this single value to adjust session auto-end (seconds)
 export const INACTIVITY_TIMEOUT_SECONDS = 30;
 export const INACTIVITY_TIMEOUT_MS = INACTIVITY_TIMEOUT_SECONDS * 1000;
-export const GOLDEN_TARGET_CHANCE = 0.15;
-export const GOLDEN_TARGET_POINTS = 3;
+export const GOLDEN_TARGET_CHANCE = 0.12;
+export const RED_TARGET_CHANCE = 0.08;
+export const MEGA_TARGET_CHANCE = 0.03;
+export const GOLDEN_TARGET_POINTS = 5;
 export const NORMAL_TARGET_POINTS = 1;
+export const RED_TARGET_POINTS = -3;
+export const MEGA_TARGET_POINTS = 10;
+
+// Combo thresholds
+export const COMBO_THRESHOLD_2X = 5;
+export const COMBO_THRESHOLD_3X = 10;
+export const COMBO_WINDOW_MS = 800;
+
+// Bonus events
+export const BONUS_EVENT_CHANCE = 0.02;
+export const DOUBLE_SCORE_DURATION_MS = 5000;
 
 export function formatBDT(amount: number): string {
   return `৳${amount.toLocaleString("bn-BD")}`;
