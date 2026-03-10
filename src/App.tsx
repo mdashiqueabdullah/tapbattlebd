@@ -18,6 +18,7 @@ import Terms from "./pages/Terms";
 import Contact from "./pages/Contact";
 import Admin from "./pages/Admin";
 import VerifyPhone from "./pages/VerifyPhone";
+import ReferralRules from "./pages/ReferralRules";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -68,6 +69,7 @@ const AppRoutes = () => (
     <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
     <Route path="/payout" element={<ProtectedRoute><Payout /></ProtectedRoute>} />
     <Route path="/rules" element={<Rules />} />
+    <Route path="/referral-rules" element={<ReferralRules />} />
     <Route path="/faq" element={<FAQ />} />
     <Route path="/privacy" element={<Privacy />} />
     <Route path="/terms" element={<Terms />} />

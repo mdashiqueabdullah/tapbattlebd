@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { Copy, Share2, Check, Users, Gift } from "lucide-react";
@@ -154,6 +155,25 @@ export default function ReferralSection() {
           <p className="text-muted-foreground text-sm">এখনো কোনো রেফার নেই। বন্ধুদের আমন্ত্রণ করুন!</p>
         </div>
       )}
+
+      {/* Referral Rules Preview */}
+      <div className="glass-card p-4 space-y-2">
+        <h3 className="font-bold text-foreground text-sm flex items-center gap-2">
+          <Gift className="w-4 h-4 text-accent" /> রেফার নিয়মাবলী
+        </h3>
+        <ul className="space-y-1.5 text-xs text-muted-foreground">
+          <li className="flex items-start gap-1.5"><span className="text-primary">✓</span> প্রতি সফল রেফারে ২০ পয়েন্ট</li>
+          <li className="flex items-start gap-1.5"><span className="text-primary">✓</span> রেফার্ড ইউজারকে সাইন আপ সম্পূর্ণ করতে হবে</li>
+          <li className="flex items-start gap-1.5"><span className="text-primary">✓</span> রেফার্ড ইউজারকে ফোন ভেরিফাই করতে হবে</li>
+          <li className="flex items-start gap-1.5"><span className="text-destructive">✗</span> অসম্পূর্ণ অ্যাকাউন্ট গণনা হবে না</li>
+        </ul>
+        <Link
+          to="/referral-rules"
+          className="block text-center text-sm text-primary font-semibold hover:underline pt-2"
+        >
+          সম্পূর্ণ রেফার রুলস দেখুন →
+        </Link>
+      </div>
     </div>
   );
 }
