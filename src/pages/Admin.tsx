@@ -1,11 +1,15 @@
-import { useState } from "react";
-import { Shield, Users, Trophy, CreditCard, BarChart3, AlertTriangle, Download, Megaphone, Settings, Share2 } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Shield, Users, Trophy, CreditCard, BarChart3, AlertTriangle, Download, Megaphone, Share2, ShoppingCart, CheckCircle, XCircle } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
+import { toast } from "sonner";
 
 const tabs = [
   { key: "overview", label: "ওভারভিউ", icon: BarChart3 },
   { key: "users", label: "ইউজার", icon: Users },
   { key: "leaderboard", label: "লিডারবোর্ড", icon: Trophy },
   { key: "payouts", label: "পেআউট", icon: CreditCard },
+  { key: "purchases", label: "পার্চেজ", icon: ShoppingCart },
   { key: "referrals", label: "রেফারেল", icon: Share2 },
   { key: "announcements", label: "ঘোষণা", icon: Megaphone },
 ];
@@ -22,8 +26,93 @@ const mockPayouts = [
   { id: 3, username: "RajuGamer", amount: 1000, method: "bKash", number: "01912345678", status: "paid" },
 ];
 
+interface PurchaseRow {
+  id: string;
+  user_id: string;
+  payment_method: string;
+  transaction_id: string;
+  amount: number;
+  attempts_count: number;
+  status: string;
+  created_at: string;
+  profiles?: { username: string } | null;
+}
+
 export default function Admin() {
   const [activeTab, setActiveTab] = useState("overview");
+  const [purchases, setPurchases] = useState<PurchaseRow[]>([]);
+  const [purchaseFilter, setPurchaseFilter] = useState<"pending" | "approved" | "rejected" | "all">("pending");
+  const [loadingPurchases, setLoadingPurchases] = useState(false);
+  const { user } = useAuth();
+
+  const fetchPurchases = async () => {
+    setLoadingPurchases(true);
+    let query = supabase
+      .from("attempt_purchases")
+      .select("*, profiles!attempt_purchases_user_id_fkey(username)")
+      .order("created_at", { ascending: false })
+      .limit(100);
+
+    if (purchaseFilter !== "all") {
+      query = query.eq("status", purchaseFilter);
+    }
+
+    const { data, error } = await query;
+    if (!error && data) {
+      setPurchases(data as unknown as PurchaseRow[]);
+    }
+    setLoadingPurchases(false);
+  };
+
+  useEffect(() => {
+    if (activeTab === "purchases") {
+      fetchPurchases();
+    }
+  }, [activeTab, purchaseFilter]);
+
+  const handlePurchaseAction = async (purchaseId: string, action: "approved" | "rejected", purchaseUserId: string, attemptsCount: number) => {
+    if (!user) return;
+
+    // Update purchase status
+    const { error: updateError } = await supabase
+      .from("attempt_purchases")
+      .update({
+        status: action,
+        reviewed_by: user.id,
+        reviewed_at: new Date().toISOString(),
+      } as any)
+      .eq("id", purchaseId);
+
+    if (updateError) {
+      toast.error("আপডেট করতে সমস্যা হয়েছে");
+      return;
+    }
+
+    // If approved, add extra attempts to user profile
+    if (action === "approved") {
+      // Get current extra_attempts
+      const { data: profileData } = await supabase
+        .from("profiles")
+        .select("extra_attempts")
+        .eq("id", purchaseUserId)
+        .single();
+
+      const currentExtra = (profileData as any)?.extra_attempts ?? 0;
+
+      const { error: profileError } = await supabase
+        .from("profiles")
+        .update({ extra_attempts: currentExtra + attemptsCount } as any)
+        .eq("id", purchaseUserId);
+
+      if (profileError) {
+        toast.error("অ্যাটেম্পট যোগ করতে সমস্যা হয়েছে");
+        return;
+      }
+    }
+
+    toast.success(action === "approved" ? "অনুমোদিত ✓" : "প্রত্যাখ্যাত ✕");
+    fetchPurchases();
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -51,12 +140,12 @@ export default function Admin() {
         </div>
 
         {/* Mobile tabs */}
-        <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 glass-card border-t border-border/30 flex">
+        <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 glass-card border-t border-border/30 flex overflow-x-auto">
           {tabs.map(tab => (
             <button
               key={tab.key}
               onClick={() => setActiveTab(tab.key)}
-              className={`flex-1 py-3 flex flex-col items-center gap-1 text-xs ${
+              className={`flex-1 py-3 flex flex-col items-center gap-1 text-xs min-w-[60px] ${
                 activeTab === tab.key ? "text-primary" : "text-muted-foreground"
               }`}
             >
@@ -190,6 +279,110 @@ export default function Admin() {
             </div>
           )}
 
+          {/* Purchases Tab */}
+          {activeTab === "purchases" && (
+            <div>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl font-bold text-foreground">পার্চেজ ম্যানেজমেন্ট</h2>
+              </div>
+
+              {/* Filters */}
+              <div className="flex gap-2 mb-4 flex-wrap">
+                {(["pending", "approved", "rejected", "all"] as const).map(f => (
+                  <button
+                    key={f}
+                    onClick={() => setPurchaseFilter(f)}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                      purchaseFilter === f ? "gradient-primary text-primary-foreground" : "glass-card text-muted-foreground"
+                    }`}
+                  >
+                    {f === "pending" ? "পেন্ডিং" : f === "approved" ? "অনুমোদিত" : f === "rejected" ? "প্রত্যাখ্যাত" : "সব"}
+                  </button>
+                ))}
+              </div>
+
+              {loadingPurchases ? (
+                <div className="text-center py-8 text-muted-foreground">লোড হচ্ছে...</div>
+              ) : purchases.length === 0 ? (
+                <div className="text-center py-8 text-muted-foreground glass-card rounded-xl">
+                  কোনো পার্চেজ রিকোয়েস্ট নেই
+                </div>
+              ) : (
+                <div className="glass-card overflow-hidden rounded-xl">
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="border-b border-border/30 text-muted-foreground">
+                          <th className="text-left p-3">ইউজার</th>
+                          <th className="text-left p-3">মেথড</th>
+                          <th className="text-left p-3">ট্রানজেকশন ID</th>
+                          <th className="text-right p-3">পরিমাণ</th>
+                          <th className="text-left p-3">তারিখ</th>
+                          <th className="text-right p-3">অ্যাকশন</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-border/20">
+                        {purchases.map(p => (
+                          <tr key={p.id}>
+                            <td className="p-3 text-foreground font-medium">
+                              {(p.profiles as any)?.username || "Unknown"}
+                            </td>
+                            <td className="p-3 text-muted-foreground">
+                              {p.payment_method === "bkash" ? "bKash" : "Nagad"}
+                            </td>
+                            <td className="p-3 text-muted-foreground font-mono text-xs">
+                              {p.transaction_id}
+                            </td>
+                            <td className="p-3 text-right font-display text-accent">
+                              ৳{p.amount}
+                            </td>
+                            <td className="p-3 text-muted-foreground text-xs">
+                              {new Date(p.created_at).toLocaleDateString("bn-BD")}
+                            </td>
+                            <td className="p-3 text-right space-x-2">
+                              {p.status === "pending" ? (
+                                <>
+                                  <button
+                                    onClick={() => handlePurchaseAction(p.id, "approved", p.user_id, p.attempts_count)}
+                                    className="text-xs text-primary hover:underline inline-flex items-center gap-0.5"
+                                  >
+                                    <CheckCircle className="w-3 h-3" /> অনুমোদন
+                                  </button>
+                                  <button
+                                    onClick={() => handlePurchaseAction(p.id, "rejected", p.user_id, p.attempts_count)}
+                                    className="text-xs text-destructive hover:underline inline-flex items-center gap-0.5"
+                                  >
+                                    <XCircle className="w-3 h-3" /> প্রত্যাখ্যান
+                                  </button>
+                                </>
+                              ) : (
+                                <span className={`text-xs font-medium ${
+                                  p.status === "approved" ? "text-primary" : "text-destructive"
+                                }`}>
+                                  {p.status === "approved" ? "✓ অনুমোদিত" : "✕ প্রত্যাখ্যাত"}
+                                </span>
+                              )}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
+
+              {/* Suspicious transactions warning */}
+              <div className="glass-card p-4 mt-4">
+                <h3 className="font-bold text-foreground mb-2 flex items-center gap-2">
+                  <AlertTriangle className="w-4 h-4 text-destructive" /> সন্দেহজনক ট্রানজেকশন
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  ডুপ্লিকেট ট্রানজেকশন আইডি স্বয়ংক্রিয়ভাবে ব্লক করা হয়। সব ট্রানজেকশন পর্যালোচনা করুন।
+                </p>
+              </div>
+            </div>
+          )}
+
           {activeTab === "leaderboard" && (
             <div>
               <h2 className="text-xl font-bold text-foreground mb-4">লিডারবোর্ড ম্যানেজমেন্ট</h2>
@@ -206,7 +399,6 @@ export default function Admin() {
                 </button>
               </div>
 
-              {/* Top Referrers */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
                 {[
                   { label: "মোট রেফারেল", value: "156", color: "text-primary" },
@@ -221,7 +413,6 @@ export default function Admin() {
                 ))}
               </div>
 
-              {/* Top Referrers Table */}
               <h3 className="text-sm font-semibold text-muted-foreground mb-2">টপ রেফারার</h3>
               <div className="glass-card overflow-hidden rounded-xl mb-6">
                 <div className="overflow-x-auto">
@@ -252,7 +443,6 @@ export default function Admin() {
                 </div>
               </div>
 
-              {/* Suspicious Referrals */}
               <div className="glass-card p-4">
                 <h3 className="font-bold text-foreground mb-3 flex items-center gap-2">
                   <AlertTriangle className="w-4 h-4 text-destructive" /> সন্দেহজনক রেফারেল
