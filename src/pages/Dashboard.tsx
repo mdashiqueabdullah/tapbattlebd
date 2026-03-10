@@ -87,7 +87,7 @@ export default function Dashboard() {
           {activeTab === "main" && (
             <>
               {/* Stats Grid */}
-              <div className="grid grid-cols-3 gap-3 mb-6">
+              <div className="grid grid-cols-3 gap-3 mb-5">
                 {[
                   { icon: Target, label: "গেম স্কোর", value: userData.gameScore, color: "text-primary" },
                   { icon: Gift, label: "রেফার পয়েন্ট", value: userData.referralPoints, color: "text-neon-pink" },
