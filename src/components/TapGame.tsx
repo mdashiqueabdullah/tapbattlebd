@@ -132,7 +132,6 @@ export default function TapGame({ isPractice, attemptsRemaining, onGameEnd, onCa
   const [phase, setPhase] = useState<"ready" | "playing" | "done">("ready");
   const [score, setScore] = useState(0);
   const [ballType, setBallType] = useState<BallType>("normal");
-  const [ballPos, setBallPos] = useState({ x: 50, y: 50 });
   const [flyingCoins, setFlyingCoins] = useState<FlyingCoin[]>([]);
   const [floatingTexts, setFloatingTexts] = useState<FloatingText[]>([]);
   const [particles, setParticles] = useState<Particle[]>([]);
