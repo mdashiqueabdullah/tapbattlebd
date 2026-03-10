@@ -13,7 +13,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { t } from "@/lib/i18n";
 import { MAX_RANKED_ATTEMPTS } from "@/lib/prizes";
 import { mockAttemptHistory } from "@/lib/mock-data";
-import { Gamepad2, Trophy, Award, Clock, Target, BarChart3, User, CreditCard, Users, Gift, ShoppingCart, Flame, ListOrdered } from "lucide-react";
+import { Gamepad2, Trophy, Award, Clock, Target, BarChart3, User, CreditCard, Users, Gift, ShoppingCart, Flame, ListOrdered, LogOut } from "lucide-react";
 import DailyStreak from "@/components/DailyStreak";
 
 export default function Dashboard() {
