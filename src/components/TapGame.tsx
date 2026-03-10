@@ -180,6 +180,9 @@ export default function TapGame({ isPractice, attemptsRemaining, onGameEnd, onCa
           {isPractice && (
             <p className="text-secondary text-sm mb-4">এটি প্র্যাকটিস মোড — লিডারবোর্ডে যাবে না</p>
           )}
+          {/* ADSENSE: Display ad on game over screen */}
+          <RectangleAd className="mb-4" />
+
           <button
             onClick={startGame}
             className="w-full py-3 rounded-xl gradient-primary text-primary-foreground font-bold mb-3"

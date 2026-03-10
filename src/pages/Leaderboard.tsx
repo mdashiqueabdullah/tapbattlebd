@@ -5,6 +5,7 @@ import CountdownTimer from "@/components/CountdownTimer";
 import { t } from "@/lib/i18n";
 import { mockLeaderboard } from "@/lib/mock-data";
 import { Trophy, Search } from "lucide-react";
+import { BannerAd, RectangleAd } from "@/components/ads/AdContainer";
 
 const tabs = [
   { key: "current", label: "চলতি সপ্তাহ" },

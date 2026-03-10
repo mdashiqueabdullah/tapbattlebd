@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Gamepad2, Trophy, Shield, Zap, Star, Users, Gift, ChevronRight } from "lucide-react";
 import Navbar from "@/components/Navbar";
+import { BannerAd, RectangleAd } from "@/components/ads/AdContainer";
 import Footer from "@/components/Footer";
 import CountdownTimer from "@/components/CountdownTimer";
 import PrizeTable from "@/components/PrizeTable";

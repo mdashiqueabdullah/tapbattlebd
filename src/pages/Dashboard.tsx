@@ -7,6 +7,7 @@ import TapGame from "@/components/TapGame";
 import { t } from "@/lib/i18n";
 import { MAX_RANKED_ATTEMPTS } from "@/lib/prizes";
 import { Gamepad2, Trophy, Award, Clock, Target, BarChart3, User, CreditCard } from "lucide-react";
+import { BannerAd, RectangleAd } from "@/components/ads/AdContainer";
 
 export default function Dashboard() {
   const [gameMode, setGameMode] = useState<"none" | "ranked" | "practice">("none");

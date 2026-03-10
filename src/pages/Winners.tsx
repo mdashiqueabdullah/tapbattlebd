@@ -67,6 +67,10 @@ export default function Winners() {
           {/* ADSENSE: Display ad after winners list */}
           <RectangleAd className="mt-4" />
         </div>
+
+          {/* ADSENSE: Display ad after winners list */}
+          <RectangleAd className="mt-4" />
+        </div>
       </div>
       <Footer />
     </div>
