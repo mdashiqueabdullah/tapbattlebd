@@ -180,7 +180,6 @@ export default function TapGame({ isPractice, attemptsRemaining, onGameEnd, onCa
     comboCountRef.current = 0;
     setBonusEvent(null);
     setIsDoubleScore(false);
-    setBallPos({ x: 50, y: 50 });
     setBallType(pickBallType());
   }, []);
 
