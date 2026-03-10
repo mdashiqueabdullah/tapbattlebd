@@ -474,6 +474,7 @@ export type Database = {
           account_number: string
           contest_id: string | null
           created_at: string | null
+          final_rank: number | null
           id: string
           payment_method: string
           prize_amount: number
@@ -486,6 +487,7 @@ export type Database = {
           account_number: string
           contest_id?: string | null
           created_at?: string | null
+          final_rank?: number | null
           id?: string
           payment_method: string
           prize_amount: number
@@ -498,6 +500,7 @@ export type Database = {
           account_number?: string
           contest_id?: string | null
           created_at?: string | null
+          final_rank?: number | null
           id?: string
           payment_method?: string
           prize_amount?: number

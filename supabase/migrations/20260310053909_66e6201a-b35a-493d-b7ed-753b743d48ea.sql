@@ -1,0 +1,1 @@
+ALTER TABLE public.payout_requests ADD COLUMN IF NOT EXISTS final_rank integer;
