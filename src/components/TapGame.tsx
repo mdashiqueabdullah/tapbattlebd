@@ -693,8 +693,8 @@ export default function TapGame({ isPractice, attemptsRemaining, onGameEnd, onCa
 
       {/* Frenzy timer bar */}
       {isFrenzy && (
-        <div className="absolute top-3 left-1/2 -translate-x-1/2 z-[5]">
-          <div className="w-full h-1.5 bg-secondary/30 rounded-full overflow-hidden" style={{ width: 140 }}>
+        <div className="absolute top-[60px] left-1/2 -translate-x-1/2 z-[5]">
+          <div className="h-1.5 bg-secondary/30 rounded-full overflow-hidden" style={{ width: 140 }}>
             <motion.div
               initial={{ width: "100%" }}
               animate={{ width: "0%" }}
