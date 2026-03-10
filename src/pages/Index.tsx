@@ -70,7 +70,7 @@ export default function Index() {
       </div>
 
       {/* How It Works */}
-      <section className="py-12 px-4">
+      <section className="py-12 md:py-16 px-4">
         <div className="container">
           <h2 className="text-2xl font-bold text-center text-foreground mb-8">{t("howItWorks")}</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl mx-auto">
