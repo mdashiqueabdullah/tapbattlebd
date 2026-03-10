@@ -18,7 +18,7 @@ export default function Navbar() {
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 glass-card border-b border-border/30">
-      <div className="container flex items-center justify-between h-14">
+      <div className="container flex items-center justify-between h-14 px-4">
         <Link to="/" className="flex items-center gap-2">
           <Gamepad2 className="w-7 h-7 text-primary" />
           <span className="font-display text-lg font-bold text-primary neon-text">
