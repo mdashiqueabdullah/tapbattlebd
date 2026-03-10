@@ -141,7 +141,7 @@ export default function TapGame({ isPractice, attemptsRemaining, onGameEnd, onCa
           )}
           <h2 className="font-display text-3xl font-bold text-primary neon-text mb-4">TAP BATTLE</h2>
           <p className="text-muted-foreground mb-2">ট্যাপ করতে থাকো, স্কোর বাড়াও!</p>
-          <p className="text-muted-foreground text-xs mb-4">৫ মিনিট নিষ্ক্রিয় থাকলে সেশন শেষ হবে</p>
+          <p className="text-muted-foreground text-xs mb-4">{INACTIVITY_TIMEOUT_SECONDS} সেকেন্ড নিষ্ক্রিয় থাকলে সেশন শেষ হবে</p>
           <div className="flex gap-4 justify-center my-6">
             <div className="glass-card p-3 text-center">
               <div className="w-10 h-10 rounded-full gradient-primary mx-auto mb-1" />
