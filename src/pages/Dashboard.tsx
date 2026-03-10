@@ -54,7 +54,7 @@ export default function Dashboard() {
     <div className="min-h-screen bg-background">
       <Navbar />
       <div className="container pt-20 pb-8 px-4">
-        <div className="max-w-lg mx-auto">
+        <div className="max-w-lg mx-auto space-y-0">
           {/* ADSENSE: Banner ad top of dashboard */}
           <BannerAd className="mb-4" />
 
