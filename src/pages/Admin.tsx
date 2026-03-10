@@ -264,7 +264,7 @@ export default function Admin() {
             </div>
           )}
 
-
+          {activeTab === "announcements" && (
             <div>
               <h2 className="text-xl font-bold text-foreground mb-4">ঘোষণা</h2>
               <form onSubmit={e => e.preventDefault()} className="glass-card p-4 space-y-3">
