@@ -26,6 +26,9 @@ export default function Winners() {
       <Navbar />
       <div className="container pt-20 pb-8 px-4">
         <div className="max-w-lg mx-auto">
+          {/* ADSENSE: Banner ad top of winners */}
+          <BannerAd className="mb-4" />
+
           <div className="flex items-center gap-2 mb-6">
             <Award className="w-6 h-6 text-accent" />
             <h1 className="text-xl font-bold text-foreground">সাপ্তাহিক বিজয়ী</h1>
