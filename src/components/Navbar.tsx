@@ -58,44 +58,12 @@ export default function Navbar() {
           ))}
 
           {user ? (
-            <>
               <Link
                 to="/dashboard"
                 className="px-4 py-2 rounded-lg gradient-primary text-primary-foreground font-semibold text-sm"
               >
                 {t("dashboard")}
               </Link>
-              <DropdownMenu>
-                <DropdownMenuTrigger className="flex items-center gap-2 outline-none">
-                  <Avatar className="h-8 w-8 border border-primary/30">
-                    <AvatarFallback className="bg-primary/20 text-primary text-xs font-bold">
-                      {initials}
-                    </AvatarFallback>
-                  </Avatar>
-                  <ChevronDown className="w-4 h-4 text-muted-foreground" />
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-48 bg-card border-border">
-                  <div className="px-3 py-2">
-                    <p className="text-sm font-semibold text-foreground">{profile?.username}</p>
-                    <p className="text-xs text-muted-foreground">{profile?.email}</p>
-                  </div>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={() => navigate("/dashboard")} className="cursor-pointer">
-                    <LayoutDashboard className="w-4 h-4 mr-2" /> ড্যাশবোর্ড
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => navigate("/profile")} className="cursor-pointer">
-                    <User className="w-4 h-4 mr-2" /> প্রোফাইল
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => navigate("/dashboard")} className="cursor-pointer">
-                    <History className="w-4 h-4 mr-2" /> অ্যাটেম্পট হিস্ট্রি
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={handleLogout} className="cursor-pointer text-destructive focus:text-destructive">
-                    <LogOut className="w-4 h-4 mr-2" /> লগআউট
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </>
           ) : (
             <div className="flex items-center gap-3">
               <Link
@@ -142,22 +110,8 @@ export default function Navbar() {
 
               {user ? (
                 <>
-                  <div className="flex items-center gap-3 py-2 border-t border-border/30 mt-2 pt-3">
-                    <Avatar className="h-8 w-8 border border-primary/30">
-                      <AvatarFallback className="bg-primary/20 text-primary text-xs font-bold">
-                        {initials}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div>
-                      <p className="text-sm font-semibold text-foreground">{profile?.username}</p>
-                      <p className="text-xs text-muted-foreground">{profile?.email}</p>
-                    </div>
-                  </div>
                   <Link to="/dashboard" onClick={() => setOpen(false)} className="text-sm font-medium text-muted-foreground hover:text-primary py-2 flex items-center gap-2">
                     <LayoutDashboard className="w-4 h-4" /> ড্যাশবোর্ড
-                  </Link>
-                  <Link to="/profile" onClick={() => setOpen(false)} className="text-sm font-medium text-muted-foreground hover:text-primary py-2 flex items-center gap-2">
-                    <User className="w-4 h-4" /> প্রোফাইল
                   </Link>
                   <button
                     onClick={() => { setOpen(false); handleLogout(); }}
