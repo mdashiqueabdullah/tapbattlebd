@@ -174,6 +174,64 @@ export default function Admin() {
     setPayoutFilter(payoutFilter);
   };
 
+  const getPrizeAmount = (rank: number): number => {
+    if (rank === 1) return 3000;
+    if (rank === 2) return 2000;
+    if (rank === 3) return 1000;
+    if (rank >= 4 && rank <= 10) return 500;
+    if (rank >= 11 && rank <= 50) return 150;
+    if (rank >= 51 && rank <= 100) return 50;
+    return 0;
+  };
+
+  const handleFinalizeWinners = async () => {
+    if (!user) return;
+    const confirmed = window.confirm("আপনি কি নিশ্চিত? এটি বর্তমান মাসের লিডারবোর্ড থেকে শীর্ষ ১০০ জনকে বিজয়ী হিসেবে নির্ধারণ করবে।");
+    if (!confirmed) return;
+
+    setFinalizingWinners(true);
+    try {
+      const now = new Date();
+      const bdtNow = new Date(now.getTime() + (6 * 60 - now.getTimezoneOffset()) * 60000);
+      const { data: cd } = await supabase.from("monthly_contests").select("id").eq("month", bdtNow.getMonth() + 1).eq("year", bdtNow.getFullYear()).single();
+      if (!cd) { toast.error("বর্তমান মাসের কনটেস্ট পাওয়া যায়নি"); setFinalizingWinners(false); return; }
+
+      // Check if winners already exist for this contest
+      const { count } = await supabase.from("monthly_winners").select("*", { count: "exact", head: true }).eq("contest_id", cd.id);
+      if ((count ?? 0) > 0) { toast.error("এই মাসের বিজয়ী ইতোমধ্যে নির্ধারিত হয়েছে!"); setFinalizingWinners(false); return; }
+
+      // Get top 100 from leaderboard
+      const { data: top100 } = await supabase.from("leaderboard").select("user_id, total_score").eq("contest_id", cd.id).order("total_score", { ascending: false }).limit(100);
+      if (!top100 || top100.length === 0) { toast.error("লিডারবোর্ডে কোনো এন্ট্রি নেই"); setFinalizingWinners(false); return; }
+
+      const winnersToInsert = top100.map((entry: any, i: number) => ({
+        contest_id: cd.id,
+        user_id: entry.user_id,
+        final_rank: i + 1,
+        prize_amount: getPrizeAmount(i + 1),
+      }));
+
+      const { error } = await supabase.from("monthly_winners").insert(winnersToInsert);
+      if (error) { toast.error("বিজয়ী সংরক্ষণ ব্যর্থ: " + error.message); setFinalizingWinners(false); return; }
+
+      // Mark contest as finalized
+      await supabase.from("monthly_contests").update({ status: "finalized" }).eq("id", cd.id);
+
+      toast.success(`${winnersToInsert.length} জন বিজয়ী সফলভাবে নির্ধারিত হয়েছে!`);
+      // Refresh winners list
+      const { data: refreshed } = await supabase.from("monthly_winners").select("*").eq("contest_id", cd.id).order("final_rank", { ascending: true });
+      if (refreshed) {
+        const uids = refreshed.map((w: any) => w.user_id);
+        const { data: profiles } = await supabase.from("profiles").select("id, username").in("id", uids);
+        const m = new Map((profiles || []).map((p: any) => [p.id, p.username]));
+        setWinners(refreshed.map((w: any) => ({ ...w, username: m.get(w.user_id) || "Unknown" })));
+      }
+    } catch (e) {
+      toast.error("একটি ত্রুটি ঘটেছে");
+    }
+    setFinalizingWinners(false);
+  };
+
   const handleBanToggle = async (userId: string, currentBanned: boolean) => {
     await supabase.from("profiles").update({ is_banned: !currentBanned } as any).eq("id", userId);
     toast.success(!currentBanned ? "ব্যান করা হয়েছে" : "আনব্যান করা হয়েছে");
