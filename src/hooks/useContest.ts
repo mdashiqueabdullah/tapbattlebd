@@ -68,7 +68,7 @@ export function useContest(): UserContestData & {
       .select("*")
       .eq("month", month)
       .eq("year", year)
-      .single();
+      .maybeSingle();
 
     if (contestData) {
       setContest(contestData as unknown as Contest);

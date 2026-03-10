@@ -31,7 +31,7 @@ export default function Index() {
         .select("id")
         .eq("month", month)
         .eq("year", year)
-        .single();
+        .maybeSingle();
 
       if (!contestData) return;
 

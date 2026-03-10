@@ -73,12 +73,11 @@ Deno.serve(async (req) => {
     }
 
     const supabase = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_ANON_KEY")!, { global: { headers: { Authorization: authHeader } } });
-    const token = authHeader.replace("Bearer ", "");
-    const { data: claimsData, error: claimsError } = await supabase.auth.getClaims(token);
-    if (claimsError || !claimsData?.claims) {
+    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    if (userError || !user) {
       return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
-    const userId = claimsData.claims.sub;
+    const userId = user.id;
 
     const body: SubmitPayload = await req.json();
     const { session_token, client_score, tap_count, tap_events, visibility_changes, focus_losses, duration_ms } = body;
@@ -127,7 +126,7 @@ Deno.serve(async (req) => {
     // Log rate limit
     await adminClient.from("rate_limits").insert({ identifier: userId, action: "score_submit", window_start: new Date().toISOString() });
 
-    // === NEW: Create attempt record and update leaderboard for ranked games ===
+    // === Create attempt record and update leaderboard for ranked games ===
     let attemptNumber = 0;
     if (!session.is_practice) {
       // Get or create current contest
@@ -139,7 +138,7 @@ Deno.serve(async (req) => {
         const currentCount = countData ?? 0;
         
         // Get user's extra/bonus attempts
-        const { data: profileData } = await adminClient.from("profiles").select("extra_attempts, bonus_attempts").eq("id", userId).single();
+        const { data: profileData } = await adminClient.from("profiles").select("extra_attempts, bonus_attempts, total_ranked_games, lifetime_best_score").eq("id", userId).single();
         const extraAttempts = (profileData?.extra_attempts ?? 0) + (profileData?.bonus_attempts ?? 0);
         const maxAttempts = 10 + extraAttempts;
 
@@ -161,9 +160,11 @@ Deno.serve(async (req) => {
           await adminClient.rpc("update_leaderboard_scores", { _user_id: userId, _contest_id: contestId });
 
           // Update profile stats
+          const newTotalRanked = (profileData?.total_ranked_games ?? 0) + 1;
+          const newLifetimeBest = Math.max(profileData?.lifetime_best_score ?? 0, verifiedScore);
           await adminClient.from("profiles").update({
-            total_ranked_games: (await adminClient.from("attempts").select("*", { count: "exact", head: true }).eq("user_id", userId)).count ?? 0,
-            lifetime_best_score: Math.max(profileData ? 0 : 0, verifiedScore),
+            total_ranked_games: newTotalRanked,
+            lifetime_best_score: newLifetimeBest,
             updated_at: new Date().toISOString(),
           }).eq("id", userId);
         }

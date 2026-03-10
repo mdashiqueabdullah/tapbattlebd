@@ -58,7 +58,7 @@ export default function Leaderboard() {
       .select("id")
       .eq("month", month)
       .eq("year", year)
-      .single();
+      .maybeSingle();
 
     if (!contestData) {
       // Try to create contest via RPC
