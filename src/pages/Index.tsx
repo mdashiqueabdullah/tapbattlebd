@@ -31,7 +31,7 @@ export default function Index() {
               <span className="text-sm text-primary font-medium">{t("freeToPlay")}</span>
             </div>
 
-            <h1 className="font-display text-4xl md:text-6xl font-black text-foreground mb-4">
+            <h1 className="font-display text-3xl md:text-5xl lg:text-6xl font-black text-foreground mb-4 leading-tight">
               <span className="text-primary neon-text">TAP</span>{" "}
               <span className="text-accent neon-text-gold">BATTLE</span>{" "}
               <span className="text-secondary neon-text-purple">BD</span>
