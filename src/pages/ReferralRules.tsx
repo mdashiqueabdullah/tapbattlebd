@@ -70,6 +70,7 @@ export default function ReferralRules() {
             </h2>
             <p className="text-sm font-semibold text-primary mb-3">রেফার পয়েন্ট গেম স্কোরের সাথে যোগ হবে এবং লিডারবোর্ডে প্রভাব ফেলবে।</p>
             <p className="text-xs text-muted-foreground mb-3">মোট স্কোর = গেম স্কোর + রেফার পয়েন্ট</p>
+            <ul className="space-y-2">
               {[
                 "প্রতি সফল রেফারে ২০ পয়েন্ট",
                 "আনলিমিটেড রেফার করা যাবে",
