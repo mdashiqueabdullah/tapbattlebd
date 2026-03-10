@@ -3,6 +3,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { mockPastWinners } from "@/lib/mock-data";
 import { Trophy, Award } from "lucide-react";
+import { BannerAd, RectangleAd } from "@/components/ads/AdContainer";
 
 const statusColors: Record<string, string> = {
   paid: "bg-primary/20 text-primary",
