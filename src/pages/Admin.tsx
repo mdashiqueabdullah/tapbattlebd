@@ -37,6 +37,8 @@ export default function Admin() {
   const [payoutFilter, setPayoutFilter] = useState<"pending" | "approved" | "paid" | "rejected" | "all">("pending");
   const [stats, setStats] = useState({ totalUsers: 0, todayGames: 0, pendingPayouts: 0, pendingPurchases: 0 });
   const [loading, setLoading] = useState(true);
+  const [winners, setWinners] = useState<any[]>([]);
+  const [finalizingWinners, setFinalizingWinners] = useState(false);
 
   // Check admin
   useEffect(() => {
@@ -134,6 +136,24 @@ export default function Admin() {
     })();
   }, [activeTab, isAdmin]);
 
+  // Fetch winners
+  useEffect(() => {
+    if (activeTab !== "winners" || !isAdmin) return;
+    (async () => {
+      const { data } = await supabase.from("monthly_winners").select("*").order("final_rank", { ascending: true }).limit(100);
+      if (data) {
+        const uids = [...new Set(data.map((w: any) => w.user_id))];
+        if (uids.length > 0) {
+          const { data: profiles } = await supabase.from("profiles").select("id, username").in("id", uids);
+          const m = new Map((profiles || []).map((p: any) => [p.id, p.username]));
+          setWinners(data.map((w: any) => ({ ...w, username: m.get(w.user_id) || "Unknown" })));
+        } else {
+          setWinners([]);
+        }
+      }
+    })();
+  }, [activeTab, isAdmin]);
+
   const handlePurchaseAction = async (id: string, action: "approved" | "rejected", userId: string, attempts: number) => {
     if (!user) return;
     const { error } = await supabase.from("attempt_purchases").update({ status: action, reviewed_by: user.id, reviewed_at: new Date().toISOString() } as any).eq("id", id);
@@ -152,6 +172,64 @@ export default function Admin() {
     if (error) { toast.error("আপডেট ব্যর্থ"); return; }
     toast.success(action === "approved" ? "অনুমোদিত ✓" : action === "paid" ? "পরিশোধিত ✓" : "প্রত্যাখ্যাত ✕");
     setPayoutFilter(payoutFilter);
+  };
+
+  const getPrizeAmount = (rank: number): number => {
+    if (rank === 1) return 3000;
+    if (rank === 2) return 2000;
+    if (rank === 3) return 1000;
+    if (rank >= 4 && rank <= 10) return 500;
+    if (rank >= 11 && rank <= 50) return 150;
+    if (rank >= 51 && rank <= 100) return 50;
+    return 0;
+  };
+
+  const handleFinalizeWinners = async () => {
+    if (!user) return;
+    const confirmed = window.confirm("আপনি কি নিশ্চিত? এটি বর্তমান মাসের লিডারবোর্ড থেকে শীর্ষ ১০০ জনকে বিজয়ী হিসেবে নির্ধারণ করবে।");
+    if (!confirmed) return;
+
+    setFinalizingWinners(true);
+    try {
+      const now = new Date();
+      const bdtNow = new Date(now.getTime() + (6 * 60 - now.getTimezoneOffset()) * 60000);
+      const { data: cd } = await supabase.from("monthly_contests").select("id").eq("month", bdtNow.getMonth() + 1).eq("year", bdtNow.getFullYear()).single();
+      if (!cd) { toast.error("বর্তমান মাসের কনটেস্ট পাওয়া যায়নি"); setFinalizingWinners(false); return; }
+
+      // Check if winners already exist for this contest
+      const { count } = await supabase.from("monthly_winners").select("*", { count: "exact", head: true }).eq("contest_id", cd.id);
+      if ((count ?? 0) > 0) { toast.error("এই মাসের বিজয়ী ইতোমধ্যে নির্ধারিত হয়েছে!"); setFinalizingWinners(false); return; }
+
+      // Get top 100 from leaderboard
+      const { data: top100 } = await supabase.from("leaderboard").select("user_id, total_score").eq("contest_id", cd.id).order("total_score", { ascending: false }).limit(100);
+      if (!top100 || top100.length === 0) { toast.error("লিডারবোর্ডে কোনো এন্ট্রি নেই"); setFinalizingWinners(false); return; }
+
+      const winnersToInsert = top100.map((entry: any, i: number) => ({
+        contest_id: cd.id,
+        user_id: entry.user_id,
+        final_rank: i + 1,
+        prize_amount: getPrizeAmount(i + 1),
+      }));
+
+      const { error } = await supabase.from("monthly_winners").insert(winnersToInsert);
+      if (error) { toast.error("বিজয়ী সংরক্ষণ ব্যর্থ: " + error.message); setFinalizingWinners(false); return; }
+
+      // Mark contest as finalized
+      await supabase.from("monthly_contests").update({ status: "finalized" }).eq("id", cd.id);
+
+      toast.success(`${winnersToInsert.length} জন বিজয়ী সফলভাবে নির্ধারিত হয়েছে!`);
+      // Refresh winners list
+      const { data: refreshed } = await supabase.from("monthly_winners").select("*").eq("contest_id", cd.id).order("final_rank", { ascending: true });
+      if (refreshed) {
+        const uids = refreshed.map((w: any) => w.user_id);
+        const { data: profiles } = await supabase.from("profiles").select("id, username").in("id", uids);
+        const m = new Map((profiles || []).map((p: any) => [p.id, p.username]));
+        setWinners(refreshed.map((w: any) => ({ ...w, username: m.get(w.user_id) || "Unknown" })));
+      }
+    } catch (e) {
+      toast.error("একটি ত্রুটি ঘটেছে");
+    }
+    setFinalizingWinners(false);
   };
 
   const handleBanToggle = async (userId: string, currentBanned: boolean) => {
@@ -389,8 +467,48 @@ export default function Admin() {
 
           {activeTab === "winners" && (
             <div>
-              <h2 className="text-xl font-bold text-foreground mb-4">বিজয়ী ম্যানেজমেন্ট</h2>
-              <p className="text-sm text-muted-foreground glass-card p-4 rounded-xl">মাস শেষে লিডারবোর্ড থেকে বিজয়ী নির্ধারণ করুন।</p>
+              <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
+                <h2 className="text-xl font-bold text-foreground">বিজয়ী ম্যানেজমেন্ট</h2>
+                <button
+                  onClick={handleFinalizeWinners}
+                  disabled={finalizingWinners}
+                  className="gradient-primary text-primary-foreground px-4 py-2 rounded-lg text-sm font-medium disabled:opacity-50 inline-flex items-center gap-2"
+                >
+                  <Trophy className="w-4 h-4" />
+                  {finalizingWinners ? "প্রসেসিং..." : "বিজয়ী নির্ধারণ করুন (শীর্ষ ১০০)"}
+                </button>
+              </div>
+              {winners.length === 0 ? (
+                <div className="text-center py-8 text-muted-foreground glass-card rounded-xl">
+                  <Trophy className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                  <p>এখনও বিজয়ী নির্ধারণ করা হয়নি।</p>
+                  <p className="text-xs mt-1">লিডারবোর্ড থেকে শীর্ষ ১০০ জনকে বিজয়ী হিসেবে নির্ধারণ করতে উপরের বাটনে ক্লিক করুন।</p>
+                </div>
+              ) : (
+                <div className="glass-card overflow-hidden rounded-xl">
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                      <thead><tr className="border-b border-border/30 text-muted-foreground">
+                        <th className="text-left p-3">র‍্যাঙ্ক</th><th className="text-left p-3">ইউজার</th><th className="text-right p-3">পুরস্কার (৳)</th><th className="text-right p-3">পেআউট স্ট্যাটাস</th>
+                      </tr></thead>
+                      <tbody className="divide-y divide-border/20">
+                        {winners.map((w: any) => (
+                          <tr key={w.id}>
+                            <td className="p-3 font-display font-bold text-accent">#{w.final_rank}</td>
+                            <td className="p-3 text-foreground font-medium">{w.username}</td>
+                            <td className="p-3 text-right font-display text-primary">৳{w.prize_amount}</td>
+                            <td className="p-3 text-right">
+                              <span className={`text-xs px-2 py-0.5 rounded-full ${w.payout_status === "paid" ? "bg-primary/20 text-primary" : w.payout_status === "pending" ? "bg-secondary/20 text-secondary" : "bg-accent/20 text-accent"}`}>
+                                {w.payout_status === "paid" ? "পরিশোধিত" : w.payout_status === "pending" ? "পেন্ডিং" : w.payout_status}
+                              </span>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </div>
