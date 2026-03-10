@@ -1,24 +1,40 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import { Flame, Gift, Check, Info, Lock } from "lucide-react";
+import { Flame, Gift, Check, Info, Lock, Calendar } from "lucide-react";
 
-function getRewardForDay(day: number): number {
-  return 2 + day;
+function getRewardForDate(dateNum: number): number {
+  return 2 + dateNum;
+}
+
+function getBDTNow(): Date {
+  const now = new Date();
+  return new Date(now.getTime() + (6 * 60 - now.getTimezoneOffset()) * 60000);
 }
 
 function getTodayBDT(): string {
-  const now = new Date();
-  const bdt = new Date(now.getTime() + (6 * 60 - now.getTimezoneOffset()) * 60000);
-  return bdt.toISOString().split("T")[0];
+  return getBDTNow().toISOString().split("T")[0];
 }
 
 function getYesterdayBDT(): string {
-  const now = new Date();
-  const bdt = new Date(now.getTime() + (6 * 60 - now.getTimezoneOffset()) * 60000);
+  const bdt = getBDTNow();
   bdt.setDate(bdt.getDate() - 1);
   return bdt.toISOString().split("T")[0];
+}
+
+function getDaysInMonth(year: number, month: number): number {
+  return new Date(year, month + 1, 0).getDate();
+}
+
+const BANGLA_MONTHS = [
+  "জানুয়ারি", "ফেব্রুয়ারি", "মার্চ", "এপ্রিল", "মে", "জুন",
+  "জুলাই", "আগস্ট", "সেপ্টেম্বর", "অক্টোবর", "নভেম্বর", "ডিসেম্বর",
+];
+
+const BANGLA_DIGITS = ["০", "১", "২", "৩", "৪", "৫", "৬", "৭", "৮", "৯"];
+function toBanglaNum(n: number): string {
+  return String(n).split("").map(d => BANGLA_DIGITS[parseInt(d)]).join("");
 }
 
 interface StreakData {
@@ -29,7 +45,7 @@ interface StreakData {
 }
 
 export default function DailyStreak() {
-  const { user, profile, refreshProfile } = useAuth();
+  const { user, refreshProfile } = useAuth();
   const [streakData, setStreakData] = useState<StreakData | null>(null);
   const [loading, setLoading] = useState(true);
   const [claiming, setClaiming] = useState(false);
@@ -38,6 +54,18 @@ export default function DailyStreak() {
 
   const today = getTodayBDT();
   const yesterday = getYesterdayBDT();
+  const bdtNow = getBDTNow();
+  const currentYear = bdtNow.getFullYear();
+  const currentMonth = bdtNow.getMonth();
+  const currentDate = bdtNow.getDate();
+  const daysInMonth = getDaysInMonth(currentYear, currentMonth);
+  const monthName = BANGLA_MONTHS[currentMonth];
+
+  // Determine which dates this month have been claimed
+  // We track streak as consecutive days from the start or use last_claimed_date
+  const todayReward = getRewardForDate(currentDate);
+  const tomorrowDate = currentDate < daysInMonth ? currentDate + 1 : null;
+  const tomorrowReward = tomorrowDate ? getRewardForDate(tomorrowDate) : null;
 
   const fetchStreak = useCallback(async () => {
     if (!user) return;
@@ -54,17 +82,35 @@ export default function DailyStreak() {
     }
 
     if (data) {
-      if (
-        data.last_claimed_date &&
-        data.last_claimed_date !== today &&
-        data.last_claimed_date !== yesterday &&
-        data.current_streak > 0
-      ) {
-        await supabase
-          .from("daily_streaks")
-          .update({ current_streak: 0, updated_at: new Date().toISOString() })
-          .eq("user_id", user.id);
-        setStreakData({ ...data, current_streak: 0 });
+      // Check if last claim was in a previous month — reset streak
+      if (data.last_claimed_date) {
+        const lastClaimMonth = new Date(data.last_claimed_date).getMonth();
+        const lastClaimYear = new Date(data.last_claimed_date).getFullYear();
+        if (lastClaimMonth !== currentMonth || lastClaimYear !== currentYear) {
+          // New month — reset streak
+          if (data.current_streak > 0) {
+            await supabase
+              .from("daily_streaks")
+              .update({ current_streak: 0, updated_at: new Date().toISOString() })
+              .eq("user_id", user.id);
+            setStreakData({ ...data, current_streak: 0 });
+          } else {
+            setStreakData(data);
+          }
+        } else if (
+          data.last_claimed_date !== today &&
+          data.last_claimed_date !== yesterday &&
+          data.current_streak > 0
+        ) {
+          // Missed a day within same month — reset streak
+          await supabase
+            .from("daily_streaks")
+            .update({ current_streak: 0, updated_at: new Date().toISOString() })
+            .eq("user_id", user.id);
+          setStreakData({ ...data, current_streak: 0 });
+        } else {
+          setStreakData(data);
+        }
       } else {
         setStreakData(data);
       }
@@ -72,7 +118,7 @@ export default function DailyStreak() {
       setStreakData(null);
     }
     setLoading(false);
-  }, [user, today, yesterday]);
+  }, [user, today, yesterday, currentMonth, currentYear]);
 
   useEffect(() => {
     fetchStreak();
@@ -81,16 +127,27 @@ export default function DailyStreak() {
   const alreadyClaimed = streakData?.last_claimed_date === today;
   const currentStreak = streakData?.current_streak ?? 0;
   const totalStreakPoints = streakData?.total_streak_points ?? 0;
-  const nextDay = currentStreak + 1;
-  const todayReward = getRewardForDay(nextDay);
-  const nextReward = getRewardForDay(Math.min(nextDay + 1, 30));
+
+  // Figure out which dates are claimed (consecutive ending at last_claimed_date)
+  const claimedDates = useMemo(() => {
+    if (!streakData?.last_claimed_date) return new Set<number>();
+    const lastDate = new Date(streakData.last_claimed_date);
+    if (lastDate.getMonth() !== currentMonth || lastDate.getFullYear() !== currentYear) return new Set<number>();
+    const lastDay = lastDate.getDate();
+    const streak = streakData.current_streak;
+    const dates = new Set<number>();
+    for (let i = 0; i < streak; i++) {
+      dates.add(lastDay - i);
+    }
+    return dates;
+  }, [streakData, currentMonth, currentYear]);
 
   const handleClaim = async () => {
     if (!user || claiming || alreadyClaimed) return;
     setClaiming(true);
 
-    const newStreak = Math.min(currentStreak + 1, 30);
-    const reward = getRewardForDay(newStreak);
+    const newStreak = currentStreak + 1;
+    const reward = getRewardForDate(currentDate);
 
     try {
       if (!streakData) {
@@ -137,7 +194,9 @@ export default function DailyStreak() {
     );
   }
 
-  const days = Array.from({ length: 30 }, (_, i) => i + 1);
+  const days = Array.from({ length: daysInMonth }, (_, i) => i + 1);
+  // Grid columns: 7 per row (like a calendar week)
+  const gridCols = 7;
 
   return (
     <div className="glass-card p-4 relative overflow-hidden">
@@ -145,27 +204,28 @@ export default function DailyStreak() {
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
           <Flame className="w-5 h-5 text-accent" />
-          <h3 className="font-display text-base font-bold text-foreground">দৈনিক স্ট্রিক</h3>
+          <h3 className="font-display text-base font-bold text-foreground">মাসিক ক্লেইম</h3>
         </div>
-        <div className="glass-card px-3 py-1 rounded-full">
-          <span className="text-xs font-bold text-accent">{currentStreak}/৩০ দিন</span>
+        <div className="flex items-center gap-1.5 glass-card px-3 py-1 rounded-full">
+          <Calendar className="w-3 h-3 text-muted-foreground" />
+          <span className="text-xs font-bold text-accent">{monthName} — {toBanglaNum(currentStreak)} দিন স্ট্রিক</span>
         </div>
       </div>
 
       {/* Claim section */}
       <div className="flex items-center justify-between mb-4 p-3 rounded-xl bg-muted/30 border border-border/30">
         <div>
-          <p className="text-xs text-muted-foreground">আজকের বোনাস</p>
+          <p className="text-[11px] text-muted-foreground">আজকের তারিখ: {toBanglaNum(currentDate)} {monthName}</p>
           <p className="font-display text-lg font-bold text-primary">
-            +{alreadyClaimed ? claimedReward || getRewardForDay(currentStreak) : todayReward} পয়েন্ট
+            আজকের বোনাস: +{alreadyClaimed ? claimedReward || todayReward : todayReward}
           </p>
-          {!alreadyClaimed && nextDay < 30 && (
-            <p className="text-[10px] text-muted-foreground mt-0.5">পরের দিন: +{nextReward} পয়েন্ট</p>
+          {!alreadyClaimed && tomorrowReward && (
+            <p className="text-[10px] text-muted-foreground mt-0.5">আগামীকালের বোনাস: +{tomorrowReward}</p>
           )}
         </div>
 
         {alreadyClaimed ? (
-          <div className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-accent/20 text-accent text-sm font-semibold">
+          <div className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-accent/20 text-accent text-sm font-semibold flex-shrink-0">
             <Check className="w-4 h-4" />
             ক্লেইম করা হয়েছে
           </div>
@@ -173,7 +233,7 @@ export default function DailyStreak() {
           <button
             onClick={handleClaim}
             disabled={claiming}
-            className="px-5 py-2.5 rounded-xl gradient-primary text-primary-foreground font-bold text-sm neon-border disabled:opacity-50 flex items-center gap-1.5"
+            className="px-5 py-2.5 rounded-xl gradient-primary text-primary-foreground font-bold text-sm neon-border disabled:opacity-50 flex items-center gap-1.5 flex-shrink-0"
           >
             <Gift className="w-4 h-4" />
             {claiming ? "..." : "ক্লেইম করুন"}
@@ -181,37 +241,47 @@ export default function DailyStreak() {
         )}
       </div>
 
-      {/* 30-day grid */}
-      <div className="grid grid-cols-6 gap-1.5 mb-3">
+      {/* Calendar grid */}
+      <div className="grid grid-cols-7 gap-1 mb-3">
         {days.map((day) => {
-          const reward = getRewardForDay(day);
-          const isCompleted = currentStreak >= day;
-          const isCurrent = !alreadyClaimed && nextDay === day;
-          const isLocked = day > currentStreak + 1 || (alreadyClaimed && day > currentStreak);
+          const reward = getRewardForDate(day);
+          const isClaimed = claimedDates.has(day);
+          const isToday = day === currentDate;
+          const isPast = day < currentDate && !isClaimed;
+          const isFuture = day > currentDate;
 
           return (
             <div
               key={day}
-              className={`flex flex-col items-center justify-center py-1.5 rounded-lg text-center border transition-colors ${
-                isCompleted
+              className={`flex flex-col items-center justify-center py-1 rounded-lg text-center border transition-colors ${
+                isClaimed
                   ? "bg-accent/20 border-accent/30"
-                  : isCurrent
+                  : isToday && !alreadyClaimed
                   ? "bg-primary/10 border-primary/40 ring-1 ring-primary/30"
-                  : "bg-muted/10 border-border/20"
+                  : isToday && alreadyClaimed
+                  ? "bg-accent/20 border-accent/30"
+                  : isPast
+                  ? "bg-destructive/5 border-border/10"
+                  : "bg-muted/10 border-border/15"
               }`}
             >
-              <span className="text-[8px] text-muted-foreground leading-none">Day</span>
-              <span className={`text-[10px] font-bold leading-tight ${isCompleted ? "text-accent" : isCurrent ? "text-primary" : "text-muted-foreground/60"}`}>
-                {day}
+              <span className={`text-[9px] font-bold leading-tight ${
+                isClaimed || (isToday && alreadyClaimed) ? "text-accent" : isToday ? "text-primary" : isPast ? "text-muted-foreground/40" : "text-muted-foreground/50"
+              }`}>
+                {toBanglaNum(day)}
               </span>
-              {isCompleted ? (
-                <Check className="w-3 h-3 text-accent" />
-              ) : isCurrent ? (
-                <Gift className="w-3 h-3 text-primary" />
+              {isClaimed || (isToday && alreadyClaimed) ? (
+                <Check className="w-2.5 h-2.5 text-accent" />
+              ) : isToday ? (
+                <Gift className="w-2.5 h-2.5 text-primary" />
+              ) : isFuture ? (
+                <Lock className="w-2 h-2 text-muted-foreground/25" />
               ) : (
-                <Lock className="w-2.5 h-2.5 text-muted-foreground/30" />
+                <span className="text-[7px] text-destructive/40">✕</span>
               )}
-              <span className={`text-[8px] font-bold leading-none ${isCompleted ? "text-accent" : isCurrent ? "text-primary" : "text-muted-foreground/40"}`}>
+              <span className={`text-[7px] font-bold leading-none ${
+                isClaimed || (isToday && alreadyClaimed) ? "text-accent/70" : isToday ? "text-primary/70" : "text-muted-foreground/30"
+              }`}>
                 +{reward}
               </span>
             </div>
