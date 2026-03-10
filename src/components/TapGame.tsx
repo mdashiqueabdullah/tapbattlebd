@@ -172,7 +172,7 @@ export default function TapGame({ isPractice, attemptsRemaining, onGameEnd, onCa
       <div className="fixed inset-0 z-50 bg-background flex flex-col items-center justify-center p-6">
         <div className="text-center max-w-sm">
           <h2 className="font-display text-2xl font-bold text-accent neon-text-gold mb-2">{t("gameOver")}</h2>
-          <p className="text-muted-foreground text-sm mb-4">নিষ্ক্রিয়তার কারণে সেশন শেষ হয়েছে</p>
+          <p className="text-muted-foreground text-sm mb-4">{INACTIVITY_TIMEOUT_SECONDS} সেকেন্ড নিষ্ক্রিয়তার কারণে সেশন শেষ হয়েছে</p>
           <div className="glass-card neon-border-gold p-8 my-6">
             <p className="text-muted-foreground text-sm mb-1">{t("finalScore")}</p>
             <p className="font-display text-6xl font-black text-accent neon-text-gold">{scoreRef.current}</p>
