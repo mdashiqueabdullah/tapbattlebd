@@ -55,7 +55,8 @@ export default function Leaderboard() {
                   <div className={`glass-card ${isFirst ? "neon-border-gold p-5" : "p-4"} rounded-2xl`}>
                     <span className="text-2xl">{["🥇", "🥈", "🥉"][idx]}</span>
                     <p className={`font-bold ${isFirst ? "text-lg" : "text-sm"} text-foreground mt-1`}>{entry.username}</p>
-                    <p className={`font-display font-bold ${isFirst ? "text-2xl text-accent neon-text-gold" : "text-lg text-primary"}`}>{entry.bestScore}</p>
+                    <p className={`font-display font-bold ${isFirst ? "text-2xl text-accent neon-text-gold" : "text-lg text-primary"}`}>{entry.totalScore}</p>
+                    {entry.referralPoints > 0 && <p className="text-[10px] text-neon-pink">+{entry.referralPoints} রেফার</p>}
                     <p className="text-xs text-muted-foreground">৳{entry.prize?.toLocaleString()}</p>
                   </div>
                 </div>
@@ -68,8 +69,9 @@ export default function Leaderboard() {
             <div className="flex items-center px-4 py-2 text-xs text-muted-foreground font-medium bg-muted/30">
               <span className="w-10">#</span>
               <span className="flex-1">{t("username")}</span>
-              <span className="w-16 text-right">{t("score")}</span>
-              <span className="w-12 text-right">চেষ্টা</span>
+              <span className="w-14 text-right">গেম</span>
+              <span className="w-14 text-right">রেফার</span>
+              <span className="w-14 text-right">মোট</span>
             </div>
             {mockLeaderboard.map(entry => (
               <div key={entry.rank} className={`flex items-center px-4 py-3 ${entry.rank <= 3 ? "bg-accent/5" : ""}`}>
@@ -77,8 +79,9 @@ export default function Leaderboard() {
                   {entry.rank}
                 </span>
                 <span className="flex-1 font-medium text-foreground text-sm">{entry.username}</span>
-                <span className="w-16 text-right font-display font-bold text-primary text-sm">{entry.bestScore}</span>
-                <span className="w-12 text-right text-muted-foreground text-sm">{entry.attemptsUsed}</span>
+                <span className="w-14 text-right text-muted-foreground text-sm">{entry.bestScore}</span>
+                <span className="w-14 text-right text-neon-pink text-sm">{entry.referralPoints}</span>
+                <span className="w-14 text-right font-display font-bold text-primary text-sm">{entry.totalScore}</span>
               </div>
             ))}
           </div>

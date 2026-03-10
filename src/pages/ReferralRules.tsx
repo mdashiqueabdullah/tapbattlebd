@@ -48,7 +48,7 @@ const faqs = [
   },
   {
     q: "রেফার পয়েন্ট কি গেম স্কোরের সাথে যোগ হবে?",
-    a: "না। রেফার পয়েন্ট এবং সাপ্তাহিক গেম স্কোর সম্পূর্ণ আলাদা। রেফার পয়েন্ট লিডারবোর্ডে প্রভাব ফেলবে না।",
+    a: "হ্যাঁ! রেফার পয়েন্ট গেম স্কোরের সাথে যোগ হবে এবং লিডারবোর্ডে প্রভাব ফেলবে। মোট স্কোর = গেম স্কোর + রেফার পয়েন্ট।",
   },
 ];
 
@@ -68,6 +68,8 @@ export default function ReferralRules() {
             <h2 className="font-bold text-foreground mb-3 flex items-center gap-2">
               <Star className="w-5 h-5 text-accent" /> রেফার সারসংক্ষেপ
             </h2>
+            <p className="text-sm font-semibold text-primary mb-3">রেফার পয়েন্ট গেম স্কোরের সাথে যোগ হবে এবং লিডারবোর্ডে প্রভাব ফেলবে।</p>
+            <p className="text-xs text-muted-foreground mb-3">মোট স্কোর = গেম স্কোর + রেফার পয়েন্ট</p>
             <ul className="space-y-2">
               {[
                 "প্রতি সফল রেফারে ২০ পয়েন্ট",

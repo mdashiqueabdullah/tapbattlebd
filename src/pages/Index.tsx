@@ -129,7 +129,7 @@ export default function Index() {
                   {entry.rank <= 3 ? ["🥇", "🥈", "🥉"][entry.rank - 1] : `#${entry.rank}`}
                 </span>
                 <span className="flex-1 font-medium text-foreground ml-2">{entry.username}</span>
-                <span className="font-display font-bold text-primary">{entry.bestScore}</span>
+                <span className="font-display font-bold text-primary">{entry.totalScore}</span>
               </div>
             ))}
           </div>

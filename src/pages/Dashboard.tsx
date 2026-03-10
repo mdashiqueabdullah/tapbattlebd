@@ -17,12 +17,17 @@ export default function Dashboard() {
   const { profile } = useAuth();
 
   // Use profile data or fallback to mock
+  const gameScore = profile?.lifetime_best_score ?? 65;
+  const referralPoints = profile?.referral_points ?? 0;
+  const totalScore = gameScore + referralPoints;
+
   const userData = {
     username: profile?.username || "Player_BD",
     attemptsUsed: 3,
-    bestScore: profile?.lifetime_best_score ?? 65,
+    gameScore,
+    referralPoints,
+    totalScore,
     currentRank: 28,
-    referralPoints: profile?.referral_points ?? 0,
   };
 
   if (gameMode !== "none") {
@@ -75,12 +80,23 @@ export default function Dashboard() {
           {activeTab === "main" && (
             <>
               {/* Stats Grid */}
+              <div className="grid grid-cols-3 gap-3 mb-6">
+                {[
+                  { icon: Target, label: "গেম স্কোর", value: userData.gameScore, color: "text-primary" },
+                  { icon: Gift, label: "রেফার পয়েন্ট", value: userData.referralPoints, color: "text-neon-pink" },
+                  { icon: BarChart3, label: "মোট স্কোর", value: userData.totalScore, color: "text-accent" },
+                ].map((stat, i) => (
+                  <div key={i} className="glass-card p-4">
+                    <stat.icon className={`w-5 h-5 ${stat.color} mb-2`} />
+                    <p className="text-xs text-muted-foreground">{stat.label}</p>
+                    <p className={`font-display text-2xl font-bold ${stat.color}`}>{stat.value}</p>
+                  </div>
+                ))}
+              </div>
               <div className="grid grid-cols-2 gap-3 mb-6">
                 {[
-                  { icon: Target, label: t("bestScore"), value: userData.bestScore, color: "text-primary" },
-                  { icon: BarChart3, label: t("currentRank"), value: `#${userData.currentRank}`, color: "text-accent" },
+                  { icon: Trophy, label: t("currentRank"), value: `#${userData.currentRank}`, color: "text-accent" },
                   { icon: Clock, label: t("attemptsUsed"), value: `${userData.attemptsUsed}/${MAX_RANKED_ATTEMPTS}`, color: "text-secondary" },
-                  { icon: Gift, label: "রেফার পয়েন্ট", value: userData.referralPoints, color: "text-neon-pink" },
                 ].map((stat, i) => (
                   <div key={i} className="glass-card p-4">
                     <stat.icon className={`w-5 h-5 ${stat.color} mb-2`} />
