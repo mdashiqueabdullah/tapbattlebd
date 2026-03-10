@@ -58,22 +58,25 @@ export default function PurchaseHistory() {
       </h3>
       <div className="space-y-2">
         {purchases.map(p => (
-          <div key={p.id} className="flex items-center justify-between p-3 bg-muted/30 rounded-lg">
-            <div>
+          <div key={p.id} className="p-3 bg-muted/30 rounded-lg">
+            <div className="flex items-center justify-between mb-1">
               <p className="text-sm font-medium text-foreground">
                 {p.attempts_count}টি অ্যাটেম্পট – ৳{p.amount}
               </p>
+              <div className="flex items-center gap-1.5">
+                {statusIcon(p.status)}
+                <span className={`text-xs font-medium ${
+                  p.status === "approved" ? "text-primary" : p.status === "rejected" ? "text-destructive" : "text-accent"
+                }`}>
+                  {statusLabel(p.status)}
+                </span>
+              </div>
+            </div>
+            <div className="flex items-center justify-between">
               <p className="text-xs text-muted-foreground">
                 {p.payment_method === "bkash" ? "bKash" : "Nagad"} • {new Date(p.created_at).toLocaleDateString("bn-BD")}
               </p>
-            </div>
-            <div className="flex items-center gap-1.5">
-              {statusIcon(p.status)}
-              <span className={`text-xs font-medium ${
-                p.status === "approved" ? "text-primary" : p.status === "rejected" ? "text-destructive" : "text-accent"
-              }`}>
-                {statusLabel(p.status)}
-              </span>
+              <p className="text-xs text-muted-foreground font-mono">{p.transaction_id}</p>
             </div>
           </div>
         ))}
