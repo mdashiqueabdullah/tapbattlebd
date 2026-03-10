@@ -20,7 +20,7 @@ export default function Profile() {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      <div className="container pt-20 pb-8 px-4">
+      <div className="container pt-24 pb-10 px-4">
         <div className="max-w-lg mx-auto">
           <h1 className="text-xl font-bold text-foreground mb-6 flex items-center gap-2">
             <User className="w-5 h-5 text-primary" /> প্রোফাইল

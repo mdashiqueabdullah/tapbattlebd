@@ -19,7 +19,7 @@ export default function Leaderboard() {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      <div className="container pt-20 pb-8 px-4">
+      <div className="container pt-24 pb-10 px-4">
         <div className="max-w-lg mx-auto">
           {/* ADSENSE: Banner ad top of leaderboard */}
           <BannerAd className="mb-4" />
