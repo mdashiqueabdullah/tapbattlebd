@@ -55,7 +55,8 @@ export default function Leaderboard() {
                   <div className={`glass-card ${isFirst ? "neon-border-gold p-5" : "p-4"} rounded-2xl`}>
                     <span className="text-2xl">{["🥇", "🥈", "🥉"][idx]}</span>
                     <p className={`font-bold ${isFirst ? "text-lg" : "text-sm"} text-foreground mt-1`}>{entry.username}</p>
-                    <p className={`font-display font-bold ${isFirst ? "text-2xl text-accent neon-text-gold" : "text-lg text-primary"}`}>{entry.bestScore}</p>
+                    <p className={`font-display font-bold ${isFirst ? "text-2xl text-accent neon-text-gold" : "text-lg text-primary"}`}>{entry.totalScore}</p>
+                    {entry.referralPoints > 0 && <p className="text-[10px] text-neon-pink">+{entry.referralPoints} রেফার</p>}
                     <p className="text-xs text-muted-foreground">৳{entry.prize?.toLocaleString()}</p>
                   </div>
                 </div>
