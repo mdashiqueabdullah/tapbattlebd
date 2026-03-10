@@ -189,28 +189,50 @@ export default function Admin() {
     return 0;
   };
 
-  const handleFinalizeWinners = async () => {
+  const BANGLA_MONTHS = ["", "জানুয়ারি", "ফেব্রুয়ারি", "মার্চ", "এপ্রিল", "মে", "জুন", "জুলাই", "আগস্ট", "সেপ্টেম্বর", "অক্টোবর", "নভেম্বর", "ডিসেম্বর"];
+
+  const openContestPicker = async () => {
+    setShowContestPicker(true);
+    setContestsLoading(true);
+    const { data } = await supabase
+      .from("monthly_contests")
+      .select("id, month, year, status")
+      .order("year", { ascending: false })
+      .order("month", { ascending: false });
+
+    if (data) {
+      const contestIds = data.map((c: any) => c.id);
+      const { data: existingWinners } = await supabase
+        .from("monthly_winners")
+        .select("contest_id")
+        .in("contest_id", contestIds);
+      const finalizedIds = new Set((existingWinners || []).map((w: any) => w.contest_id));
+
+      setAvailableContests(data.map((c: any) => ({
+        ...c,
+        label: `${BANGLA_MONTHS[c.month]} ${c.year}`,
+        hasWinners: finalizedIds.has(c.id),
+      })));
+    }
+    setContestsLoading(false);
+  };
+
+  const handleFinalizeForContest = async (contestId: string, contestLabel: string) => {
     if (!user) return;
-    const confirmed = window.confirm("আপনি কি নিশ্চিত? এটি বর্তমান মাসের লিডারবোর্ড থেকে শীর্ষ ১০০ জনকে বিজয়ী হিসেবে নির্ধারণ করবে।");
+    const confirmed = window.confirm(`আপনি কি নিশ্চিত? "${contestLabel}" এর লিডারবোর্ড থেকে শীর্ষ ১০০ জনকে বিজয়ী হিসেবে নির্ধারণ করবে।`);
     if (!confirmed) return;
 
     setFinalizingWinners(true);
+    setShowContestPicker(false);
     try {
-      const now = new Date();
-      const bdtNow = new Date(now.getTime() + (6 * 60 - now.getTimezoneOffset()) * 60000);
-      const { data: cd } = await supabase.from("monthly_contests").select("id").eq("month", bdtNow.getMonth() + 1).eq("year", bdtNow.getFullYear()).single();
-      if (!cd) { toast.error("বর্তমান মাসের কনটেস্ট পাওয়া যায়নি"); setFinalizingWinners(false); return; }
-
-      // Check if winners already exist for this contest
-      const { count } = await supabase.from("monthly_winners").select("*", { count: "exact", head: true }).eq("contest_id", cd.id);
+      const { count } = await supabase.from("monthly_winners").select("*", { count: "exact", head: true }).eq("contest_id", contestId);
       if ((count ?? 0) > 0) { toast.error("এই মাসের বিজয়ী ইতোমধ্যে নির্ধারিত হয়েছে!"); setFinalizingWinners(false); return; }
 
-      // Get top 100 from leaderboard
-      const { data: top100 } = await supabase.from("leaderboard").select("user_id, total_score").eq("contest_id", cd.id).order("total_score", { ascending: false }).limit(100);
+      const { data: top100 } = await supabase.from("leaderboard").select("user_id, total_score").eq("contest_id", contestId).order("total_score", { ascending: false }).limit(100);
       if (!top100 || top100.length === 0) { toast.error("লিডারবোর্ডে কোনো এন্ট্রি নেই"); setFinalizingWinners(false); return; }
 
       const winnersToInsert = top100.map((entry: any, i: number) => ({
-        contest_id: cd.id,
+        contest_id: contestId,
         user_id: entry.user_id,
         final_rank: i + 1,
         prize_amount: getPrizeAmount(i + 1),
@@ -219,12 +241,10 @@ export default function Admin() {
       const { error } = await supabase.from("monthly_winners").insert(winnersToInsert);
       if (error) { toast.error("বিজয়ী সংরক্ষণ ব্যর্থ: " + error.message); setFinalizingWinners(false); return; }
 
-      // Mark contest as finalized
-      await supabase.from("monthly_contests").update({ status: "finalized" }).eq("id", cd.id);
+      await supabase.from("monthly_contests").update({ status: "finalized" }).eq("id", contestId);
 
       toast.success(`${winnersToInsert.length} জন বিজয়ী সফলভাবে নির্ধারিত হয়েছে!`);
-      // Refresh winners list
-      const { data: refreshed } = await supabase.from("monthly_winners").select("*").eq("contest_id", cd.id).order("final_rank", { ascending: true });
+      const { data: refreshed } = await supabase.from("monthly_winners").select("*").eq("contest_id", contestId).order("final_rank", { ascending: true });
       if (refreshed) {
         const uids = refreshed.map((w: any) => w.user_id);
         const { data: profiles } = await supabase.from("profiles").select("id, username").in("id", uids);
