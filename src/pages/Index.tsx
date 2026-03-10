@@ -15,7 +15,7 @@ export default function Index() {
       <Navbar />
 
       {/* Hero */}
-      <section className="pt-20 pb-12 px-4 relative overflow-hidden">
+      <section className="pt-24 pb-12 px-4 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-transparent to-transparent" />
         <div className="absolute top-20 left-1/4 w-64 h-64 bg-primary/10 rounded-full blur-3xl" />
         <div className="absolute bottom-0 right-1/4 w-48 h-48 bg-secondary/10 rounded-full blur-3xl" />
