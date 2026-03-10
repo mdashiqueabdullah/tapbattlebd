@@ -37,6 +37,8 @@ export default function Admin() {
   const [payoutFilter, setPayoutFilter] = useState<"pending" | "approved" | "paid" | "rejected" | "all">("pending");
   const [stats, setStats] = useState({ totalUsers: 0, todayGames: 0, pendingPayouts: 0, pendingPurchases: 0 });
   const [loading, setLoading] = useState(true);
+  const [winners, setWinners] = useState<any[]>([]);
+  const [finalizingWinners, setFinalizingWinners] = useState(false);
 
   // Check admin
   useEffect(() => {
