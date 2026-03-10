@@ -509,14 +509,33 @@ export default function Admin() {
             <div>
               <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
                 <h2 className="text-xl font-bold text-foreground">বিজয়ী ম্যানেজমেন্ট</h2>
-                <button
-                  onClick={openContestPicker}
-                  disabled={finalizingWinners}
-                  className="gradient-primary text-primary-foreground px-4 py-2 rounded-lg text-sm font-medium disabled:opacity-50 inline-flex items-center gap-2"
-                >
-                  <Trophy className="w-4 h-4" />
-                  {finalizingWinners ? "প্রসেসিং..." : "বিজয়ী নির্ধারণ করুন (শীর্ষ ১০০)"}
-                </button>
+                <div className="flex gap-2 flex-wrap">
+                  {winners.length > 0 && (
+                    <button
+                      onClick={() => {
+                        const csv = ["র‍্যাঙ্ক,ইউজার,ফোন,পুরস্কার (৳),পেআউট স্ট্যাটাস"]
+                          .concat(winners.map((w: any) => `${w.final_rank},"${w.username}","${w.phone_number}",${w.prize_amount},${w.payout_status}`))
+                          .join("\n");
+                        const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement("a"); a.href = url; a.download = "winners.csv"; a.click();
+                        URL.revokeObjectURL(url);
+                      }}
+                      className="bg-accent/20 text-accent px-4 py-2 rounded-lg text-sm font-medium inline-flex items-center gap-2 hover:bg-accent/30 transition-colors"
+                    >
+                      <Download className="w-4 h-4" />
+                      CSV এক্সপোর্ট
+                    </button>
+                  )}
+                  <button
+                    onClick={openContestPicker}
+                    disabled={finalizingWinners}
+                    className="gradient-primary text-primary-foreground px-4 py-2 rounded-lg text-sm font-medium disabled:opacity-50 inline-flex items-center gap-2"
+                  >
+                    <Trophy className="w-4 h-4" />
+                    {finalizingWinners ? "প্রসেসিং..." : "বিজয়ী নির্ধারণ করুন (শীর্ষ ১০০)"}
+                  </button>
+                </div>
               </div>
 
               {/* Contest Picker Dialog */}
