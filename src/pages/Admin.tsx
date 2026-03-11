@@ -41,6 +41,7 @@ export default function Admin() {
   const [stats, setStats] = useState({ totalUsers: 0, todayGames: 0, pendingPayouts: 0, pendingPurchases: 0 });
   const [loading, setLoading] = useState(true);
   const [winners, setWinners] = useState<any[]>([]);
+  const [blockedSignups, setBlockedSignups] = useState<any[]>([]);
   const [finalizingWinners, setFinalizingWinners] = useState(false);
   const [showContestPicker, setShowContestPicker] = useState(false);
   const [availableContests, setAvailableContests] = useState<any[]>([]);
