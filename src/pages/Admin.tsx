@@ -621,6 +621,8 @@ export default function Admin() {
                       </tbody>
                     </table>
                   </div>
+                </div>
+              )}
             </div>
           )}
 
@@ -687,12 +689,6 @@ function BlockedSignupsPanel() {
           </div>
         </div>
       )}
-    </div>
-  );
-}
-          )}
-        </div>
-      </div>
     </div>
   );
 }
