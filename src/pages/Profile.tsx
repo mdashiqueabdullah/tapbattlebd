@@ -42,6 +42,7 @@ export default function Profile() {
       .from("profiles")
       .update({
         full_name: fullName || null,
+        phone_number: phoneNum || null,
         bkash_number: bkash || null,
         nagad_number: nagad || null,
         updated_at: new Date().toISOString(),
