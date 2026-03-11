@@ -721,7 +721,7 @@ export default function TapGame({ isPractice, attemptsRemaining, onGameEnd, onCa
       {/* HUD */}
       <div className="absolute top-0 left-0 right-0 z-10 safe-area-top">
         <div className="flex items-center justify-between px-4 pt-3 pb-2">
-          <button onClick={endSession} className="glass-card px-3 py-1.5 rounded-full text-xs text-muted-foreground">
+          <button onClick={() => endSession(false)} className="glass-card px-3 py-1.5 rounded-full text-xs text-muted-foreground">
             ✕ বাতিল
           </button>
           <div ref={scoreAreaRef} className="glass-card px-4 py-2 rounded-full flex items-center gap-2">
