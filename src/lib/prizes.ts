@@ -10,7 +10,7 @@ export const PRIZE_DISTRIBUTION: { rankRange: string; amount: number; count: num
 export const TOTAL_PRIZE = 15000;
 export const MAX_RANKED_ATTEMPTS = 10;
 // Inactivity timeout — change this single value to adjust session auto-end (seconds)
-export const INACTIVITY_TIMEOUT_SECONDS = 30;
+export const INACTIVITY_TIMEOUT_SECONDS = 300;
 export const INACTIVITY_TIMEOUT_MS = INACTIVITY_TIMEOUT_SECONDS * 1000;
 export const GOLDEN_TARGET_CHANCE = 0.12;
 export const RED_TARGET_CHANCE = 0.08;

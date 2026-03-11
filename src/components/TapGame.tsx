@@ -202,16 +202,23 @@ export default function TapGame({ isPractice, attemptsRemaining, onGameEnd, onCa
   const lionIdRef = useRef(0);
   const chestIdRef = useRef(0);
 
+  const [inactivityCountdown, setInactivityCountdown] = useState(INACTIVITY_TIMEOUT_SECONDS);
+  const [endedByInactivity, setEndedByInactivity] = useState(false);
+  const lastActivityRef = useRef(Date.now());
+  const countdownIntervalRef = useRef<NodeJS.Timeout | null>(null);
+
   const clearInactivityTimer = useCallback(() => {
     if (inactivityTimerRef.current) { clearTimeout(inactivityTimerRef.current); inactivityTimerRef.current = null; }
+    if (countdownIntervalRef.current) { clearInterval(countdownIntervalRef.current); countdownIntervalRef.current = null; }
   }, []);
 
-  const endSession = useCallback(() => {
+  const endSession = useCallback((byInactivity = false) => {
     clearInactivityTimer();
     if (doubleScoreTimerRef.current) clearTimeout(doubleScoreTimerRef.current);
     if (lionTimerRef.current) clearTimeout(lionTimerRef.current);
     if (chestTimerRef.current) clearTimeout(chestTimerRef.current);
     if (frenzyTimerRef.current) clearTimeout(frenzyTimerRef.current);
+    if (byInactivity) setEndedByInactivity(true);
     setPhase("submitting");
   }, [clearInactivityTimer]);
 
@@ -246,7 +253,15 @@ export default function TapGame({ isPractice, attemptsRemaining, onGameEnd, onCa
 
   const resetInactivityTimer = useCallback(() => {
     clearInactivityTimer();
-    inactivityTimerRef.current = setTimeout(endSession, INACTIVITY_TIMEOUT_MS);
+    lastActivityRef.current = Date.now();
+    setInactivityCountdown(INACTIVITY_TIMEOUT_SECONDS);
+    inactivityTimerRef.current = setTimeout(() => endSession(true), INACTIVITY_TIMEOUT_MS);
+    // Update countdown every second
+    countdownIntervalRef.current = setInterval(() => {
+      const elapsed = Math.floor((Date.now() - lastActivityRef.current) / 1000);
+      const remaining = Math.max(0, INACTIVITY_TIMEOUT_SECONDS - elapsed);
+      setInactivityCountdown(remaining);
+    }, 1000);
   }, [clearInactivityTimer, endSession]);
 
   const startGame = useCallback(async () => {
@@ -277,6 +292,8 @@ export default function TapGame({ isPractice, attemptsRemaining, onGameEnd, onCa
     setIsFrenzy(false);
     setVerifiedScore(null);
     setWasFlagged(false);
+    setEndedByInactivity(false);
+    setInactivityCountdown(INACTIVITY_TIMEOUT_SECONDS);
   }, [isPractice, startSession]);
 
   useEffect(() => {
@@ -285,6 +302,25 @@ export default function TapGame({ isPractice, attemptsRemaining, onGameEnd, onCa
     }
     return () => clearInactivityTimer();
   }, [phase, resetInactivityTimer, clearInactivityTimer]);
+
+  // Handle visibility changes - auto-end if 5 min passed while tab was hidden
+  useEffect(() => {
+    if (phase !== "playing") return;
+    const handleVisibilityChange = () => {
+      if (!document.hidden && phase === "playing") {
+        const elapsed = Date.now() - lastActivityRef.current;
+        if (elapsed >= INACTIVITY_TIMEOUT_MS) {
+          endSession(true);
+        } else {
+          // Update countdown to reflect time passed
+          const remaining = Math.max(0, INACTIVITY_TIMEOUT_SECONDS - Math.floor(elapsed / 1000));
+          setInactivityCountdown(remaining);
+        }
+      }
+    };
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return () => document.removeEventListener("visibilitychange", handleVisibilityChange);
+  }, [phase, endSession]);
 
   const spawnParticles = useCallback((x: number, y: number, color: string, count = 6) => {
     const newParticles: Particle[] = [];
@@ -564,7 +600,7 @@ export default function TapGame({ isPractice, attemptsRemaining, onGameEnd, onCa
           )}
           <h2 className="font-display text-3xl font-bold text-primary neon-text mb-4">TAP BATTLE</h2>
           <p className="text-muted-foreground mb-2">বলে ট্যাপ করো, স্কোর বাড়াও!</p>
-          <p className="text-muted-foreground text-xs mb-4">{INACTIVITY_TIMEOUT_SECONDS} সেকেন্ড নিষ্ক্রিয় থাকলে সেশন শেষ</p>
+          <p className="text-muted-foreground text-xs mb-4">৫ মিনিট নিষ্ক্রিয় থাকলে সেশন স্বয়ংক্রিয়ভাবে শেষ হয়</p>
           
           {/* Ball types guide */}
           <div className="grid grid-cols-2 gap-3 my-6">
@@ -642,7 +678,11 @@ export default function TapGame({ isPractice, attemptsRemaining, onGameEnd, onCa
       <div className="fixed inset-0 z-50 bg-background flex flex-col items-center justify-center p-6">
         <div className="text-center max-w-sm">
           <h2 className="font-display text-2xl font-bold text-accent neon-text-gold mb-2">{t("gameOver")}</h2>
-          <p className="text-muted-foreground text-sm mb-4">{INACTIVITY_TIMEOUT_SECONDS} সেকেন্ড নিষ্ক্রিয়তার কারণে সেশন শেষ হয়েছে</p>
+          <p className="text-muted-foreground text-sm mb-4">
+            {endedByInactivity 
+              ? "৫ মিনিট কোনো ট্যাপ না থাকায় সেশন স্বয়ংক্রিয়ভাবে শেষ হয়েছে।"
+              : "সেশন শেষ হয়েছে"}
+          </p>
           <div className="glass-card neon-border-gold p-8 my-6">
             <p className="text-muted-foreground text-sm mb-1">{t("finalScore")}</p>
             <p className="font-display text-6xl font-black text-accent neon-text-gold">{displayScore}</p>
@@ -687,7 +727,7 @@ export default function TapGame({ isPractice, attemptsRemaining, onGameEnd, onCa
       {/* HUD */}
       <div className="absolute top-0 left-0 right-0 z-10 safe-area-top">
         <div className="flex items-center justify-between px-4 pt-3 pb-2">
-          <button onClick={endSession} className="glass-card px-3 py-1.5 rounded-full text-xs text-muted-foreground">
+          <button onClick={() => endSession(false)} className="glass-card px-3 py-1.5 rounded-full text-xs text-muted-foreground">
             ✕ বাতিল
           </button>
           <div ref={scoreAreaRef} className="glass-card px-4 py-2 rounded-full flex items-center gap-2">
@@ -981,7 +1021,7 @@ export default function TapGame({ isPractice, attemptsRemaining, onGameEnd, onCa
           <BannerAd />
         </div>
         <p className="text-muted-foreground/50 text-xs text-center mt-1">
-          ট্যাপ করতে থাকো • {INACTIVITY_TIMEOUT_SECONDS}s নিষ্ক্রিয় থাকলে সেশন শেষ
+          ট্যাপ করতে থাকো • নিষ্ক্রিয়: {Math.floor(inactivityCountdown / 60)}:{String(inactivityCountdown % 60).padStart(2, '0')}
         </p>
       </div>
     </div>
