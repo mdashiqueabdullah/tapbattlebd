@@ -202,16 +202,23 @@ export default function TapGame({ isPractice, attemptsRemaining, onGameEnd, onCa
   const lionIdRef = useRef(0);
   const chestIdRef = useRef(0);
 
+  const [inactivityCountdown, setInactivityCountdown] = useState(INACTIVITY_TIMEOUT_SECONDS);
+  const [endedByInactivity, setEndedByInactivity] = useState(false);
+  const lastActivityRef = useRef(Date.now());
+  const countdownIntervalRef = useRef<NodeJS.Timeout | null>(null);
+
   const clearInactivityTimer = useCallback(() => {
     if (inactivityTimerRef.current) { clearTimeout(inactivityTimerRef.current); inactivityTimerRef.current = null; }
+    if (countdownIntervalRef.current) { clearInterval(countdownIntervalRef.current); countdownIntervalRef.current = null; }
   }, []);
 
-  const endSession = useCallback(() => {
+  const endSession = useCallback((byInactivity = false) => {
     clearInactivityTimer();
     if (doubleScoreTimerRef.current) clearTimeout(doubleScoreTimerRef.current);
     if (lionTimerRef.current) clearTimeout(lionTimerRef.current);
     if (chestTimerRef.current) clearTimeout(chestTimerRef.current);
     if (frenzyTimerRef.current) clearTimeout(frenzyTimerRef.current);
+    if (byInactivity) setEndedByInactivity(true);
     setPhase("submitting");
   }, [clearInactivityTimer]);
 
