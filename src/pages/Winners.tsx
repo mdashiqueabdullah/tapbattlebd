@@ -39,12 +39,15 @@ interface WinnerEntry {
   username: string;
 }
 
+const PAGE_SIZE = 20;
+
 export default function Winners() {
   const [contests, setContests] = useState<ContestOption[]>([]);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [winners, setWinners] = useState<WinnerEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [winnersLoading, setWinnersLoading] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
 
   // Load all finalized contests
   useEffect(() => {
@@ -78,6 +81,7 @@ export default function Winners() {
 
     (async () => {
       setWinnersLoading(true);
+      setCurrentPage(1);
       const { data } = await supabase
         .from("monthly_winners")
         .select("*")
@@ -105,6 +109,8 @@ export default function Winners() {
   }, [contests, selectedIndex]);
 
   const selectedContest = contests[selectedIndex];
+  const totalPages = Math.ceil(winners.length / PAGE_SIZE);
+  const paginatedWinners = winners.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
 
   return (
     <div className="min-h-screen bg-background">
@@ -157,25 +163,50 @@ export default function Winners() {
                   <p className="text-muted-foreground">এই মাসে কোনো বিজয়ী নেই</p>
                 </div>
               ) : (
-                <div className="glass-card divide-y divide-border/20 rounded-xl overflow-hidden">
-                  {winners.map((w) => (
-                    <div key={w.id} className="flex items-center px-4 py-3">
-                      <span className="text-lg mr-3 w-8 text-center">
-                        {w.final_rank === 1 ? "🥇" : w.final_rank === 2 ? "🥈" : w.final_rank === 3 ? "🥉" : `#${w.final_rank}`}
-                      </span>
-                      <div className="flex-1 min-w-0">
-                        <p className="font-medium text-foreground text-sm truncate">{w.username}</p>
-                        <p className="text-xs text-muted-foreground">র‍্যাঙ্ক #{w.final_rank}</p>
-                      </div>
-                      <div className="text-right ml-2">
-                        <p className="font-display font-bold text-accent text-sm">৳{w.prize_amount.toLocaleString()}</p>
-                        <span className={`text-xs px-2 py-0.5 rounded-full ${statusColors[w.payout_status] || "bg-muted text-muted-foreground"}`}>
-                          {statusLabels[w.payout_status] || w.payout_status}
+                <>
+                  <div className="glass-card divide-y divide-border/20 rounded-xl overflow-hidden">
+                    {paginatedWinners.map((w) => (
+                      <div key={w.id} className="flex items-center px-4 py-3">
+                        <span className="text-lg mr-3 w-8 text-center">
+                          {w.final_rank === 1 ? "🥇" : w.final_rank === 2 ? "🥈" : w.final_rank === 3 ? "🥉" : `#${w.final_rank}`}
                         </span>
+                        <div className="flex-1 min-w-0">
+                          <p className="font-medium text-foreground text-sm truncate">{w.username}</p>
+                          <p className="text-xs text-muted-foreground">র‍্যাঙ্ক #{w.final_rank}</p>
+                        </div>
+                        <div className="text-right ml-2">
+                          <p className="font-display font-bold text-accent text-sm">৳{w.prize_amount.toLocaleString()}</p>
+                          <span className={`text-xs px-2 py-0.5 rounded-full ${statusColors[w.payout_status] || "bg-muted text-muted-foreground"}`}>
+                            {statusLabels[w.payout_status] || w.payout_status}
+                          </span>
+                        </div>
                       </div>
+                    ))}
+                  </div>
+
+                  {/* Pagination */}
+                  {totalPages > 1 && (
+                    <div className="flex items-center justify-between mt-4 glass-card rounded-xl px-4 py-3">
+                      <button
+                        onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                        disabled={currentPage <= 1}
+                        className="flex items-center gap-1 text-sm font-medium text-foreground disabled:text-muted-foreground/40 transition-colors"
+                      >
+                        <ChevronLeft className="w-4 h-4" /> আগের
+                      </button>
+                      <span className="text-sm text-muted-foreground">
+                        পৃষ্ঠা {currentPage}/{totalPages}
+                      </span>
+                      <button
+                        onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                        disabled={currentPage >= totalPages}
+                        className="flex items-center gap-1 text-sm font-medium text-foreground disabled:text-muted-foreground/40 transition-colors"
+                      >
+                        পরের <ChevronRight className="w-4 h-4" />
+                      </button>
                     </div>
-                  ))}
-                </div>
+                  )}
+                </>
               )}
             </>
           )}

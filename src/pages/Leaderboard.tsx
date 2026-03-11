@@ -5,7 +5,7 @@ import CountdownTimer from "@/components/CountdownTimer";
 import { t } from "@/lib/i18n";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
-import { Trophy } from "lucide-react";
+import { Trophy, ChevronLeft, ChevronRight } from "lucide-react";
 import { BannerAd, RectangleAd } from "@/components/ads/AdContainer";
 import { PRIZE_DISTRIBUTION } from "@/lib/prizes";
 
@@ -30,11 +30,14 @@ function getPrize(rank: number): number {
   return 0;
 }
 
+const PAGE_SIZE = 20;
+
 export default function Leaderboard() {
   const [tab, setTab] = useState("current");
-  const [entries, setEntries] = useState<LeaderboardEntry[]>([]);
+  const [allEntries, setAllEntries] = useState<LeaderboardEntry[]>([]);
   const [myEntry, setMyEntry] = useState<LeaderboardEntry | null>(null);
   const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
   const { user } = useAuth();
 
   const tabs = [
@@ -45,6 +48,9 @@ export default function Leaderboard() {
   useEffect(() => {
     loadLeaderboard();
   }, []);
+
+  // Reset page when tab changes
+  useEffect(() => { setCurrentPage(1); }, [tab]);
 
   const loadLeaderboard = async () => {
     setLoading(true);
@@ -61,7 +67,6 @@ export default function Leaderboard() {
       .maybeSingle();
 
     if (!contestData) {
-      // Try to create contest via RPC
       await supabase.rpc("get_or_create_current_contest");
       setLoading(false);
       return;
@@ -72,10 +77,11 @@ export default function Leaderboard() {
       .select("*")
       .eq("contest_id", contestData.id)
       .order("total_score", { ascending: false })
-      .limit(100);
+      .limit(1000);
 
     if (data && data.length > 0) {
       const userIds = data.map((e: any) => e.user_id);
+      // Fetch profiles in batches if needed
       const { data: profiles } = await supabase
         .from("profiles")
         .select("id, username")
@@ -92,19 +98,23 @@ export default function Leaderboard() {
         prize: getPrize(i + 1),
         userId: e.user_id,
       }));
-      setEntries(mapped);
+      setAllEntries(mapped);
 
       if (user) {
         const mine = mapped.find(e => e.userId === user.id);
         setMyEntry(mine || null);
       }
     } else {
-      setEntries([]);
+      setAllEntries([]);
     }
     setLoading(false);
   };
 
-  const displayEntries = tab === "mine" && myEntry ? [myEntry] : entries;
+  const displayEntries = tab === "mine" && myEntry ? [myEntry] : allEntries;
+  const totalPages = Math.ceil(displayEntries.length / PAGE_SIZE);
+  const paginatedEntries = tab === "mine" 
+    ? displayEntries 
+    : displayEntries.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
 
   return (
     <div className="min-h-screen bg-background">
@@ -145,10 +155,10 @@ export default function Leaderboard() {
           ) : (
             <>
               {/* Top 3 */}
-              {tab === "current" && entries.length >= 3 && (
+              {tab === "current" && currentPage === 1 && allEntries.length >= 3 && (
                 <div className="flex justify-center items-end gap-2 sm:gap-3 mb-6 px-2">
                   {[1, 0, 2].map(idx => {
-                    const entry = entries[idx];
+                    const entry = allEntries[idx];
                     if (!entry) return null;
                     const isFirst = idx === 0;
                     return (
@@ -179,7 +189,7 @@ export default function Leaderboard() {
                   <span className="w-10 text-right">স্ট্রিক</span>
                   <span className="w-12 text-right">মোট</span>
                 </div>
-                {displayEntries.map(entry => (
+                {paginatedEntries.map(entry => (
                   <div key={entry.rank} className={`flex items-center px-3 py-3 ${entry.rank <= 3 ? "bg-accent/5" : ""} ${entry.userId === user?.id ? "bg-primary/5 border-l-2 border-primary" : ""}`}>
                     <span className={`w-8 font-display font-bold text-sm ${entry.rank <= 3 ? "text-accent" : "text-muted-foreground"}`}>
                       {entry.rank}
@@ -192,6 +202,29 @@ export default function Leaderboard() {
                   </div>
                 ))}
               </div>
+
+              {/* Pagination */}
+              {tab === "current" && totalPages > 1 && (
+                <div className="flex items-center justify-between mt-4 glass-card rounded-xl px-4 py-3">
+                  <button
+                    onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                    disabled={currentPage <= 1}
+                    className="flex items-center gap-1 text-sm font-medium text-foreground disabled:text-muted-foreground/40 transition-colors"
+                  >
+                    <ChevronLeft className="w-4 h-4" /> আগের
+                  </button>
+                  <span className="text-sm text-muted-foreground">
+                    পৃষ্ঠা {currentPage}/{totalPages}
+                  </span>
+                  <button
+                    onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                    disabled={currentPage >= totalPages}
+                    className="flex items-center gap-1 text-sm font-medium text-foreground disabled:text-muted-foreground/40 transition-colors"
+                  >
+                    পরের <ChevronRight className="w-4 h-4" />
+                  </button>
+                </div>
+              )}
             </>
           )}
 
