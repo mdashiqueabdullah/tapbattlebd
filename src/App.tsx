@@ -17,16 +17,16 @@ import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
 import Contact from "./pages/Contact";
 import Admin from "./pages/Admin";
-import VerifyPhone from "./pages/VerifyPhone";
 import ReferralRules from "./pages/ReferralRules";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
+import VerifyEmail from "./pages/VerifyEmail";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  const { user, profile, loading } = useAuth();
+  const { user, loading, isEmailVerified } = useAuth();
 
   if (loading) {
     return (
@@ -37,23 +37,7 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
   }
 
   if (!user) return <Navigate to="/login" replace />;
-
-  return <>{children}</>;
-}
-
-function PhoneGate({ children }: { children: React.ReactNode }) {
-  const { user, profile, loading } = useAuth();
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-primary font-display text-xl animate-pulse">লোড হচ্ছে...</div>
-      </div>
-    );
-  }
-
-  if (!user) return <Navigate to="/login" replace />;
-  if (profile?.phone_verified) return <Navigate to="/dashboard" replace />;
+  if (!isEmailVerified) return <Navigate to="/verify-email" replace />;
 
   return <>{children}</>;
 }
@@ -65,7 +49,7 @@ const AppRoutes = () => (
     <Route path="/register" element={<Login />} />
     <Route path="/forgot-password" element={<ForgotPassword />} />
     <Route path="/reset-password" element={<ResetPassword />} />
-    <Route path="/verify-phone" element={<PhoneGate><VerifyPhone /></PhoneGate>} />
+    <Route path="/verify-email" element={<VerifyEmail />} />
     <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
     <Route path="/leaderboard" element={<Leaderboard />} />
     <Route path="/winners" element={<Winners />} />

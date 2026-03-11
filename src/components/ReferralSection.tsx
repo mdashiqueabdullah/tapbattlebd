@@ -32,7 +32,6 @@ export default function ReferralSection() {
         .order("created_at", { ascending: false });
 
       if (data) {
-        // Fetch referred usernames
         const userIds = data.map((r: any) => r.referred_user_id);
         if (userIds.length > 0) {
           const { data: profiles } = await supabase
@@ -130,7 +129,7 @@ export default function ReferralSection() {
         <div className="glass-card overflow-hidden rounded-xl">
           <div className="px-4 py-2 text-xs text-muted-foreground font-medium bg-muted/30 flex">
             <span className="flex-1">ইউজার</span>
-            <span className="w-20 text-center">ভেরিফাইড</span>
+            <span className="w-20 text-center">স্ট্যাটাস</span>
             <span className="w-16 text-right">পয়েন্ট</span>
           </div>
           <div className="divide-y divide-border/20">
@@ -140,8 +139,8 @@ export default function ReferralSection() {
                   <p className="text-foreground font-medium">{r.referred_username}</p>
                   <p className="text-xs text-muted-foreground">{new Date(r.created_at).toLocaleDateString("bn-BD")}</p>
                 </div>
-                <span className={`w-20 text-center text-xs px-2 py-0.5 rounded-full ${r.phone_verified ? "bg-primary/20 text-primary" : "bg-secondary/20 text-secondary"}`}>
-                  {r.phone_verified ? "✓ হ্যাঁ" : "অপেক্ষমাণ"}
+                <span className={`w-20 text-center text-xs px-2 py-0.5 rounded-full ${r.status === "completed" ? "bg-primary/20 text-primary" : "bg-secondary/20 text-secondary"}`}>
+                  {r.status === "completed" ? "✓ সম্পন্ন" : "অপেক্ষমাণ"}
                 </span>
                 <span className="w-16 text-right font-display font-bold text-accent">{r.points_awarded}</span>
               </div>
@@ -165,7 +164,7 @@ export default function ReferralSection() {
           <li className="flex items-start gap-1.5"><span className="text-primary">✓</span> প্রতি সফল রেফারে ২০ পয়েন্ট</li>
           <li className="flex items-start gap-1.5"><span className="text-primary">✓</span> রেফার পয়েন্ট গেম স্কোরের সাথে যোগ হয়</li>
           <li className="flex items-start gap-1.5"><span className="text-primary">✓</span> লিডারবোর্ডে মোট স্কোর = গেম + রেফার</li>
-          <li className="flex items-start gap-1.5"><span className="text-primary">✓</span> রেফার্ড ইউজারকে ফোন ভেরিফাই করতে হবে</li>
+          <li className="flex items-start gap-1.5"><span className="text-primary">✓</span> রেফার্ড ইউজারকে ইমেইল ভেরিফাই করতে হবে</li>
           <li className="flex items-start gap-1.5"><span className="text-destructive">✗</span> অসম্পূর্ণ অ্যাকাউন্ট গণনা হবে না</li>
         </ul>
         <Link
