@@ -292,6 +292,8 @@ export default function TapGame({ isPractice, attemptsRemaining, onGameEnd, onCa
     setIsFrenzy(false);
     setVerifiedScore(null);
     setWasFlagged(false);
+    setEndedByInactivity(false);
+    setInactivityCountdown(INACTIVITY_TIMEOUT_SECONDS);
   }, [isPractice, startSession]);
 
   useEffect(() => {
