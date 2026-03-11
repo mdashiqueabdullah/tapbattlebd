@@ -253,7 +253,15 @@ export default function TapGame({ isPractice, attemptsRemaining, onGameEnd, onCa
 
   const resetInactivityTimer = useCallback(() => {
     clearInactivityTimer();
-    inactivityTimerRef.current = setTimeout(endSession, INACTIVITY_TIMEOUT_MS);
+    lastActivityRef.current = Date.now();
+    setInactivityCountdown(INACTIVITY_TIMEOUT_SECONDS);
+    inactivityTimerRef.current = setTimeout(() => endSession(true), INACTIVITY_TIMEOUT_MS);
+    // Update countdown every second
+    countdownIntervalRef.current = setInterval(() => {
+      const elapsed = Math.floor((Date.now() - lastActivityRef.current) / 1000);
+      const remaining = Math.max(0, INACTIVITY_TIMEOUT_SECONDS - elapsed);
+      setInactivityCountdown(remaining);
+    }, 1000);
   }, [clearInactivityTimer, endSession]);
 
   const startGame = useCallback(async () => {
