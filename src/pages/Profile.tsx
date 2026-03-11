@@ -158,6 +158,7 @@ export default function Profile() {
             <button
               onClick={() => {
                 setFullName(profile.full_name || "");
+                setPhoneNum(profile.phone_number || "");
                 setBkash(profile.bkash_number || "");
                 setNagad(profile.nagad_number || "");
                 setEditing(true);
