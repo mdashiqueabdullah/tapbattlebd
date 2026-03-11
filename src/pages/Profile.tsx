@@ -10,6 +10,7 @@ export default function Profile() {
   const { profile, refreshProfile, user } = useAuth();
   const [editing, setEditing] = useState(false);
   const [fullName, setFullName] = useState(profile?.full_name || "");
+  const [phoneNum, setPhoneNum] = useState(profile?.phone_number || "");
   const [bkash, setBkash] = useState(profile?.bkash_number || "");
   const [nagad, setNagad] = useState(profile?.nagad_number || "");
   const [saving, setSaving] = useState(false);
