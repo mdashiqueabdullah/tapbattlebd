@@ -301,6 +301,25 @@ export default function TapGame({ isPractice, attemptsRemaining, onGameEnd, onCa
     return () => clearInactivityTimer();
   }, [phase, resetInactivityTimer, clearInactivityTimer]);
 
+  // Handle visibility changes - auto-end if 5 min passed while tab was hidden
+  useEffect(() => {
+    if (phase !== "playing") return;
+    const handleVisibilityChange = () => {
+      if (!document.hidden && phase === "playing") {
+        const elapsed = Date.now() - lastActivityRef.current;
+        if (elapsed >= INACTIVITY_TIMEOUT_MS) {
+          endSession(true);
+        } else {
+          // Update countdown to reflect time passed
+          const remaining = Math.max(0, INACTIVITY_TIMEOUT_SECONDS - Math.floor(elapsed / 1000));
+          setInactivityCountdown(remaining);
+        }
+      }
+    };
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return () => document.removeEventListener("visibilitychange", handleVisibilityChange);
+  }, [phase, endSession]);
+
   const spawnParticles = useCallback((x: number, y: number, color: string, count = 6) => {
     const newParticles: Particle[] = [];
     for (let i = 0; i < count; i++) {
