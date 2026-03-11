@@ -1019,7 +1019,7 @@ export default function TapGame({ isPractice, attemptsRemaining, onGameEnd, onCa
           <BannerAd />
         </div>
         <p className="text-muted-foreground/50 text-xs text-center mt-1">
-          ট্যাপ করতে থাকো • {INACTIVITY_TIMEOUT_SECONDS}s নিষ্ক্রিয় থাকলে সেশন শেষ
+          ট্যাপ করতে থাকো • নিষ্ক্রিয়: {Math.floor(inactivityCountdown / 60)}:{String(inactivityCountdown % 60).padStart(2, '0')}
         </p>
       </div>
     </div>
