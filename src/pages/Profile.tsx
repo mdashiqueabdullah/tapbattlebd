@@ -10,6 +10,7 @@ export default function Profile() {
   const { profile, refreshProfile, user } = useAuth();
   const [editing, setEditing] = useState(false);
   const [fullName, setFullName] = useState(profile?.full_name || "");
+  const [phoneNum, setPhoneNum] = useState(profile?.phone_number || "");
   const [bkash, setBkash] = useState(profile?.bkash_number || "");
   const [nagad, setNagad] = useState(profile?.nagad_number || "");
   const [saving, setSaving] = useState(false);
@@ -41,6 +42,7 @@ export default function Profile() {
       .from("profiles")
       .update({
         full_name: fullName || null,
+        phone_number: phoneNum || null,
         bkash_number: bkash || null,
         nagad_number: nagad || null,
         updated_at: new Date().toISOString(),
@@ -89,6 +91,10 @@ export default function Profile() {
                 <div>
                   <label className="text-xs text-muted-foreground mb-1 block">পূর্ণ নাম</label>
                   <input value={fullName} onChange={e => setFullName(e.target.value)} className="w-full px-4 py-2.5 rounded-xl bg-muted border border-border text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50" />
+                </div>
+                <div>
+                  <label className="text-xs text-muted-foreground mb-1 block">ফোন নম্বর</label>
+                  <input value={phoneNum} onChange={e => setPhoneNum(e.target.value.replace(/\D/g, "").slice(0, 11))} placeholder="01XXXXXXXXX" className="w-full px-4 py-2.5 rounded-xl bg-muted border border-border text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50" />
                 </div>
                 <div>
                   <label className="text-xs text-muted-foreground mb-1 block">bKash নম্বর</label>
@@ -152,6 +158,7 @@ export default function Profile() {
             <button
               onClick={() => {
                 setFullName(profile.full_name || "");
+                setPhoneNum(profile.phone_number || "");
                 setBkash(profile.bkash_number || "");
                 setNagad(profile.nagad_number || "");
                 setEditing(true);

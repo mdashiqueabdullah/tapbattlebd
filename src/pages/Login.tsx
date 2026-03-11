@@ -2,6 +2,9 @@ import { useState, useEffect } from "react";
 import { Link, useSearchParams, useNavigate, useLocation } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import { useAuth } from "@/hooks/useAuth";
+import { isDisposableEmail } from "@/lib/disposable-emails";
+import { getDeviceFingerprint } from "@/lib/device-fingerprint";
+import { supabase } from "@/integrations/supabase/client";
 import { t } from "@/lib/i18n";
 import { Mail, Lock, User, Eye, EyeOff, Phone } from "lucide-react";
 import { toast } from "sonner";
@@ -13,22 +16,28 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
   const [agreed, setAgreed] = useState(false);
   const [loading, setLoading] = useState(false);
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const { signUp, signIn, user } = useAuth();
+  const { signUp, signIn, user, isEmailVerified } = useAuth();
 
   const referralCode = searchParams.get("ref") || "";
 
-  // Sync mode with route changes
   useEffect(() => {
     setIsRegister(location.pathname === "/register");
   }, [location.pathname]);
 
   useEffect(() => {
-    if (user) navigate("/dashboard", { replace: true });
-  }, [user, navigate]);
+    if (user) {
+      if (!isEmailVerified) {
+        navigate("/verify-email", { replace: true });
+      } else {
+        navigate("/dashboard", { replace: true });
+      }
+    }
+  }, [user, isEmailVerified, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -40,19 +49,48 @@ export default function Login() {
       toast.error("ইউজারনেম কমপক্ষে ৩ অক্ষরের হতে হবে");
       return;
     }
+
+    // Block disposable emails
+    if (isRegister && isDisposableEmail(email)) {
+      toast.error("টেম্পোরারি/ডিসপোজেবল ইমেইল ব্যবহার করা যাবে না।");
+      return;
+    }
+
     setLoading(true);
 
     if (isRegister) {
-      const { error } = await signUp(email, password, username, referralCode || undefined);
+      // Check device fingerprint
+      try {
+        const fingerprint = await getDeviceFingerprint();
+        const { data: deviceCheck } = await supabase.functions.invoke("check-device", {
+          body: { device_fingerprint: fingerprint, email },
+        });
+
+        if (deviceCheck && !deviceCheck.allowed) {
+          toast.error(deviceCheck.error || "এই ডিভাইস থেকে শুধুমাত্র একটি অ্যাকাউন্ট তৈরি করা যাবে।");
+          setLoading(false);
+          return;
+        }
+      } catch (e) {
+        console.error("Device check failed:", e);
+        // Continue with signup even if check fails
+      }
+
+      const { error } = await signUp(email, password, username, phoneNumber || undefined, referralCode || undefined);
       if (error) {
         toast.error(error);
       } else {
-        toast.success("অ্যাকাউন্ট তৈরি হয়েছে! ইমেইল ভেরিফাই করুন।");
+        toast.success("অ্যাকাউন্ট তৈরি হয়েছে! অনুগ্রহ করে আপনার ইমেইল ভেরিফাই করুন।");
+        navigate("/verify-email");
       }
     } else {
       const { error } = await signIn(email, password);
       if (error) {
-        toast.error(error);
+        if (error.includes("Email not confirmed")) {
+          toast.error("আপনার ইমেইল এখনও ভেরিফাই হয়নি। অনুগ্রহ করে ইমেইল চেক করুন।");
+        } else {
+          toast.error(error);
+        }
       }
     }
     setLoading(false);
@@ -115,6 +153,19 @@ export default function Login() {
                 {showPw ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
               </button>
             </div>
+
+            {isRegister && (
+              <div className="relative">
+                <Phone className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
+                <input
+                  type="tel"
+                  value={phoneNumber}
+                  onChange={e => setPhoneNumber(e.target.value.replace(/\D/g, "").slice(0, 11))}
+                  placeholder="ফোন নম্বর (ঐচ্ছিক)"
+                  className="w-full pl-10 pr-4 py-3 rounded-xl bg-muted border border-border text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
+                />
+              </div>
+            )}
 
             {isRegister && (
               <label className="flex items-start gap-2 text-sm text-muted-foreground">

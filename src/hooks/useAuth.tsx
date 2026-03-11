@@ -27,10 +27,12 @@ interface AuthContextType {
   session: Session | null;
   profile: Profile | null;
   loading: boolean;
-  signUp: (email: string, password: string, username: string, referralCode?: string) => Promise<{ error: string | null }>;
+  isEmailVerified: boolean;
+  signUp: (email: string, password: string, username: string, phoneNumber?: string, referralCode?: string) => Promise<{ error: string | null }>;
   signIn: (email: string, password: string) => Promise<{ error: string | null }>;
   signOut: () => Promise<void>;
   refreshProfile: () => Promise<void>;
+  resendVerificationEmail: () => Promise<{ error: string | null }>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -40,6 +42,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
+
+  const isEmailVerified = !!user?.email_confirmed_at;
 
   const fetchProfile = async (userId: string) => {
     const { data } = await supabase
@@ -74,9 +78,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => subscription.unsubscribe();
   }, []);
 
-  const signUp = async (email: string, password: string, username: string, referralCode?: string) => {
+  const signUp = async (email: string, password: string, username: string, phoneNumber?: string, referralCode?: string) => {
     const metadata: Record<string, string> = { username };
     if (referralCode) metadata.referred_by = referralCode;
+    if (phoneNumber) metadata.phone_number = phoneNumber;
 
     const { error } = await supabase.auth.signUp({
       email,
@@ -105,8 +110,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (user) await fetchProfile(user.id);
   };
 
+  const resendVerificationEmail = async () => {
+    if (!user?.email) return { error: "No email found" };
+    const { error } = await supabase.auth.resend({
+      type: "signup",
+      email: user.email,
+    });
+    return { error: error?.message ?? null };
+  };
+
   return (
-    <AuthContext.Provider value={{ user, session, profile, loading, signUp, signIn, signOut, refreshProfile }}>
+    <AuthContext.Provider value={{ user, session, profile, loading, isEmailVerified, signUp, signIn, signOut, refreshProfile, resendVerificationEmail }}>
       {children}
     </AuthContext.Provider>
   );

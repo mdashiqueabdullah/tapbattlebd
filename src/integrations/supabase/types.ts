@@ -149,6 +149,36 @@ export type Database = {
           },
         ]
       }
+      blocked_signups: {
+        Row: {
+          created_at: string
+          device_fingerprint: string | null
+          email: string | null
+          id: string
+          ip_address: string | null
+          metadata: Json | null
+          reason: string
+        }
+        Insert: {
+          created_at?: string
+          device_fingerprint?: string | null
+          email?: string | null
+          id?: string
+          ip_address?: string | null
+          metadata?: Json | null
+          reason: string
+        }
+        Update: {
+          created_at?: string
+          device_fingerprint?: string | null
+          email?: string | null
+          id?: string
+          ip_address?: string | null
+          metadata?: Json | null
+          reason?: string
+        }
+        Relationships: []
+      }
       daily_claims: {
         Row: {
           claim_date: string
@@ -210,6 +240,27 @@ export type Database = {
           last_play_date?: string | null
           total_streak_points?: number
           updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      device_registrations: {
+        Row: {
+          created_at: string
+          device_fingerprint: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          device_fingerprint: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          device_fingerprint?: string
+          id?: string
           user_id?: string
         }
         Relationships: []
@@ -719,6 +770,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      complete_referral_on_email_confirm: {
+        Args: { _user_id: string }
+        Returns: undefined
+      }
       generate_referral_code: { Args: never; Returns: string }
       get_or_create_current_contest: { Args: never; Returns: string }
       get_user_attempt_count: {
