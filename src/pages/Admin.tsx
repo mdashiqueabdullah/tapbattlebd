@@ -621,9 +621,75 @@ export default function Admin() {
                       </tbody>
                     </table>
                   </div>
-                </div>
-              )}
             </div>
+          )}
+
+          {activeTab === "blocked" && <BlockedSignupsPanel />}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function BlockedSignupsPanel() {
+  const [blockedSignups, setBlockedSignups] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    (async () => {
+      const { data } = await supabase
+        .from("blocked_signups")
+        .select("*")
+        .order("created_at", { ascending: false })
+        .limit(100);
+      setBlockedSignups(data || []);
+      setLoading(false);
+    })();
+  }, []);
+
+  if (loading) return <div className="text-center py-8 text-muted-foreground">লোড হচ্ছে...</div>;
+
+  return (
+    <div>
+      <h2 className="text-xl font-bold text-foreground mb-4">ব্লকড সাইনআপ ({blockedSignups.length})</h2>
+      {blockedSignups.length === 0 ? (
+        <div className="text-center py-8 text-muted-foreground glass-card rounded-xl">কোনো ব্লকড সাইনআপ নেই</div>
+      ) : (
+        <div className="glass-card overflow-hidden rounded-xl">
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead><tr className="border-b border-border/30 text-muted-foreground">
+                <th className="text-left p-3">কারণ</th>
+                <th className="text-left p-3">ইমেইল</th>
+                <th className="text-left p-3">ডিভাইস</th>
+                <th className="text-left p-3">তারিখ</th>
+              </tr></thead>
+              <tbody className="divide-y divide-border/20">
+                {blockedSignups.map((b: any) => (
+                  <tr key={b.id}>
+                    <td className="p-3 text-foreground font-medium">
+                      <span className={`text-xs px-2 py-0.5 rounded-full ${
+                        b.reason === "duplicate_device" ? "bg-destructive/20 text-destructive" :
+                        b.reason === "disposable_email" ? "bg-secondary/20 text-secondary" :
+                        "bg-muted text-muted-foreground"
+                      }`}>
+                        {b.reason === "duplicate_device" ? "ডুপ্লিকেট ডিভাইস" :
+                         b.reason === "disposable_email" ? "ডিসপোজেবল ইমেইল" : b.reason}
+                      </span>
+                    </td>
+                    <td className="p-3 text-muted-foreground text-xs">{b.email || "—"}</td>
+                    <td className="p-3 text-muted-foreground text-xs font-mono">{b.device_fingerprint?.slice(0, 12) || "—"}...</td>
+                    <td className="p-3 text-muted-foreground text-xs">{new Date(b.created_at).toLocaleDateString("bn-BD")}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
           )}
         </div>
       </div>
