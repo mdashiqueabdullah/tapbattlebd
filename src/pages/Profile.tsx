@@ -93,6 +93,10 @@ export default function Profile() {
                   <input value={fullName} onChange={e => setFullName(e.target.value)} className="w-full px-4 py-2.5 rounded-xl bg-muted border border-border text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50" />
                 </div>
                 <div>
+                  <label className="text-xs text-muted-foreground mb-1 block">ফোন নম্বর</label>
+                  <input value={phoneNum} onChange={e => setPhoneNum(e.target.value.replace(/\D/g, "").slice(0, 11))} placeholder="01XXXXXXXXX" className="w-full px-4 py-2.5 rounded-xl bg-muted border border-border text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50" />
+                </div>
+                <div>
                   <label className="text-xs text-muted-foreground mb-1 block">bKash নম্বর</label>
                   <input value={bkash} onChange={e => setBkash(e.target.value)} placeholder="01XXXXXXXXX" className="w-full px-4 py-2.5 rounded-xl bg-muted border border-border text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50" />
                 </div>
