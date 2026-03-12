@@ -5,7 +5,7 @@ const config: CapacitorConfig = {
   appName: 'tapbattlebd',
   webDir: 'dist',
   server: {
-    url: 'https://c27e23e8-6da9-4edc-a850-9c093c8e422e.lovableproject.com?forceHideBadge=true',
+    url: 'https://tapbattlebd.lovable.app',
     cleartext: true
   }
 };
