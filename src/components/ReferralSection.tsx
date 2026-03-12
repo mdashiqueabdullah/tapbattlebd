@@ -74,12 +74,12 @@ export default function ReferralSection() {
         <div className="glass-card p-4">
           <Users className="w-5 h-5 text-primary mb-2" />
           <p className="text-xs text-muted-foreground">মোট রেফার</p>
-          <p className="font-display text-2xl font-bold text-primary">{completedReferrals}</p>
+          <p className="text-3xl font-bold text-primary">{completedReferrals}</p>
         </div>
         <div className="glass-card p-4">
           <Gift className="w-5 h-5 text-accent mb-2" />
           <p className="text-xs text-muted-foreground">মোট রেফার পয়েন্ট</p>
-          <p className="font-display text-2xl font-bold text-accent">{totalPoints}</p>
+          <p className="text-3xl font-bold text-accent">{totalPoints}</p>
         </div>
       </div>
 
