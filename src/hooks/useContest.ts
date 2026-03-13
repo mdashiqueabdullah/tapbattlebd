@@ -114,15 +114,14 @@ export function useContest(): UserContestData & {
       setAttemptTotalScore(0);
     }
 
-    // Always fetch streak points from daily_claims for current month
-    const now = new Date();
-    const bdtNow = new Date(now.getTime() + (6 * 60 - now.getTimezoneOffset()) * 60000);
-    const { data: claims } = await supabase
-      .from("daily_claims")
-      .select("reward_points")
-      .eq("user_id", user.id);
+    // Always fetch streak points from daily_streaks table
+    const { data: streakData } = await supabase
+      .from("daily_streaks")
+      .select("total_streak_points")
+      .eq("user_id", user.id)
+      .maybeSingle();
     
-    const monthlyStreakPoints = (claims || []).reduce((sum, c) => sum + (c.reward_points || 0), 0);
+    const monthlyStreakPoints = (streakData as any)?.total_streak_points ?? 0;
     setStreakPoints(monthlyStreakPoints);
 
     // Calculate total score from live data
