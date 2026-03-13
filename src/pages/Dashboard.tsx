@@ -129,7 +129,7 @@ export default function Dashboard() {
                     <span className="text-muted-foreground flex items-center gap-1.5">
                       <Flame className="w-3.5 h-3.5 text-accent" /> স্ট্রিক পয়েন্ট
                     </span>
-                    <span className="font-display font-bold text-accent">{streakPoints}</span>
+                    <span className="font-bold text-accent">{streakPoints}</span>
                   </div>
                   <div className="border-t border-border/30 pt-2 mt-2 flex items-center justify-between">
                     <span className="text-foreground font-semibold text-sm">মোট স্কোর</span>
