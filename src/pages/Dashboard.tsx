@@ -216,7 +216,7 @@ export default function Dashboard() {
                             {new Date(a.created_at).toLocaleDateString("bn-BD")} {new Date(a.created_at).toLocaleTimeString("bn-BD", { hour: "2-digit", minute: "2-digit" })}
                           </p>
                         </div>
-                        <span className="font-display font-bold text-primary text-sm">+{a.score}</span>
+                        <span className="font-bold text-primary text-sm">+{a.score}</span>
                       </div>
                     ))}
                     <div className="pt-2 flex items-center justify-between">
