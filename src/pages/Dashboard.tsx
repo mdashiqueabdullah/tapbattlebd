@@ -143,7 +143,7 @@ export default function Dashboard() {
                 <div className="glass-card p-4">
                   <Trophy className="w-5 h-5 text-accent mb-1.5" />
                   <p className="text-[11px] text-muted-foreground leading-tight">{t("currentRank")}</p>
-                  <p className="font-display text-xl font-bold text-accent mt-0.5">
+                  <p className="text-xl font-bold text-accent mt-0.5">
                     {currentRank ? `#${currentRank}` : "—"}
                   </p>
                 </div>
