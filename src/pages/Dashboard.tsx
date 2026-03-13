@@ -117,23 +117,23 @@ export default function Dashboard() {
                     <span className="text-muted-foreground flex items-center gap-1.5">
                       <Target className="w-3.5 h-3.5 text-primary" /> অ্যাটেম্পট স্কোর
                     </span>
-                    <span className="font-display font-bold text-primary">{attemptTotalScore}</span>
+                    <span className="font-bold text-primary">{attemptTotalScore}</span>
                   </div>
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-muted-foreground flex items-center gap-1.5">
                       <Gift className="w-3.5 h-3.5 text-neon-pink" /> রেফার পয়েন্ট
                     </span>
-                    <span className="font-display font-bold text-neon-pink">{referralPoints}</span>
+                    <span className="font-bold text-neon-pink">{referralPoints}</span>
                   </div>
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-muted-foreground flex items-center gap-1.5">
                       <Flame className="w-3.5 h-3.5 text-accent" /> স্ট্রিক পয়েন্ট
                     </span>
-                    <span className="font-display font-bold text-accent">{streakPoints}</span>
+                    <span className="font-bold text-accent">{streakPoints}</span>
                   </div>
                   <div className="border-t border-border/30 pt-2 mt-2 flex items-center justify-between">
                     <span className="text-foreground font-semibold text-sm">মোট স্কোর</span>
-                    <span className="font-display text-xl font-bold text-foreground">{totalScore}</span>
+                    <span className="text-xl font-bold text-foreground">{totalScore}</span>
                   </div>
                 </div>
               </div>
@@ -143,14 +143,14 @@ export default function Dashboard() {
                 <div className="glass-card p-4">
                   <Trophy className="w-5 h-5 text-accent mb-1.5" />
                   <p className="text-[11px] text-muted-foreground leading-tight">{t("currentRank")}</p>
-                  <p className="font-display text-xl font-bold text-accent mt-0.5">
+                  <p className="text-xl font-bold text-accent mt-0.5">
                     {currentRank ? `#${currentRank}` : "—"}
                   </p>
                 </div>
                 <div className="glass-card p-4">
                   <Clock className="w-5 h-5 text-secondary mb-1.5" />
                   <p className="text-[11px] text-muted-foreground leading-tight">{t("attemptsUsed")}</p>
-                  <p className="font-display text-xl font-bold text-secondary mt-0.5">{attemptsUsed}/{maxAttempts}</p>
+                  <p className="text-xl font-bold text-secondary mt-0.5">{attemptsUsed}/{maxAttempts}</p>
                 </div>
               </div>
 
@@ -196,7 +196,7 @@ export default function Dashboard() {
               >
                 <ShoppingCart className="w-5 h-5 text-accent" />
                 <span className="font-semibold text-foreground">অতিরিক্ত অ্যাটেম্পট কিনুন</span>
-                <span className="font-display font-bold text-accent">১০০৳ থেকে</span>
+                <span className="font-bold text-accent">১০০৳ থেকে</span>
               </button>
 
               {/* Attempt History - Real Data */}
@@ -216,12 +216,12 @@ export default function Dashboard() {
                             {new Date(a.created_at).toLocaleDateString("bn-BD")} {new Date(a.created_at).toLocaleTimeString("bn-BD", { hour: "2-digit", minute: "2-digit" })}
                           </p>
                         </div>
-                        <span className="font-display font-bold text-primary text-sm">+{a.score}</span>
+                        <span className="font-bold text-primary text-sm">+{a.score}</span>
                       </div>
                     ))}
                     <div className="pt-2 flex items-center justify-between">
                       <span className="text-sm font-semibold text-foreground">মোট অ্যাটেম্পট স্কোর</span>
-                      <span className="font-display font-bold text-primary">{attemptHistory.reduce((s, a) => s + a.score, 0)}</span>
+                      <span className="font-bold text-primary">{attemptHistory.reduce((s, a) => s + a.score, 0)}</span>
                     </div>
                   </div>
                 )}
