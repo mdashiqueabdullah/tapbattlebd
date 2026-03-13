@@ -117,7 +117,7 @@ export default function Dashboard() {
                     <span className="text-muted-foreground flex items-center gap-1.5">
                       <Target className="w-3.5 h-3.5 text-primary" /> অ্যাটেম্পট স্কোর
                     </span>
-                    <span className="font-display font-bold text-primary">{attemptTotalScore}</span>
+                    <span className="font-bold text-primary">{attemptTotalScore}</span>
                   </div>
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-muted-foreground flex items-center gap-1.5">
