@@ -196,7 +196,7 @@ export default function Dashboard() {
               >
                 <ShoppingCart className="w-5 h-5 text-accent" />
                 <span className="font-semibold text-foreground">অতিরিক্ত অ্যাটেম্পট কিনুন</span>
-                <span className="font-display font-bold text-accent">১০০৳ থেকে</span>
+                <span className="font-bold text-accent">১০০৳ থেকে</span>
               </button>
 
               {/* Attempt History - Real Data */}
