@@ -150,7 +150,7 @@ export default function Dashboard() {
                 <div className="glass-card p-4">
                   <Clock className="w-5 h-5 text-secondary mb-1.5" />
                   <p className="text-[11px] text-muted-foreground leading-tight">{t("attemptsUsed")}</p>
-                  <p className="font-display text-xl font-bold text-secondary mt-0.5">{attemptsUsed}/{maxAttempts}</p>
+                  <p className="text-xl font-bold text-secondary mt-0.5">{attemptsUsed}/{maxAttempts}</p>
                 </div>
               </div>
 
