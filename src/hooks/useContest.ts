@@ -109,27 +109,26 @@ export function useContest(): UserContestData & {
     if (lbEntry) {
       setAttemptsUsed((lbEntry as any).attempts_used ?? 0);
       setAttemptTotalScore((lbEntry as any).attempt_total_score ?? 0);
-      setStreakPoints((lbEntry as any).daily_streak_points ?? 0);
-      setTotalScore((lbEntry as any).total_score ?? 0);
     } else {
       setAttemptsUsed(0);
       setAttemptTotalScore(0);
-      setTotalScore(0);
-
-      // Fetch streak points from daily_claims even without leaderboard entry
-      const now = new Date();
-      const bdtNow = new Date(now.getTime() + (6 * 60 - now.getTimezoneOffset()) * 60000);
-      const claimMonth = bdtNow.getMonth() + 1;
-      const claimYear = bdtNow.getFullYear();
-      const { data: claims } = await supabase
-        .from("daily_claims")
-        .select("reward_points")
-        .eq("user_id", user.id);
-      
-      // Filter claims for current month
-      const monthlyPoints = (claims || []).reduce((sum, c) => sum + (c.reward_points || 0), 0);
-      setStreakPoints(monthlyPoints);
     }
+
+    // Always fetch streak points from daily_claims for current month
+    const now = new Date();
+    const bdtNow = new Date(now.getTime() + (6 * 60 - now.getTimezoneOffset()) * 60000);
+    const { data: claims } = await supabase
+      .from("daily_claims")
+      .select("reward_points")
+      .eq("user_id", user.id);
+    
+    const monthlyStreakPoints = (claims || []).reduce((sum, c) => sum + (c.reward_points || 0), 0);
+    setStreakPoints(monthlyStreakPoints);
+
+    // Calculate total score from live data
+    const liveAttemptScore = (lbEntry as any)?.attempt_total_score ?? 0;
+    const liveTotal = liveAttemptScore + referralPoints + monthlyStreakPoints;
+    setTotalScore(liveTotal);
 
     // Get rank
     if (lbEntry) {
