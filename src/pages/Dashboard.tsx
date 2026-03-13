@@ -123,7 +123,7 @@ export default function Dashboard() {
                     <span className="text-muted-foreground flex items-center gap-1.5">
                       <Gift className="w-3.5 h-3.5 text-neon-pink" /> রেফার পয়েন্ট
                     </span>
-                    <span className="font-display font-bold text-neon-pink">{referralPoints}</span>
+                    <span className="font-bold text-neon-pink">{referralPoints}</span>
                   </div>
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-muted-foreground flex items-center gap-1.5">
