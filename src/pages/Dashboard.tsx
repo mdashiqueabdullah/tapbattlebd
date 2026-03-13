@@ -221,7 +221,7 @@ export default function Dashboard() {
                     ))}
                     <div className="pt-2 flex items-center justify-between">
                       <span className="text-sm font-semibold text-foreground">মোট অ্যাটেম্পট স্কোর</span>
-                      <span className="font-display font-bold text-primary">{attemptHistory.reduce((s, a) => s + a.score, 0)}</span>
+                      <span className="font-bold text-primary">{attemptHistory.reduce((s, a) => s + a.score, 0)}</span>
                     </div>
                   </div>
                 )}
