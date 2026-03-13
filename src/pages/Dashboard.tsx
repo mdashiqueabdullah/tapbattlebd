@@ -133,7 +133,7 @@ export default function Dashboard() {
                   </div>
                   <div className="border-t border-border/30 pt-2 mt-2 flex items-center justify-between">
                     <span className="text-foreground font-semibold text-sm">মোট স্কোর</span>
-                    <span className="font-display text-xl font-bold text-foreground">{totalScore}</span>
+                    <span className="text-xl font-bold text-foreground">{totalScore}</span>
                   </div>
                 </div>
               </div>
