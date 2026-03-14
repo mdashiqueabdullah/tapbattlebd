@@ -14,7 +14,6 @@ import { toast } from "sonner";
 
 interface TapGameProps {
   isPractice: boolean;
-  attemptsRemaining?: number;
   onGameEnd: (score: number) => void;
   onCancel: () => void;
 }
