@@ -6,7 +6,7 @@ import Footer from "@/components/Footer";
 import TapGame from "@/components/TapGame";
 import ReferralSection from "@/components/ReferralSection";
 import PurchaseHistory from "@/components/PurchaseHistory";
-import { BannerAd, RectangleAd } from "@/components/ads/AdContainer";
+import { BannerAd, RectangleAd, ResponsiveAd } from "@/components/ads/AdContainer";
 import { useAuth } from "@/hooks/useAuth";
 import { useContest } from "@/hooks/useContest";
 import { supabase } from "@/integrations/supabase/client";
