@@ -197,6 +197,8 @@ export default function Dashboard() {
                 )}
               </div>
 
+              <BannerAd className="mb-5" />
+
               <div className="mb-6">
                 <PurchaseHistory />
               </div>

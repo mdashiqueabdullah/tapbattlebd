@@ -211,6 +211,7 @@ export default function Winners() {
             </>
           )}
 
+          <ResponsiveAd className="mt-4" />
           <RectangleAd className="mt-4" />
         </div>
       </div>

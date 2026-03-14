@@ -179,6 +179,8 @@ export default function Leaderboard() {
                 </div>
               )}
 
+              <ResponsiveAd className="mb-4" />
+
               {/* List */}
               <div className="glass-card divide-y divide-border/20 overflow-hidden rounded-xl">
                 <div className="flex items-center px-3 py-2 text-[10px] text-muted-foreground font-medium bg-muted/30">
