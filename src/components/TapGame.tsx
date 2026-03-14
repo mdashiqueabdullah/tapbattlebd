@@ -592,9 +592,9 @@ export default function TapGame({ isPractice, onGameEnd, onCancel }: TapGameProp
               <span className="text-secondary font-semibold text-sm">{t("practiceMode")}</span>
             </div>
           )}
-          {!isPractice && attemptsRemaining !== undefined && (
+          {!isPractice && (
             <p className="text-muted-foreground mb-4">
-              {t("remainingAttempts")}: <span className="text-primary font-bold">{attemptsRemaining}</span>/10
+              <span className="text-primary font-bold">আনলিমিটেড</span> র‍্যাঙ্কড গেম
             </p>
           )}
           <h2 className="font-display text-3xl font-bold text-primary neon-text mb-4">TAP BATTLE</h2>
