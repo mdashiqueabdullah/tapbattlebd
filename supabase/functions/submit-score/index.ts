@@ -126,51 +126,42 @@ Deno.serve(async (req) => {
     // Log rate limit
     await adminClient.from("rate_limits").insert({ identifier: userId, action: "score_submit", window_start: new Date().toISOString() });
 
-    // === Create attempt record and update leaderboard for ranked games ===
+    // === Create attempt record and update leaderboard for ranked games (NO ATTEMPT LIMIT) ===
     let attemptNumber = 0;
     if (!session.is_practice) {
-      // Get or create current contest
       const { data: contestId } = await adminClient.rpc("get_or_create_current_contest");
       
       if (contestId) {
-        // Count existing attempts
+        // Count existing attempts (no limit check)
         const { data: countData } = await adminClient.rpc("get_user_attempt_count", { _user_id: userId, _contest_id: contestId });
         const currentCount = countData ?? 0;
+        attemptNumber = currentCount + 1;
         
-        // Get user's extra/bonus attempts
-        const { data: profileData } = await adminClient.from("profiles").select("extra_attempts, bonus_attempts, total_ranked_games, lifetime_best_score").eq("id", userId).single();
-        const extraAttempts = (profileData?.extra_attempts ?? 0) + (profileData?.bonus_attempts ?? 0);
-        const maxAttempts = 10 + extraAttempts;
+        // Insert attempt (unlimited)
+        await adminClient.from("attempts").insert({
+          user_id: userId,
+          contest_id: contestId,
+          attempt_number: attemptNumber,
+          score: verifiedScore,
+          session_id: session.id,
+          session_started_at: session.started_at,
+          session_ended_at: new Date().toISOString(),
+        });
 
-        if (currentCount < maxAttempts) {
-          attemptNumber = currentCount + 1;
-          
-          // Insert attempt
-          await adminClient.from("attempts").insert({
-            user_id: userId,
-            contest_id: contestId,
-            attempt_number: attemptNumber,
-            score: verifiedScore,
-            session_id: session.id,
-            session_started_at: session.started_at,
-            session_ended_at: new Date().toISOString(),
-          });
+        // Update leaderboard
+        await adminClient.rpc("update_leaderboard_scores", { _user_id: userId, _contest_id: contestId });
 
-          // Update leaderboard
-          await adminClient.rpc("update_leaderboard_scores", { _user_id: userId, _contest_id: contestId });
-
-          // Update profile stats
-          const newTotalRanked = (profileData?.total_ranked_games ?? 0) + 1;
-          const newLifetimeBest = Math.max(profileData?.lifetime_best_score ?? 0, verifiedScore);
-          await adminClient.from("profiles").update({
-            total_ranked_games: newTotalRanked,
-            lifetime_best_score: newLifetimeBest,
-            updated_at: new Date().toISOString(),
-          }).eq("id", userId);
-        }
+        // Update profile stats
+        const { data: profileData } = await adminClient.from("profiles").select("total_ranked_games, lifetime_best_score").eq("id", userId).single();
+        const newTotalRanked = (profileData?.total_ranked_games ?? 0) + 1;
+        const newLifetimeBest = Math.max(profileData?.lifetime_best_score ?? 0, verifiedScore);
+        await adminClient.from("profiles").update({
+          total_ranked_games: newTotalRanked,
+          lifetime_best_score: newLifetimeBest,
+          updated_at: new Date().toISOString(),
+        }).eq("id", userId);
       }
     } else {
-      // Update practice game count
       const { count: practiceCount } = await adminClient.from("game_sessions").select("*", { count: "exact", head: true }).eq("user_id", userId).eq("is_practice", true).eq("status", "completed");
       await adminClient.from("profiles").update({ total_practice_games: practiceCount ?? 0, updated_at: new Date().toISOString() }).eq("id", userId);
     }

@@ -27,7 +27,6 @@ interface LeaderboardEntry {
 interface UserContestData {
   contest: Contest | null;
   attemptsUsed: number;
-  maxAttempts: number;
   attemptTotalScore: number;
   referralPoints: number;
   streakPoints: number;
@@ -51,13 +50,9 @@ export function useContest(): UserContestData & {
   const [loading, setLoading] = useState(true);
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
 
-  const extraAttempts = (profile as any)?.extra_attempts ?? 0;
-  const bonusAttempts = (profile as any)?.bonus_attempts ?? 0;
-  const maxAttempts = 10 + extraAttempts + bonusAttempts;
   const referralPoints = profile?.referral_points ?? 0;
 
   const fetchContest = useCallback(async () => {
-    // Get current contest
     const now = new Date();
     const bdtNow = new Date(now.getTime() + (6 * 60 - now.getTimezoneOffset()) * 60000);
     const month = bdtNow.getMonth() + 1;
@@ -75,7 +70,6 @@ export function useContest(): UserContestData & {
       return contestData.id;
     }
 
-    // If no contest exists, call the RPC to create one
     const { data: contestId } = await supabase.rpc("get_or_create_current_contest");
     if (contestId) {
       const { data: newContest } = await supabase
@@ -98,7 +92,6 @@ export function useContest(): UserContestData & {
     const contestId = await fetchContest();
     if (!contestId) { setLoading(false); return; }
 
-    // Get user's leaderboard entry
     const { data: lbEntry } = await supabase
       .from("leaderboard")
       .select("*")
@@ -114,7 +107,7 @@ export function useContest(): UserContestData & {
       setAttemptTotalScore(0);
     }
 
-    // Always fetch streak points from daily_streaks table
+    // Fetch streak points from daily_streaks table
     const { data: streakData } = await supabase
       .from("daily_streaks")
       .select("total_streak_points")
@@ -124,12 +117,10 @@ export function useContest(): UserContestData & {
     const monthlyStreakPoints = (streakData as any)?.total_streak_points ?? 0;
     setStreakPoints(monthlyStreakPoints);
 
-    // Calculate total score from live data
     const liveAttemptScore = (lbEntry as any)?.attempt_total_score ?? 0;
     const liveTotal = liveAttemptScore + referralPoints + monthlyStreakPoints;
     setTotalScore(liveTotal);
 
-    // Get rank
     if (lbEntry) {
       const { count } = await supabase
         .from("leaderboard")
@@ -142,7 +133,7 @@ export function useContest(): UserContestData & {
     }
 
     setLoading(false);
-  }, [user, fetchContest]);
+  }, [user, fetchContest, referralPoints]);
 
   const loadLeaderboard = useCallback(async () => {
     if (!contest) {
@@ -159,7 +150,6 @@ export function useContest(): UserContestData & {
       .limit(100);
 
     if (data && data.length > 0) {
-      // Fetch usernames
       const userIds = data.map((e: any) => e.user_id);
       const { data: profiles } = await supabase
         .from("profiles")
@@ -180,7 +170,6 @@ export function useContest(): UserContestData & {
   useEffect(() => {
     if (user) refreshContest();
     else {
-      // Still load contest for non-logged-in users
       fetchContest().then(() => setLoading(false));
     }
   }, [user, refreshContest, fetchContest]);
@@ -188,7 +177,6 @@ export function useContest(): UserContestData & {
   return {
     contest,
     attemptsUsed,
-    maxAttempts,
     attemptTotalScore,
     referralPoints,
     streakPoints,
