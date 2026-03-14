@@ -317,6 +317,7 @@ export default function Index() {
       </section>
 
       <div className="container max-w-lg px-4"><RectangleAd /></div>
+      <div className="container max-w-lg px-4 mt-2"><ResponsiveAd /></div>
 
       {/* Live Leaderboard Preview */}
       <section className="py-12 md:py-16 px-4">
