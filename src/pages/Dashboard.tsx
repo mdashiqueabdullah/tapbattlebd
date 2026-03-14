@@ -3,18 +3,15 @@ import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import CountdownTimer from "@/components/CountdownTimer";
 import TapGame from "@/components/TapGame";
 import ReferralSection from "@/components/ReferralSection";
-import BuyAttemptsDialog from "@/components/BuyAttemptsDialog";
 import PurchaseHistory from "@/components/PurchaseHistory";
 import { BannerAd, RectangleAd } from "@/components/ads/AdContainer";
 import { useAuth } from "@/hooks/useAuth";
 import { useContest } from "@/hooks/useContest";
 import { supabase } from "@/integrations/supabase/client";
 import { t } from "@/lib/i18n";
-import { MAX_RANKED_ATTEMPTS } from "@/lib/prizes";
-import { Gamepad2, Trophy, Award, Clock, Target, BarChart3, User, CreditCard, Users, Gift, ShoppingCart, Flame, ListOrdered, LogOut } from "lucide-react";
+import { Gamepad2, Trophy, Award, Target, BarChart3, User, CreditCard, Users, Gift, Flame, ListOrdered, LogOut } from "lucide-react";
 import DailyStreak from "@/components/DailyStreak";
 
 interface AttemptRecord {
@@ -27,13 +24,10 @@ interface AttemptRecord {
 export default function Dashboard() {
   const [gameMode, setGameMode] = useState<"none" | "ranked" | "practice">("none");
   const [activeTab, setActiveTab] = useState<"main" | "referral">("main");
-  const [showBuyDialog, setShowBuyDialog] = useState(false);
   const [attemptHistory, setAttemptHistory] = useState<AttemptRecord[]>([]);
   const { profile, refreshProfile, signOut, user } = useAuth();
-  const { attemptsUsed, maxAttempts, attemptTotalScore, referralPoints, streakPoints, totalScore, currentRank, refreshContest, contest } = useContest();
+  const { attemptsUsed, attemptTotalScore, referralPoints, streakPoints, totalScore, currentRank, refreshContest, contest } = useContest();
   const navigate = useNavigate();
-
-  const extraAttempts = ((profile as any)?.extra_attempts ?? 0) + ((profile as any)?.bonus_attempts ?? 0);
 
   // Fetch attempt history
   useEffect(() => {
@@ -53,12 +47,10 @@ export default function Dashboard() {
     return (
       <TapGame
         isPractice={gameMode === "practice"}
-        attemptsRemaining={maxAttempts - attemptsUsed}
         onGameEnd={async (score) => {
           setGameMode("none");
           await refreshContest();
           await refreshProfile();
-          // Refetch attempt history
           if (user && contest) {
             const { data } = await supabase
               .from("attempts")
@@ -83,7 +75,7 @@ export default function Dashboard() {
 
           <div className="mb-6 mt-2">
             <h1 className="text-xl font-bold text-foreground leading-tight">স্বাগতম, <span className="text-primary">{profile?.username || "Player"}</span>!</h1>
-            <p className="text-sm text-muted-foreground mt-2">{t("contestEnds")}: <CountdownTimer compact /></p>
+            <p className="text-sm text-muted-foreground mt-2">🎮 যত খুশি খেলুন — কোনো সীমা নেই!</p>
           </div>
 
           <div className="flex gap-1 mb-4 p-1 glass-card rounded-lg">
@@ -148,20 +140,11 @@ export default function Dashboard() {
                   </p>
                 </div>
                 <div className="glass-card p-4">
-                  <Clock className="w-5 h-5 text-secondary mb-1.5" />
-                  <p className="text-[11px] text-muted-foreground leading-tight">{t("attemptsUsed")}</p>
-                  <p className="text-xl font-bold text-secondary mt-0.5">{attemptsUsed}/{maxAttempts}</p>
+                  <Gamepad2 className="w-5 h-5 text-secondary mb-1.5" />
+                  <p className="text-[11px] text-muted-foreground leading-tight">মোট গেম খেলা</p>
+                  <p className="text-xl font-bold text-secondary mt-0.5">{attemptsUsed}</p>
                 </div>
               </div>
-
-              {extraAttempts > 0 && (
-                <div className="glass-card p-3 mb-4 rounded-lg flex items-center gap-2">
-                  <ShoppingCart className="w-4 h-4 text-accent" />
-                  <span className="text-sm text-muted-foreground">
-                    অতিরিক্ত অ্যাটেম্পট: <span className="font-bold text-accent">{extraAttempts}</span>
-                  </span>
-                </div>
-              )}
 
               <div className="mb-5">
                 <DailyStreak onClaim={async () => { await refreshContest(); }} />
@@ -169,17 +152,11 @@ export default function Dashboard() {
 
               <div className="space-y-3 mb-5">
                 <button
-                  onClick={() => {
-                    if (attemptsUsed >= maxAttempts) {
-                      setShowBuyDialog(true);
-                      return;
-                    }
-                    setGameMode("ranked");
-                  }}
+                  onClick={() => setGameMode("ranked")}
                   className="w-full py-4 rounded-xl gradient-primary text-primary-foreground font-bold text-lg neon-border flex items-center justify-center gap-2"
                 >
                   <Gamepad2 className="w-5 h-5" />
-                  {attemptsUsed >= maxAttempts ? "অ্যাটেম্পট কিনুন" : t("rankedGame")}
+                  {t("rankedGame")}
                 </button>
                 <button
                   onClick={() => setGameMode("practice")}
@@ -189,15 +166,6 @@ export default function Dashboard() {
                   {t("practiceMode")}
                 </button>
               </div>
-
-              <button
-                onClick={() => setShowBuyDialog(true)}
-                className="w-full py-3 rounded-xl glass-card border border-accent/30 hover:border-accent/60 transition-colors flex items-center justify-center gap-2 mb-6"
-              >
-                <ShoppingCart className="w-5 h-5 text-accent" />
-                <span className="font-semibold text-foreground">অতিরিক্ত অ্যাটেম্পট কিনুন</span>
-                <span className="font-bold text-accent">১০০৳ থেকে</span>
-              </button>
 
               {/* Attempt History - Real Data */}
               <div className="glass-card p-4 mb-5">
@@ -261,12 +229,6 @@ export default function Dashboard() {
         </button>
       </div>
       <Footer />
-      <BuyAttemptsDialog
-        open={showBuyDialog}
-        onClose={() => setShowBuyDialog(false)}
-        onSuccess={() => { refreshProfile(); refreshContest(); }}
-        isPaywall={attemptsUsed >= maxAttempts}
-      />
     </div>
   );
 }

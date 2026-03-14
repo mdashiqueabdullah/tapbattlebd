@@ -9,12 +9,11 @@ import {
 import Navbar from "@/components/Navbar";
 import { BannerAd, RectangleAd } from "@/components/ads/AdContainer";
 import Footer from "@/components/Footer";
-import CountdownTimer from "@/components/CountdownTimer";
 import PrizeTable from "@/components/PrizeTable";
 import { t } from "@/lib/i18n";
 import { supabase } from "@/integrations/supabase/client";
 import {
-  MAX_RANKED_ATTEMPTS, INACTIVITY_TIMEOUT_SECONDS,
+  INACTIVITY_TIMEOUT_SECONDS,
   GOLDEN_TARGET_POINTS, RED_TARGET_POINTS, MEGA_TARGET_POINTS, NORMAL_TARGET_POINTS,
   COMBO_THRESHOLD_2X, COMBO_THRESHOLD_3X
 } from "@/lib/prizes";
@@ -117,8 +116,10 @@ export default function Index() {
             </div>
 
             <div className="my-6">
-              <p className="text-sm text-muted-foreground mb-3">{t("contestEnds")}</p>
-              <CountdownTimer />
+              <div className="glass-card px-4 py-3 rounded-xl inline-flex items-center gap-2 neon-border">
+                <Zap className="w-4 h-4 text-accent" />
+                <span className="text-sm font-bold text-accent">কোনো সীমা নেই — যত খুশি খেলুন!</span>
+              </div>
             </div>
             <div className="flex flex-col sm:flex-row gap-3 justify-center max-w-md mx-auto">
               <Link to="/dashboard" className="flex-1 py-3.5 rounded-xl gradient-primary text-primary-foreground font-bold text-lg text-center neon-border">
@@ -146,7 +147,7 @@ export default function Index() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5 max-w-5xl mx-auto">
             {[
               { icon: Users, title: "ফ্রি রেজিস্ট্রেশন করুন", step: "ধাপ ১", color: "text-primary", glow: "shadow-[0_0_20px_hsl(var(--primary)/0.15)]", borderGlow: "hover:border-primary/40", note: "ইমেইল দিয়ে অ্যাকাউন্ট তৈরি করুন, ভেরিফাই করুন এবং গেমে প্রবেশ করুন।" },
-              { icon: Gamepad2, title: "যত খুশি ট্যাপ করুন", step: "ধাপ ২", color: "text-secondary", glow: "shadow-[0_0_20px_hsl(var(--neon-purple)/0.15)]", borderGlow: "hover:border-secondary/40", note: `${INACTIVITY_TIMEOUT_SECONDS} সেকেন্ড নিষ্ক্রিয় থাকলে সেশন শেষ হয়। মাসে ${MAX_RANKED_ATTEMPTS}টি র‍্যাঙ্কড সুযোগ।` },
+              { icon: Gamepad2, title: "যত খুশি ট্যাপ করুন", step: "ধাপ ২", color: "text-secondary", glow: "shadow-[0_0_20px_hsl(var(--neon-purple)/0.15)]", borderGlow: "hover:border-secondary/40", note: `${INACTIVITY_TIMEOUT_SECONDS} সেকেন্ড নিষ্ক্রিয় থাকলে সেশন শেষ হয়। কোনো অ্যাটেম্পট সীমা নেই!` },
               { icon: Star, title: "লিডারবোর্ডে উঠুন", step: "ধাপ ৩", color: "text-accent", glow: "shadow-[0_0_20px_hsl(var(--neon-gold)/0.15)]", borderGlow: "hover:border-accent/40", note: "মোট স্কোর = গেম স্কোর + রেফার পয়েন্ট + স্ট্রিক পয়েন্ট। বেশি স্কোর = বেশি পুরস্কার!" },
               { icon: Gift, title: "পুরস্কার জিতুন!", step: "ধাপ ৪", color: "text-neon-pink", glow: "shadow-[0_0_20px_hsl(var(--neon-pink)/0.15)]", borderGlow: "hover:border-neon-pink/40", note: "মাসের শেষে টপ ১০০ জন bKash/Nagad এ সরাসরি পুরস্কার পায়।" },
             ].map((step, i) => (
@@ -253,7 +254,7 @@ export default function Index() {
               </div>
               <div className="flex items-start gap-2 text-muted-foreground">
                 <Gamepad2 className="w-4 h-4 text-secondary mt-0.5 flex-shrink-0" />
-                <span>প্রতি মাসে {MAX_RANKED_ATTEMPTS}টি র‍্যাঙ্কড গেম + আনলিমিটেড প্র্যাকটিস</span>
+                <span>আনলিমিটেড র‍্যাঙ্কড গেম — যত খুশি খেলুন!</span>
               </div>
             </div>
           </motion.div>
@@ -280,7 +281,7 @@ export default function Index() {
                 <div className="p-3 rounded-lg bg-muted/50 border border-border/30">
                   <Gamepad2 className="w-5 h-5 text-primary mx-auto mb-1" />
                   <p className="text-xs text-muted-foreground">গেম স্কোর</p>
-                  <p className="font-bold text-foreground text-sm">{MAX_RANKED_ATTEMPTS}টি গেমের যোগফল</p>
+                  <p className="font-bold text-foreground text-sm">সব গেমের যোগফল</p>
                 </div>
                 <div className="p-3 rounded-lg bg-muted/50 border border-border/30">
                   <Users className="w-5 h-5 text-secondary mx-auto mb-1" />
