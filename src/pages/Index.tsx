@@ -117,8 +117,10 @@ export default function Index() {
             </div>
 
             <div className="my-6">
-              <p className="text-sm text-muted-foreground mb-3">{t("contestEnds")}</p>
-              <CountdownTimer />
+              <div className="glass-card px-4 py-3 rounded-xl inline-flex items-center gap-2 neon-border">
+                <Zap className="w-4 h-4 text-accent" />
+                <span className="text-sm font-bold text-accent">কোনো সীমা নেই — যত খুশি খেলুন!</span>
+              </div>
             </div>
             <div className="flex flex-col sm:flex-row gap-3 justify-center max-w-md mx-auto">
               <Link to="/dashboard" className="flex-1 py-3.5 rounded-xl gradient-primary text-primary-foreground font-bold text-lg text-center neon-border">
