@@ -7,7 +7,7 @@ import {
   CheckCircle, Flame, Crown, Sparkles, Timer, MousePointerClick
 } from "lucide-react";
 import Navbar from "@/components/Navbar";
-import { BannerAd, RectangleAd } from "@/components/ads/AdContainer";
+import { BannerAd, RectangleAd, ResponsiveAd } from "@/components/ads/AdContainer";
 import Footer from "@/components/Footer";
 import PrizeTable from "@/components/PrizeTable";
 import { t } from "@/lib/i18n";
