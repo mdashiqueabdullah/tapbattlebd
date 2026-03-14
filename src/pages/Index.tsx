@@ -281,7 +281,7 @@ export default function Index() {
                 <div className="p-3 rounded-lg bg-muted/50 border border-border/30">
                   <Gamepad2 className="w-5 h-5 text-primary mx-auto mb-1" />
                   <p className="text-xs text-muted-foreground">গেম স্কোর</p>
-                  <p className="font-bold text-foreground text-sm">{MAX_RANKED_ATTEMPTS}টি গেমের যোগফল</p>
+                  <p className="font-bold text-foreground text-sm">সব গেমের যোগফল</p>
                 </div>
                 <div className="p-3 rounded-lg bg-muted/50 border border-border/30">
                   <Users className="w-5 h-5 text-secondary mx-auto mb-1" />
