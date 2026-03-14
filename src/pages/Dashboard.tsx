@@ -150,6 +150,8 @@ export default function Dashboard() {
                 <DailyStreak onClaim={async () => { await refreshContest(); }} />
               </div>
 
+              <ResponsiveAd className="mb-5" />
+
               <div className="space-y-3 mb-5">
                 <button
                   onClick={() => setGameMode("ranked")}
