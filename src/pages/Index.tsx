@@ -9,12 +9,11 @@ import {
 import Navbar from "@/components/Navbar";
 import { BannerAd, RectangleAd } from "@/components/ads/AdContainer";
 import Footer from "@/components/Footer";
-import CountdownTimer from "@/components/CountdownTimer";
 import PrizeTable from "@/components/PrizeTable";
 import { t } from "@/lib/i18n";
 import { supabase } from "@/integrations/supabase/client";
 import {
-  MAX_RANKED_ATTEMPTS, INACTIVITY_TIMEOUT_SECONDS,
+  INACTIVITY_TIMEOUT_SECONDS,
   GOLDEN_TARGET_POINTS, RED_TARGET_POINTS, MEGA_TARGET_POINTS, NORMAL_TARGET_POINTS,
   COMBO_THRESHOLD_2X, COMBO_THRESHOLD_3X
 } from "@/lib/prizes";
