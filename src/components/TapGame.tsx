@@ -160,7 +160,7 @@ function randomPosition() {
   };
 }
 
-export default function TapGame({ isPractice, attemptsRemaining, onGameEnd, onCancel }: TapGameProps) {
+export default function TapGame({ isPractice, onGameEnd, onCancel }: TapGameProps) {
   const [phase, setPhase] = useState<"ready" | "starting" | "playing" | "submitting" | "done">("ready");
   const [score, setScore] = useState(0);
   const [ballType, setBallType] = useState<BallType>("normal");

@@ -255,7 +255,7 @@ export default function Index() {
               </div>
               <div className="flex items-start gap-2 text-muted-foreground">
                 <Gamepad2 className="w-4 h-4 text-secondary mt-0.5 flex-shrink-0" />
-                <span>প্রতি মাসে {MAX_RANKED_ATTEMPTS}টি র‍্যাঙ্কড গেম + আনলিমিটেড প্র্যাকটিস</span>
+                <span>আনলিমিটেড র‍্যাঙ্কড গেম — যত খুশি খেলুন!</span>
               </div>
             </div>
           </motion.div>
