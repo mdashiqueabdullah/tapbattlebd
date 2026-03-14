@@ -6,7 +6,7 @@ import { t } from "@/lib/i18n";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { Trophy, ChevronLeft, ChevronRight } from "lucide-react";
-import { BannerAd, RectangleAd } from "@/components/ads/AdContainer";
+import { BannerAd, RectangleAd, ResponsiveAd } from "@/components/ads/AdContainer";
 import { PRIZE_DISTRIBUTION } from "@/lib/prizes";
 
 interface LeaderboardEntry {
@@ -178,6 +178,8 @@ export default function Leaderboard() {
                   })}
                 </div>
               )}
+
+              <ResponsiveAd className="mb-4" />
 
               {/* List */}
               <div className="glass-card divide-y divide-border/20 overflow-hidden rounded-xl">

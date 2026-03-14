@@ -6,7 +6,7 @@ import Footer from "@/components/Footer";
 import TapGame from "@/components/TapGame";
 import ReferralSection from "@/components/ReferralSection";
 import PurchaseHistory from "@/components/PurchaseHistory";
-import { BannerAd, RectangleAd } from "@/components/ads/AdContainer";
+import { BannerAd, RectangleAd, ResponsiveAd } from "@/components/ads/AdContainer";
 import { useAuth } from "@/hooks/useAuth";
 import { useContest } from "@/hooks/useContest";
 import { supabase } from "@/integrations/supabase/client";
@@ -150,6 +150,8 @@ export default function Dashboard() {
                 <DailyStreak onClaim={async () => { await refreshContest(); }} />
               </div>
 
+              <ResponsiveAd className="mb-5" />
+
               <div className="space-y-3 mb-5">
                 <button
                   onClick={() => setGameMode("ranked")}
@@ -194,6 +196,8 @@ export default function Dashboard() {
                   </div>
                 )}
               </div>
+
+              <BannerAd className="mb-5" />
 
               <div className="mb-6">
                 <PurchaseHistory />

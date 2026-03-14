@@ -7,7 +7,7 @@ import {
   CheckCircle, Flame, Crown, Sparkles, Timer, MousePointerClick
 } from "lucide-react";
 import Navbar from "@/components/Navbar";
-import { BannerAd, RectangleAd } from "@/components/ads/AdContainer";
+import { BannerAd, RectangleAd, ResponsiveAd } from "@/components/ads/AdContainer";
 import Footer from "@/components/Footer";
 import PrizeTable from "@/components/PrizeTable";
 import { t } from "@/lib/i18n";
@@ -317,6 +317,7 @@ export default function Index() {
       </section>
 
       <div className="container max-w-lg px-4"><RectangleAd /></div>
+      <div className="container max-w-lg px-4 mt-2"><ResponsiveAd /></div>
 
       {/* Live Leaderboard Preview */}
       <section className="py-12 md:py-16 px-4">
@@ -502,7 +503,8 @@ export default function Index() {
         </div>
       </section>
 
-      <div className="container max-w-lg px-4"><BannerAd /></div>
+      <div className="container max-w-lg px-4"><RectangleAd /></div>
+      <div className="container max-w-lg px-4 mt-2"><BannerAd /></div>
       <Footer />
     </div>
   );
