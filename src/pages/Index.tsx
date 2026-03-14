@@ -503,7 +503,8 @@ export default function Index() {
         </div>
       </section>
 
-      <div className="container max-w-lg px-4"><BannerAd /></div>
+      <div className="container max-w-lg px-4"><RectangleAd /></div>
+      <div className="container max-w-lg px-4 mt-2"><BannerAd /></div>
       <Footer />
     </div>
   );
