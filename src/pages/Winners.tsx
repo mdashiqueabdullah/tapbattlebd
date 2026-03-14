@@ -3,7 +3,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { supabase } from "@/integrations/supabase/client";
 import { Trophy, Award, ChevronLeft, ChevronRight } from "lucide-react";
-import { BannerAd, RectangleAd } from "@/components/ads/AdContainer";
+import { BannerAd, RectangleAd, ResponsiveAd } from "@/components/ads/AdContainer";
 import { Button } from "@/components/ui/button";
 
 const BANGLA_MONTHS = [
