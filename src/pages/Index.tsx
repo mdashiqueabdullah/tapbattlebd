@@ -148,7 +148,7 @@ export default function Index() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5 max-w-5xl mx-auto">
             {[
               { icon: Users, title: "ফ্রি রেজিস্ট্রেশন করুন", step: "ধাপ ১", color: "text-primary", glow: "shadow-[0_0_20px_hsl(var(--primary)/0.15)]", borderGlow: "hover:border-primary/40", note: "ইমেইল দিয়ে অ্যাকাউন্ট তৈরি করুন, ভেরিফাই করুন এবং গেমে প্রবেশ করুন।" },
-              { icon: Gamepad2, title: "যত খুশি ট্যাপ করুন", step: "ধাপ ২", color: "text-secondary", glow: "shadow-[0_0_20px_hsl(var(--neon-purple)/0.15)]", borderGlow: "hover:border-secondary/40", note: `${INACTIVITY_TIMEOUT_SECONDS} সেকেন্ড নিষ্ক্রিয় থাকলে সেশন শেষ হয়। মাসে ${MAX_RANKED_ATTEMPTS}টি র‍্যাঙ্কড সুযোগ।` },
+              { icon: Gamepad2, title: "যত খুশি ট্যাপ করুন", step: "ধাপ ২", color: "text-secondary", glow: "shadow-[0_0_20px_hsl(var(--neon-purple)/0.15)]", borderGlow: "hover:border-secondary/40", note: `${INACTIVITY_TIMEOUT_SECONDS} সেকেন্ড নিষ্ক্রিয় থাকলে সেশন শেষ হয়। কোনো অ্যাটেম্পট সীমা নেই!` },
               { icon: Star, title: "লিডারবোর্ডে উঠুন", step: "ধাপ ৩", color: "text-accent", glow: "shadow-[0_0_20px_hsl(var(--neon-gold)/0.15)]", borderGlow: "hover:border-accent/40", note: "মোট স্কোর = গেম স্কোর + রেফার পয়েন্ট + স্ট্রিক পয়েন্ট। বেশি স্কোর = বেশি পুরস্কার!" },
               { icon: Gift, title: "পুরস্কার জিতুন!", step: "ধাপ ৪", color: "text-neon-pink", glow: "shadow-[0_0_20px_hsl(var(--neon-pink)/0.15)]", borderGlow: "hover:border-neon-pink/40", note: "মাসের শেষে টপ ১০০ জন bKash/Nagad এ সরাসরি পুরস্কার পায়।" },
             ].map((step, i) => (
