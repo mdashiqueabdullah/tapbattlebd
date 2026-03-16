@@ -20,7 +20,7 @@ interface TapGameProps {
   onCancel: () => void;
   existingTotalScore?: number;
   currentRank?: number | null;
-  nextRankScore?: number | null;
+  aboveScores?: number[];
 }
 
 type BallType = "normal" | "golden" | "red" | "mega";
