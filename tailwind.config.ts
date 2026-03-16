@@ -18,8 +18,8 @@ export default {
     },
     extend: {
       fontFamily: {
-        bangla: ["Hind Siliguri", "sans-serif"],
-        display: ["Orbitron", "sans-serif"],
+        bangla: ["Inter", "sans-serif"],
+        display: ["Inter", "sans-serif"],
       },
       colors: {
         border: "hsl(var(--border))",

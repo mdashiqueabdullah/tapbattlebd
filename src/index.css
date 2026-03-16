@@ -74,10 +74,11 @@
 
 @layer utilities {
   .font-display {
-    font-family: 'Orbitron', sans-serif;
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
   }
   .font-bangla {
-    font-family: 'Hind Siliguri', sans-serif;
+    font-family: 'Inter', sans-serif;
   }
   .neon-text {
     text-shadow: 0 0 10px hsl(var(--neon-glow) / 0.8),
