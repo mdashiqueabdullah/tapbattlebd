@@ -195,7 +195,19 @@ export default function TapGame({ isPractice, onGameEnd, onCancel, existingTotal
   const [verifiedScore, setVerifiedScore] = useState<number | null>(null);
   const [wasFlagged, setWasFlagged] = useState(false);
 
-  // Lion bonus state
+  // Rank-up detection
+  useEffect(() => {
+    if (isPractice || aboveScores.length === 0) return;
+    const liveTotal = existingTotalScore + score;
+    const passed = aboveScores.filter(s => s <= liveTotal).length;
+    if (passed > prevRanksPassedRef.current) {
+      prevRanksPassedRef.current = passed;
+      setRanksPassedCount(passed);
+      setRankUpVisible(true);
+      setTimeout(() => setRankUpVisible(false), 2000);
+    }
+  }, [score, aboveScores, existingTotalScore, isPractice]);
+
   const [lion, setLion] = useState<LionBonus | null>(null);
   // Lucky chest state
   const [chest, setChest] = useState<LuckyChest | null>(null);
