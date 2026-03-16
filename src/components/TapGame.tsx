@@ -774,28 +774,24 @@ export default function TapGame({ isPractice, onGameEnd, onCancel, existingTotal
 
         {/* Live Rank + Points to next rank */}
         {!isPractice && (
-          <div className="flex items-center justify-center gap-4 mt-2">
-            <div className="flex items-center gap-1.5 px-3 py-1 rounded-full"
-              style={{ background: "hsl(var(--card) / 0.6)" }}>
-              <span className="text-xs text-accent font-bold">🏆 র‍্যাঙ্ক #{currentRank || "—"}</span>
+          <>
+            <div className="flex items-center justify-center gap-4 mt-2">
+              <div className="flex items-center gap-1.5 px-3 py-1 rounded-full"
+                style={{ background: "hsl(var(--card) / 0.6)" }}>
+                <span className="text-xs text-accent font-bold">🏆 র‍্যাঙ্ক #{currentRank || "—"}</span>
+              </div>
+              <div className="flex items-center gap-1.5 px-3 py-1 rounded-full"
+                style={{ background: "hsl(var(--card) / 0.6)" }}>
+                <span className="text-xs text-muted-foreground">
+                  পরবর্তী র‍্যাঙ্কে: <span className="text-primary font-semibold">{nextRankScore !== null && nextRankScore > 0 ? Math.max(0, nextRankScore - (existingTotalScore + score)) : 0}</span> পয়েন্ট
+                </span>
+              </div>
             </div>
-            <div className="flex items-center gap-1.5 px-3 py-1 rounded-full"
-              style={{ background: "hsl(var(--card) / 0.6)" }}>
-              <span className="text-xs text-muted-foreground">
-                পরবর্তী র‍্যাঙ্কে: <span className="text-primary font-semibold">{nextRankScore !== null && nextRankScore > 0 ? Math.max(0, nextRankScore - (existingTotalScore + score)) : 0}</span> পয়েন্ট
-              </span>
-            </div>
-          </div>
-          {/* Progress bar toward next rank */}
-          {nextRankScore !== null && nextRankScore > 0 && (
-            <div className="w-full max-w-xs mx-auto mt-2 px-4">
-              {(() => {
-                const currentTotal = existingTotalScore + score;
-                const pointsNeeded = Math.max(0, nextRankScore - currentTotal);
-                const gap = nextRankScore - existingTotalScore;
-                const progress = gap > 0 ? Math.min(100, Math.max(0, ((currentTotal - existingTotalScore + (gap - (nextRankScore - existingTotalScore))) / gap) * 100)) : 0;
-                const progressPct = gap > 0 ? Math.min(100, Math.max(0, ((score) / gap) * 100)) : (pointsNeeded === 0 ? 100 : 0);
-                return (
+            {nextRankScore !== null && nextRankScore > 0 && (() => {
+              const gap = nextRankScore - existingTotalScore;
+              const progressPct = gap > 0 ? Math.min(100, Math.max(0, (score / gap) * 100)) : 0;
+              return (
+                <div className="w-full max-w-xs mx-auto mt-2 px-4">
                   <div className="relative w-full h-2 rounded-full overflow-hidden" style={{ background: "hsl(var(--muted) / 0.4)" }}>
                     <motion.div
                       className="absolute inset-y-0 left-0 rounded-full"
@@ -805,10 +801,10 @@ export default function TapGame({ isPractice, onGameEnd, onCancel, existingTotal
                       transition={{ type: "spring", stiffness: 120, damping: 20 }}
                     />
                   </div>
-                );
-              })()}
-            </div>
-          )}
+                </div>
+              );
+            })()}
+          </>
         )}
       </div>
 
