@@ -724,9 +724,10 @@ export default function TapGame({ isPractice, onGameEnd, onCancel }: TapGameProp
     );
   }
 
-  // Playing
   return (
-    <div className={`fixed inset-0 z-50 bg-background select-none touch-none overflow-hidden ${isFrenzy ? "frenzy-bg" : ""}`}>
+    <div className={`fixed inset-0 z-50 select-none touch-none overflow-hidden ${isFrenzy ? "frenzy-bg" : ""}`}
+      style={{ background: "linear-gradient(180deg, hsl(230 30% 8%) 0%, hsl(230 25% 12%) 40%, hsl(220 30% 15%) 100%)" }}
+    >
       {/* Frenzy background pulse */}
       {isFrenzy && (
         <motion.div
@@ -737,22 +738,12 @@ export default function TapGame({ isPractice, onGameEnd, onCancel }: TapGameProp
         />
       )}
 
-      {/* HUD */}
+      {/* Top HUD - Score centered prominently */}
       <div className="absolute top-0 left-0 right-0 z-10 safe-area-top">
         <div className="flex items-center justify-between px-4 pt-3 pb-2">
           <button onClick={() => endSession(false)} className="glass-card px-3 py-1.5 rounded-full text-xs text-muted-foreground">
             ✕ বাতিল
           </button>
-          <div ref={scoreAreaRef} className="glass-card px-4 py-2 rounded-full flex items-center gap-2">
-            <motion.span
-              key={score}
-              initial={{ scale: 1.4 }}
-              animate={{ scale: 1 }}
-              className="font-display text-xl font-bold text-primary"
-            >
-              {score}
-            </motion.span>
-          </div>
           {isPractice ? (
             <div className="glass-card px-3 py-1.5 rounded-full">
               <span className="text-secondary text-xs font-semibold">প্র্যাকটিস</span>
@@ -763,6 +754,31 @@ export default function TapGame({ isPractice, onGameEnd, onCancel }: TapGameProp
             </div>
           )}
         </div>
+
+        {/* Big score display */}
+        <div ref={scoreAreaRef} className="flex items-center justify-center gap-3 mt-2">
+          <span className="text-2xl">🪙</span>
+          <motion.span
+            key={score}
+            initial={{ scale: 1.3 }}
+            animate={{ scale: 1 }}
+            className="text-4xl font-bold text-foreground"
+            style={{ fontFamily: "'Inter', sans-serif" }}
+          >
+            {score.toLocaleString()}
+          </motion.span>
+        </div>
+
+        {/* Ball type indicator */}
+        <div className="flex justify-center mt-2">
+          <div className="flex items-center gap-1.5 px-3 py-1 rounded-full"
+            style={{ background: "hsl(var(--card) / 0.6)" }}>
+            <div className="w-3 h-3 rounded-full" style={{ background: currentStyle.gradient }} />
+            <span className="text-xs text-muted-foreground">
+              {ballType === "golden" ? "গোল্ডেন +5" : ballType === "red" ? "লাল -3" : ballType === "mega" ? "মেগা +10" : "সাধারণ +1"}
+            </span>
+          </div>
+        </div>
       </div>
 
       {/* Combo indicator */}
@@ -772,7 +788,7 @@ export default function TapGame({ isPractice, onGameEnd, onCancel }: TapGameProp
             initial={{ scale: 0, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0, opacity: 0 }}
-            className="absolute top-[72px] left-1/2 -translate-x-1/2 z-10"
+            className="absolute top-[140px] left-1/2 -translate-x-1/2 z-10"
           >
             <div className={`glass-card neon-border px-4 py-1.5 rounded-full ${
               isFrenzy ? "border-secondary" : comboMultiplier >= 3 ? "border-neon-pink" : ""
@@ -795,7 +811,7 @@ export default function TapGame({ isPractice, onGameEnd, onCancel }: TapGameProp
             initial={{ y: -50, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: -50, opacity: 0 }}
-            className="absolute top-[110px] left-1/2 -translate-x-1/2 z-10"
+            className="absolute top-[170px] left-1/2 -translate-x-1/2 z-10"
           >
             <div className={`glass-card px-5 py-2 rounded-full ${isFrenzy ? "neon-border" : "neon-border-gold"}`}>
               <span className={`font-display text-sm font-bold ${isFrenzy ? "text-secondary" : "text-accent neon-text-gold"}`}>
@@ -808,7 +824,7 @@ export default function TapGame({ isPractice, onGameEnd, onCancel }: TapGameProp
 
       {/* Double score indicator */}
       {isDoubleScore && (
-        <div className="absolute top-[60px] left-1/2 -translate-x-1/2 z-[5]">
+        <div className="absolute top-[130px] left-1/2 -translate-x-1/2 z-[5]">
           <div className="h-1 bg-accent/30 rounded-full overflow-hidden" style={{ width: 120 }}>
             <motion.div
               initial={{ width: "100%" }}
@@ -822,7 +838,7 @@ export default function TapGame({ isPractice, onGameEnd, onCancel }: TapGameProp
 
       {/* Frenzy timer bar */}
       {isFrenzy && (
-        <div className="absolute top-[60px] left-1/2 -translate-x-1/2 z-[5]">
+        <div className="absolute top-[130px] left-1/2 -translate-x-1/2 z-[5]">
           <div className="h-1.5 bg-secondary/30 rounded-full overflow-hidden" style={{ width: 140 }}>
             <motion.div
               initial={{ width: "100%" }}
@@ -834,41 +850,66 @@ export default function TapGame({ isPractice, onGameEnd, onCancel }: TapGameProp
         </div>
       )}
 
-      {/* Fixed center tap target */}
-      <div className="absolute inset-0 flex items-center justify-center">
+      {/* Center character tap area - Hamster Kombat style */}
+      <div className="absolute inset-0 flex items-center justify-center" style={{ paddingTop: "60px" }}>
+        {/* Platform glow */}
+        <div className="absolute bottom-[18%] left-1/2 -translate-x-1/2 w-64 h-16 rounded-[50%] pointer-events-none"
+          style={{
+            background: isFrenzy
+              ? "radial-gradient(ellipse, hsl(280 100% 65% / 0.4), transparent 70%)"
+              : "radial-gradient(ellipse, hsl(var(--primary) / 0.3), transparent 70%)",
+            filter: "blur(10px)",
+          }}
+        />
+
+        {/* Character image as tap target */}
         <motion.button
           ref={targetRef}
           onClick={handleTap}
           onTouchStart={handleTap}
-          animate={{ 
-            scale: tapping ? 0.85 : 1,
-            ...(isFrenzy ? { rotate: [0, 2, -2, 0] } : {}),
+          animate={{
+            scale: tapping ? 0.92 : 1,
+            y: tapping ? 8 : 0,
           }}
-          transition={{ 
+          transition={{
             scale: { duration: 0.06 },
-            rotate: { duration: 0.3, repeat: Infinity },
+            y: { duration: 0.06 },
           }}
-          className="w-24 h-24 rounded-full relative"
-          style={{
-            background: isFrenzy 
-              ? "linear-gradient(135deg, hsl(280 100% 65%), hsl(320 100% 60%), hsl(45 100% 60%))"
-              : currentStyle.gradient,
-            boxShadow: isFrenzy 
-              ? "0 0 40px hsl(280 100% 65% / 0.7), 0 0 80px hsl(320 100% 60% / 0.4)"
-              : currentStyle.glow,
-          }}
+          className="relative z-[1] w-56 h-72 md:w-64 md:h-80 flex items-end justify-center"
+          style={{ WebkitTapHighlightColor: "transparent" }}
         >
+          {/* Character glow aura */}
           <motion.div
-            animate={{ scale: [1, 1.3, 1], opacity: [0.4, 0, 0.4] }}
-            transition={{ duration: isFrenzy ? 0.5 : 1.5, repeat: Infinity, ease: "easeInOut" }}
-            className="absolute inset-0 rounded-full border-2"
-            style={{ borderColor: isFrenzy ? "hsl(280 100% 65% / 0.6)" : ballType === "red" ? "hsl(0 84% 60% / 0.5)" : ballType === "golden" ? "hsl(45 100% 55% / 0.5)" : ballType === "mega" ? "hsl(280 100% 65% / 0.5)" : "hsl(160 100% 50% / 0.5)" }}
+            animate={{
+              opacity: isFrenzy ? [0.4, 0.7, 0.4] : [0.2, 0.4, 0.2],
+              scale: [1, 1.05, 1],
+            }}
+            transition={{ duration: isFrenzy ? 0.5 : 2, repeat: Infinity }}
+            className="absolute inset-0 pointer-events-none rounded-3xl"
+            style={{
+              background: isFrenzy
+                ? "radial-gradient(circle, hsl(280 100% 65% / 0.3), transparent 65%)"
+                : `radial-gradient(circle, hsl(var(--primary) / 0.2), transparent 65%)`,
+            }}
           />
-          {ballType !== "normal" && (
-            <span className="absolute inset-0 flex items-center justify-center font-display text-xs font-bold text-primary-foreground drop-shadow-lg">
-              {ballType === "mega" ? "⭐" : ballType === "golden" ? "✦" : "✕"}
-            </span>
-          )}
+          <img
+            src={characterImage}
+            alt="Tap character"
+            className="w-full h-full object-contain drop-shadow-2xl pointer-events-none"
+            draggable={false}
+          />
+
+          {/* Platform under character */}
+          <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-48 h-6 rounded-[50%] pointer-events-none"
+            style={{
+              background: isFrenzy
+                ? "radial-gradient(ellipse, hsl(280 80% 50% / 0.6), hsl(280 80% 50% / 0.1))"
+                : "radial-gradient(ellipse, hsl(var(--primary) / 0.5), hsl(var(--primary) / 0.1))",
+              boxShadow: isFrenzy
+                ? "0 0 30px hsl(280 100% 65% / 0.4)"
+                : "0 0 20px hsl(var(--primary) / 0.3)",
+            }}
+          />
         </motion.button>
       </div>
 
@@ -890,7 +931,6 @@ export default function TapGame({ isPractice, onGameEnd, onCancel }: TapGameProp
               transform: "translate(-50%, -50%)",
             }}
           >
-            {/* Golden glow aura */}
             <motion.div
               animate={{ scale: [1, 1.4, 1], opacity: [0.3, 0.6, 0.3] }}
               transition={{ duration: 0.6, repeat: Infinity }}
@@ -901,7 +941,6 @@ export default function TapGame({ isPractice, onGameEnd, onCancel }: TapGameProp
               }}
             />
             <span className="text-4xl drop-shadow-lg relative z-10">🦁</span>
-            {/* Timer ring */}
             <svg className="absolute inset-0 w-full h-full" viewBox="0 0 80 80">
               <motion.circle
                 cx="40" cy="40" r="36"
@@ -938,7 +977,6 @@ export default function TapGame({ isPractice, onGameEnd, onCancel }: TapGameProp
               transform: "translate(-50%, -50%)",
             }}
           >
-            {/* Shimmer effect */}
             <motion.div
               animate={{ opacity: [0.2, 0.5, 0.2], scale: [1, 1.2, 1] }}
               transition={{ duration: 1, repeat: Infinity }}
@@ -955,7 +993,6 @@ export default function TapGame({ isPractice, onGameEnd, onCancel }: TapGameProp
             >
               {chest.opened ? "🎉" : "🎁"}
             </motion.span>
-            {/* Reward text */}
             {chest.opened && chest.rewardText && (
               <motion.div
                 initial={{ y: 0, opacity: 1, scale: 0.8 }}
@@ -1029,7 +1066,7 @@ export default function TapGame({ isPractice, onGameEnd, onCancel }: TapGameProp
       </AnimatePresence>
 
       {/* Bottom info */}
-      <div className="absolute bottom-0 left-0 right-0 pb-2 pt-10 pointer-events-auto z-0">
+      <div className="absolute bottom-0 left-0 right-0 pb-2 pt-6 pointer-events-auto z-0">
         <div className="max-w-md mx-auto px-4">
           <BannerAd />
         </div>
