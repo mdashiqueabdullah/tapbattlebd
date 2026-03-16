@@ -72,6 +72,9 @@ export default function Dashboard() {
     return (
       <TapGame
         isPractice={gameMode === "practice"}
+        existingTotalScore={totalScore}
+        currentRank={currentRank}
+        nextRankScore={nextRankScore}
         onGameEnd={async (score) => {
           setGameMode("none");
           await refreshContest();
