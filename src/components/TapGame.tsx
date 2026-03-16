@@ -758,22 +758,26 @@ export default function TapGame({ isPractice, onGameEnd, onCancel, existingTotal
           )}
         </div>
 
-        {/* Big score display */}
+        {/* Big score display - shows accumulated total */}
         <div ref={scoreAreaRef} className="flex items-center justify-center gap-3 mt-2">
           <span className="text-2xl">🪙</span>
           <motion.span
-            key={score}
+            key={existingTotalScore + score}
             initial={{ scale: 1.3 }}
             animate={{ scale: 1 }}
             className="text-4xl font-bold text-foreground"
             style={{ fontFamily: "'Inter', sans-serif" }}
           >
-            {score.toLocaleString()}
+            {(existingTotalScore + score).toLocaleString()}
           </motion.span>
         </div>
 
-        {/* Ball type indicator */}
-        <div className="flex justify-center mt-2">
+        {/* Session score + Ball type */}
+        <div className="flex items-center justify-center gap-3 mt-1.5">
+          <div className="flex items-center gap-1.5 px-3 py-1 rounded-full"
+            style={{ background: "hsl(var(--card) / 0.6)" }}>
+            <span className="text-xs text-primary font-semibold">এই সেশন: +{score}</span>
+          </div>
           <div className="flex items-center gap-1.5 px-3 py-1 rounded-full"
             style={{ background: "hsl(var(--card) / 0.6)" }}>
             <div className="w-3 h-3 rounded-full" style={{ background: currentStyle.gradient }} />
@@ -782,6 +786,24 @@ export default function TapGame({ isPractice, onGameEnd, onCancel, existingTotal
             </span>
           </div>
         </div>
+
+        {/* Live Rank + Points to next rank */}
+        {!isPractice && currentRank && (
+          <div className="flex items-center justify-center gap-3 mt-2">
+            <div className="flex items-center gap-1.5 px-3 py-1 rounded-full"
+              style={{ background: "hsl(var(--card) / 0.6)" }}>
+              <span className="text-xs text-accent font-bold">🏆 র‍্যাঙ্ক #{currentRank}</span>
+            </div>
+            {nextRankScore !== null && nextRankScore > 0 && (
+              <div className="flex items-center gap-1.5 px-3 py-1 rounded-full"
+                style={{ background: "hsl(var(--card) / 0.6)" }}>
+                <span className="text-xs text-muted-foreground">
+                  পরবর্তী র‍্যাঙ্কে: <span className="text-primary font-semibold">{Math.max(0, nextRankScore - (existingTotalScore + score))}</span> পয়েন্ট
+                </span>
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Combo indicator */}
