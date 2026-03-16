@@ -107,18 +107,22 @@ export default function ReferralSection() {
 
         {/* Share Buttons */}
         <div className="flex gap-2">
-          <button
-            onClick={shareWhatsApp}
+          <a
+            href={whatsappShareUrl}
+            target="_blank"
+            rel="noopener noreferrer"
             className="flex-1 py-2.5 rounded-lg bg-[#25D366]/20 text-[#25D366] text-sm font-semibold flex items-center justify-center gap-2"
           >
             <Share2 className="w-4 h-4" /> WhatsApp
-          </button>
-          <button
-            onClick={shareFacebook}
+          </a>
+          <a
+            href={facebookShareUrl}
+            target="_blank"
+            rel="noopener noreferrer"
             className="flex-1 py-2.5 rounded-lg bg-[#1877F2]/20 text-[#1877F2] text-sm font-semibold flex items-center justify-center gap-2"
           >
             <Share2 className="w-4 h-4" /> Facebook
-          </button>
+          </a>
         </div>
       </div>
 
