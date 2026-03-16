@@ -116,6 +116,12 @@ export default function Leaderboard() {
     ? displayEntries 
     : displayEntries.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
 
+  // Calculate points needed for next rank
+  const nextRankEntry = myEntry && myEntry.rank > 1
+    ? allEntries.find(e => e.rank === myEntry.rank - 1)
+    : null;
+  const pointsToNextRank = nextRankEntry ? Math.max(0, nextRankEntry.totalScore - (myEntry?.totalScore || 0)) : 0;
+
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
