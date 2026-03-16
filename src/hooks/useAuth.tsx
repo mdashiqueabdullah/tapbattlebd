@@ -88,9 +88,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       password,
       options: {
         data: metadata,
-        emailRedirectTo: window.location.origin,
+        emailRedirectTo: `${window.location.origin}/verify-email`,
       },
     });
+
+    if (!error) {
+      // Sign out immediately - user must verify email before accessing the app
+      await supabase.auth.signOut();
+      setUser(null);
+      setSession(null);
+      setProfile(null);
+    }
+
     return { error: error?.message ?? null };
   };
 

@@ -21,6 +21,9 @@ import ReferralRules from "./pages/ReferralRules";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import VerifyEmail from "./pages/VerifyEmail";
+import RegistrationSuccess from "./pages/RegistrationSuccess";
+import EmailNotVerified from "./pages/EmailNotVerified";
+import EmailVerified from "./pages/EmailVerified";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -37,7 +40,7 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
   }
 
   if (!user) return <Navigate to="/login" replace />;
-  if (!isEmailVerified) return <Navigate to="/verify-email" replace />;
+  if (!isEmailVerified) return <Navigate to="/login" replace />;
 
   return <>{children}</>;
 }
@@ -50,6 +53,9 @@ const AppRoutes = () => (
     <Route path="/forgot-password" element={<ForgotPassword />} />
     <Route path="/reset-password" element={<ResetPassword />} />
     <Route path="/verify-email" element={<VerifyEmail />} />
+    <Route path="/registration-success" element={<RegistrationSuccess />} />
+    <Route path="/email-not-verified" element={<EmailNotVerified />} />
+    <Route path="/email-verified" element={<EmailVerified />} />
     <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
     <Route path="/leaderboard" element={<Leaderboard />} />
     <Route path="/winners" element={<Winners />} />
