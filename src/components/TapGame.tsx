@@ -773,24 +773,32 @@ export default function TapGame({ isPractice, onGameEnd, onCancel, existingTotal
         </div>
 
         {/* Live Rank + Points to next rank */}
-        {!isPractice && (
-          <>
-            <div className="flex items-center justify-center gap-4 mt-2">
-              <div className="flex items-center gap-1.5 px-3 py-1 rounded-full"
-                style={{ background: "hsl(var(--card) / 0.6)" }}>
-                <span className="text-xs text-accent font-bold">🏆 র‍্যাঙ্ক #{currentRank || "—"}</span>
+        {!isPractice && (() => {
+          const liveTotal = existingTotalScore + score;
+          // Find the next rank score that is still above our live total
+          const nextRankScore = aboveScores.find(s => s > liveTotal) ?? null;
+          const pointsNeeded = nextRankScore !== null ? Math.max(0, nextRankScore - liveTotal) : 0;
+          // For progress: find the previous milestone (last score we passed or existingTotalScore)
+          const passedScores = aboveScores.filter(s => s <= liveTotal);
+          const prevMilestone = passedScores.length > 0 ? passedScores[passedScores.length - 1] : existingTotalScore;
+          const gap = nextRankScore !== null ? nextRankScore - prevMilestone : 0;
+          const progressPct = gap > 0 ? Math.min(100, Math.max(0, ((liveTotal - prevMilestone) / gap) * 100)) : 0;
+
+          return (
+            <>
+              <div className="flex items-center justify-center gap-4 mt-2">
+                <div className="flex items-center gap-1.5 px-3 py-1 rounded-full"
+                  style={{ background: "hsl(var(--card) / 0.6)" }}>
+                  <span className="text-xs text-accent font-bold">🏆 র‍্যাঙ্ক #{currentRank || "—"}</span>
+                </div>
+                <div className="flex items-center gap-1.5 px-3 py-1 rounded-full"
+                  style={{ background: "hsl(var(--card) / 0.6)" }}>
+                  <span className="text-xs text-muted-foreground">
+                    পরবর্তী র‍্যাঙ্কে: <span className="text-primary font-semibold">{pointsNeeded}</span> পয়েন্ট
+                  </span>
+                </div>
               </div>
-              <div className="flex items-center gap-1.5 px-3 py-1 rounded-full"
-                style={{ background: "hsl(var(--card) / 0.6)" }}>
-                <span className="text-xs text-muted-foreground">
-                  পরবর্তী র‍্যাঙ্কে: <span className="text-primary font-semibold">{nextRankScore !== null && nextRankScore > 0 ? Math.max(0, nextRankScore - (existingTotalScore + score)) : 0}</span> পয়েন্ট
-                </span>
-              </div>
-            </div>
-            {nextRankScore !== null && nextRankScore > 0 && (() => {
-              const gap = nextRankScore - existingTotalScore;
-              const progressPct = gap > 0 ? Math.min(100, Math.max(0, (score / gap) * 100)) : 0;
-              return (
+              {nextRankScore !== null && (
                 <div className="w-full max-w-xs mx-auto mt-2 px-4">
                   <div className="relative w-full h-2 rounded-full overflow-hidden" style={{ background: "hsl(var(--muted) / 0.4)" }}>
                     <motion.div
@@ -802,10 +810,10 @@ export default function TapGame({ isPractice, onGameEnd, onCancel, existingTotal
                     />
                   </div>
                 </div>
-              );
-            })()}
-          </>
-        )}
+              )}
+            </>
+          );
+        })()}
       </div>
 
       {/* Combo indicator */}
