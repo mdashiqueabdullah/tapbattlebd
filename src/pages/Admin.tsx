@@ -17,6 +17,7 @@ const tabs = [
   { key: "referrals", label: "রেফারেল", icon: Share2 },
   { key: "winners", label: "বিজয়ী", icon: Award },
   { key: "blocked", label: "ব্লকড", icon: Ban },
+  { key: "game-image", label: "গেম ইমেজ", icon: Image },
 ];
 
 interface UserRow { id: string; username: string; email: string | null; total_ranked_games: number; is_banned: boolean; referral_points: number; created_at: string; }
