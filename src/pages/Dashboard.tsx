@@ -30,26 +30,23 @@ export default function Dashboard() {
   const { attemptsUsed, attemptTotalScore, referralPoints, streakPoints, totalScore, currentRank, refreshContest, contest } = useContest();
   const navigate = useNavigate();
 
-  // Fetch score of next rank above current user
+  // Fetch all scores above current user for dynamic rank progression
   useEffect(() => {
     if (!user || !contest || !currentRank || currentRank <= 1) {
-      setNextRankScore(null);
+      setAboveScores([]);
       return;
     }
     (async () => {
-      // Get score of the player just above us
       const { data } = await supabase
         .from("leaderboard")
         .select("total_score")
         .eq("contest_id", contest.id)
         .gt("total_score", totalScore)
-        .order("total_score", { ascending: true })
-        .limit(1)
-        .maybeSingle();
+        .order("total_score", { ascending: true });
       if (data) {
-        setNextRankScore((data as any).total_score);
+        setAboveScores(data.map((d: any) => d.total_score));
       } else {
-        setNextRankScore(null);
+        setAboveScores([]);
       }
     })();
   }, [user, contest, currentRank, totalScore]);
