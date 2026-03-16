@@ -165,6 +165,18 @@ function randomPosition() {
 }
 
 export default function TapGame({ isPractice, onGameEnd, onCancel }: TapGameProps) {
+  // Character image from game_settings
+  const [characterImage, setCharacterImage] = useState(defaultCharacter);
+  useEffect(() => {
+    (async () => {
+      const { data } = await supabase
+        .from("game_settings")
+        .select("value")
+        .eq("key", "tap_character_image")
+        .maybeSingle();
+      if (data?.value) setCharacterImage(data.value);
+    })();
+  }, []);
   const [phase, setPhase] = useState<"ready" | "starting" | "playing" | "submitting" | "done">("ready");
   const [score, setScore] = useState(0);
   const [ballType, setBallType] = useState<BallType>("normal");
