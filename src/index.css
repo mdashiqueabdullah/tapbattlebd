@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&family=Orbitron:wght@400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -59,7 +59,8 @@
     box-sizing: border-box;
   }
   body {
-    @apply bg-background text-foreground font-bangla antialiased;
+    @apply bg-background text-foreground antialiased;
+    font-family: 'Inter', sans-serif;
     line-height: 1.6;
     overflow-x: hidden;
   }
@@ -73,10 +74,11 @@
 
 @layer utilities {
   .font-display {
-    font-family: 'Orbitron', sans-serif;
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
   }
   .font-bangla {
-    font-family: 'Hind Siliguri', sans-serif;
+    font-family: 'Inter', sans-serif;
   }
   .neon-text {
     text-shadow: 0 0 10px hsl(var(--neon-glow) / 0.8),
