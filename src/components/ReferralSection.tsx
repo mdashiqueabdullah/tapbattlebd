@@ -162,7 +162,7 @@ export default function ReferralSection() {
         </h3>
         <ul className="space-y-1.5 text-xs text-muted-foreground">
           <li className="flex items-start gap-1.5"><span className="text-primary">✓</span> প্রতি সফল রেফারে ৫,০০০ পয়েন্ট</li>
-          <li className="flex items-start gap-1.5"><span className="text-primary">✓</span> রেফার পয়েন্ট গেম স্কোরের সাথে যোগ হয়</li>
+           <li className="flex items-start gap-1.5"><span className="text-primary">✓</span> রেফার পয়েন্ট গেম স্কোরের সাথে যোগ হয়</li>
           <li className="flex items-start gap-1.5"><span className="text-primary">✓</span> লিডারবোর্ডে মোট স্কোর = গেম + রেফার</li>
           <li className="flex items-start gap-1.5"><span className="text-primary">✓</span> রেফার্ড ইউজারকে ইমেইল ভেরিফাই করতে হবে</li>
           <li className="flex items-start gap-1.5"><span className="text-destructive">✗</span> অসম্পূর্ণ অ্যাকাউন্ট গণনা হবে না</li>
