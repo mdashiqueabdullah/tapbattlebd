@@ -55,15 +55,12 @@ export default function ReferralSection() {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const shareWhatsApp = () => {
-    const text = encodeURIComponent(`Tap Battle BD তে আমার রেফার লিংক দিয়ে জয়েন করো! প্রতি মাসে ৳১৫,০০০ জিতুন!\n\n${referralLink}`);
-    window.open(`https://api.whatsapp.com/send?text=${text}`, "_blank");
-  };
-
-  const shareFacebook = () => {
-    const fbUrl = `https://www.facebook.com/sharer.php?u=${encodeURIComponent(referralLink)}`;
-    window.open(fbUrl, "_blank", "width=600,height=400");
-  };
+  const shareMessage = `Tap Battle BD তে আমার রেফার লিংক দিয়ে জয়েন করো! প্রতি মাসে ৳১৫,০০০ জিতুন!\n\n${referralLink}`;
+  const encodedShareMessage = encodeURIComponent(shareMessage);
+  const whatsappShareUrl = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent)
+    ? `https://wa.me/?text=${encodedShareMessage}`
+    : `https://web.whatsapp.com/send?text=${encodedShareMessage}`;
+  const facebookShareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(referralLink)}&quote=${encodeURIComponent("Tap Battle BD তে আমার রেফার লিংক দিয়ে জয়েন করো!")}`;
 
   const totalPoints = profile?.referral_points ?? 0;
   const completedReferrals = referrals.filter(r => r.status === "completed").length;
@@ -110,18 +107,22 @@ export default function ReferralSection() {
 
         {/* Share Buttons */}
         <div className="flex gap-2">
-          <button
-            onClick={shareWhatsApp}
+          <a
+            href={whatsappShareUrl}
+            target="_blank"
+            rel="noopener noreferrer"
             className="flex-1 py-2.5 rounded-lg bg-[#25D366]/20 text-[#25D366] text-sm font-semibold flex items-center justify-center gap-2"
           >
             <Share2 className="w-4 h-4" /> WhatsApp
-          </button>
-          <button
-            onClick={shareFacebook}
+          </a>
+          <a
+            href={facebookShareUrl}
+            target="_blank"
+            rel="noopener noreferrer"
             className="flex-1 py-2.5 rounded-lg bg-[#1877F2]/20 text-[#1877F2] text-sm font-semibold flex items-center justify-center gap-2"
           >
             <Share2 className="w-4 h-4" /> Facebook
-          </button>
+          </a>
         </div>
       </div>
 
