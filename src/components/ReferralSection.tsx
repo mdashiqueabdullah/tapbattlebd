@@ -109,7 +109,7 @@ export default function ReferralSection() {
         <div className="flex gap-2">
           <a
             href={whatsappShareUrl}
-            target="_blank"
+            target={shareTarget}
             rel="noopener noreferrer"
             className="flex-1 py-2.5 rounded-lg bg-[#25D366]/20 text-[#25D366] text-sm font-semibold flex items-center justify-center gap-2"
           >
@@ -117,7 +117,7 @@ export default function ReferralSection() {
           </a>
           <a
             href={facebookShareUrl}
-            target="_blank"
+            target={shareTarget}
             rel="noopener noreferrer"
             className="flex-1 py-2.5 rounded-lg bg-[#1877F2]/20 text-[#1877F2] text-sm font-semibold flex items-center justify-center gap-2"
           >
