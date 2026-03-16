@@ -71,7 +71,7 @@ export default function Dashboard() {
         isPractice={gameMode === "practice"}
         existingTotalScore={totalScore}
         currentRank={currentRank}
-        nextRankScore={nextRankScore}
+        aboveScores={aboveScores}
         onGameEnd={async (score) => {
           setGameMode("none");
           await refreshContest();
