@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { Shield, Users, Trophy, CreditCard, BarChart3, AlertTriangle, Download, Megaphone, Share2, ShoppingCart, CheckCircle, XCircle, Award, FileText, Calendar, Ban, Smartphone } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import { Shield, Users, Trophy, CreditCard, BarChart3, AlertTriangle, Download, Megaphone, Share2, ShoppingCart, CheckCircle, XCircle, Award, FileText, Calendar, Ban, Smartphone, Image, Upload } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
@@ -17,6 +17,7 @@ const tabs = [
   { key: "referrals", label: "রেফারেল", icon: Share2 },
   { key: "winners", label: "বিজয়ী", icon: Award },
   { key: "blocked", label: "ব্লকড", icon: Ban },
+  { key: "game-image", label: "গেম ইমেজ", icon: Image },
 ];
 
 interface UserRow { id: string; username: string; email: string | null; total_ranked_games: number; is_banned: boolean; referral_points: number; created_at: string; }
@@ -627,6 +628,7 @@ export default function Admin() {
           )}
 
           {activeTab === "blocked" && <BlockedSignupsPanel />}
+          {activeTab === "game-image" && <GameImagePanel userId={user?.id} />}
         </div>
       </div>
     </div>
@@ -689,6 +691,168 @@ function BlockedSignupsPanel() {
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+function GameImagePanel({ userId }: { userId?: string }) {
+  const [currentImage, setCurrentImage] = useState<string>("");
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    (async () => {
+      const { data } = await supabase
+        .from("game_settings")
+        .select("value")
+        .eq("key", "tap_character_image")
+        .maybeSingle();
+      if (data?.value) setCurrentImage(data.value);
+    })();
+  }, []);
+
+  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      toast.error("শুধুমাত্র ইমেজ ফাইল আপলোড করুন");
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("ফাইল সাইজ ৫MB এর বেশি হতে পারবে না");
+      return;
+    }
+
+    setUploading(true);
+    try {
+      const fileName = `character-${Date.now()}.${file.name.split(".").pop()}`;
+      const { error: uploadError } = await supabase.storage
+        .from("tap-game-images")
+        .upload(fileName, file, { upsert: true });
+
+      if (uploadError) {
+        toast.error("আপলোড ব্যর্থ: " + uploadError.message);
+        setUploading(false);
+        return;
+      }
+
+      const { data: urlData } = supabase.storage
+        .from("tap-game-images")
+        .getPublicUrl(fileName);
+
+      const publicUrl = urlData.publicUrl;
+
+      // Upsert game_settings
+      const { data: existing } = await supabase
+        .from("game_settings")
+        .select("id")
+        .eq("key", "tap_character_image")
+        .maybeSingle();
+
+      if (existing) {
+        await supabase
+          .from("game_settings")
+          .update({ value: publicUrl, updated_at: new Date().toISOString(), updated_by: userId } as any)
+          .eq("key", "tap_character_image");
+      } else {
+        await supabase
+          .from("game_settings")
+          .insert({ key: "tap_character_image", value: publicUrl, updated_by: userId } as any);
+      }
+
+      setCurrentImage(publicUrl);
+      toast.success("ক্যারেক্টার ইমেজ আপডেট হয়েছে! ✓");
+    } catch (err) {
+      toast.error("একটি ত্রুটি ঘটেছে");
+    }
+    setUploading(false);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
+  const handleRemoveImage = async () => {
+    const confirmed = window.confirm("ক্যারেক্টার ইমেজ রিমুভ করবেন? ডিফল্ট ইমেজ ব্যবহার হবে।");
+    if (!confirmed) return;
+
+    await supabase
+      .from("game_settings")
+      .update({ value: "", updated_at: new Date().toISOString(), updated_by: userId } as any)
+      .eq("key", "tap_character_image");
+
+    setCurrentImage("");
+    toast.success("ইমেজ রিমুভ হয়েছে — ডিফল্ট ইমেজ ব্যবহার হবে");
+  };
+
+  return (
+    <div>
+      <h2 className="text-xl font-bold text-foreground mb-4">গেম ক্যারেক্টার ইমেজ</h2>
+      <p className="text-sm text-muted-foreground mb-6">ট্যাপ গেমে যে ক্যারেক্টার দেখাবে সেটি এখান থেকে পরিবর্তন করুন</p>
+
+      <div className="grid md:grid-cols-2 gap-6">
+        {/* Current image preview */}
+        <div className="glass-card p-6 text-center">
+          <h3 className="text-sm font-semibold text-foreground mb-4">বর্তমান ক্যারেক্টার</h3>
+          <div className="w-48 h-64 mx-auto rounded-2xl flex items-center justify-center overflow-hidden"
+            style={{ background: "linear-gradient(180deg, hsl(230 30% 8%), hsl(230 25% 14%))" }}
+          >
+            {currentImage ? (
+              <img src={currentImage} alt="Current character" className="w-full h-full object-contain" />
+            ) : (
+              <div className="text-muted-foreground text-sm text-center p-4">
+                <Image className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                ডিফল্ট ইমেজ ব্যবহৃত হচ্ছে
+              </div>
+            )}
+          </div>
+          {currentImage && (
+            <button
+              onClick={handleRemoveImage}
+              className="mt-3 text-xs text-destructive hover:underline"
+            >
+              ইমেজ রিমুভ করুন
+            </button>
+          )}
+        </div>
+
+        {/* Upload section */}
+        <div className="glass-card p-6">
+          <h3 className="text-sm font-semibold text-foreground mb-4">নতুন ইমেজ আপলোড</h3>
+          <div className="space-y-4">
+            <div
+              onClick={() => fileInputRef.current?.click()}
+              className="border-2 border-dashed border-border/50 rounded-xl p-8 text-center cursor-pointer hover:border-primary/50 transition-colors"
+            >
+              <Upload className="w-8 h-8 mx-auto mb-2 text-muted-foreground" />
+              <p className="text-sm text-muted-foreground">ক্লিক করে ইমেজ সিলেক্ট করুন</p>
+              <p className="text-xs text-muted-foreground mt-1">PNG, JPG • সর্বোচ্চ 5MB</p>
+              <p className="text-xs text-primary mt-2">ট্রান্সপারেন্ট PNG সবচেয়ে ভালো দেখায়</p>
+            </div>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handleUpload}
+              className="hidden"
+            />
+            {uploading && (
+              <div className="flex items-center justify-center gap-2 text-primary">
+                <div className="w-4 h-4 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
+                <span className="text-sm">আপলোড হচ্ছে...</span>
+              </div>
+            )}
+          </div>
+
+          <div className="mt-6 p-3 rounded-lg bg-muted/30">
+            <p className="text-xs text-muted-foreground">
+              <strong className="text-foreground">টিপস:</strong><br/>
+              • ট্রান্সপারেন্ট ব্যাকগ্রাউন্ড (PNG) ব্যবহার করুন<br/>
+              • ক্যারেক্টার পুরো ফ্রেমে রাখুন<br/>
+              • রেকমেন্ডেড সাইজ: 512×768 পিক্সেল
+            </p>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
