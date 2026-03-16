@@ -25,7 +25,7 @@ export default function Dashboard() {
   const [gameMode, setGameMode] = useState<"none" | "ranked" | "practice">("none");
   const [activeTab, setActiveTab] = useState<"main" | "referral">("main");
   const [attemptHistory, setAttemptHistory] = useState<AttemptRecord[]>([]);
-  const [nextRankScore, setNextRankScore] = useState<number | null>(null);
+  const [aboveScores, setAboveScores] = useState<number[]>([]);
   const { profile, refreshProfile, signOut, user } = useAuth();
   const { attemptsUsed, attemptTotalScore, referralPoints, streakPoints, totalScore, currentRank, refreshContest, contest } = useContest();
   const navigate = useNavigate();
