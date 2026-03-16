@@ -1,3 +1,5 @@
+import { useEffect, useRef } from "react";
+
 /**
  * Google AdSense Ad Container Components
  * 
