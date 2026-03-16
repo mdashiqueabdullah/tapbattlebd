@@ -25,9 +25,34 @@ export default function Dashboard() {
   const [gameMode, setGameMode] = useState<"none" | "ranked" | "practice">("none");
   const [activeTab, setActiveTab] = useState<"main" | "referral">("main");
   const [attemptHistory, setAttemptHistory] = useState<AttemptRecord[]>([]);
+  const [nextRankScore, setNextRankScore] = useState<number | null>(null);
   const { profile, refreshProfile, signOut, user } = useAuth();
   const { attemptsUsed, attemptTotalScore, referralPoints, streakPoints, totalScore, currentRank, refreshContest, contest } = useContest();
   const navigate = useNavigate();
+
+  // Fetch score of next rank above current user
+  useEffect(() => {
+    if (!user || !contest || !currentRank || currentRank <= 1) {
+      setNextRankScore(null);
+      return;
+    }
+    (async () => {
+      // Get score of the player just above us
+      const { data } = await supabase
+        .from("leaderboard")
+        .select("total_score")
+        .eq("contest_id", contest.id)
+        .gt("total_score", totalScore)
+        .order("total_score", { ascending: true })
+        .limit(1)
+        .maybeSingle();
+      if (data) {
+        setNextRankScore((data as any).total_score);
+      } else {
+        setNextRankScore(null);
+      }
+    })();
+  }, [user, contest, currentRank, totalScore]);
 
   // Fetch attempt history
   useEffect(() => {
