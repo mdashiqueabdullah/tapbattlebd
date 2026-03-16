@@ -17,17 +17,45 @@ interface AdContainerProps {
 
 /** Responsive banner ad — full width, ~90px height on mobile, ~90-250px on desktop */
 export function BannerAd({ className = "", label = "বিজ্ঞাপন" }: AdContainerProps) {
+  const adRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!adRef.current) return;
+
+    // Create the script element with your ad configuration
+    const script = document.createElement('script');
+    script.innerHTML = `
+      atOptions = {
+        'key' : 'e38de3cadfe0b2a63176f251af42b2a4',
+        'format' : 'iframe',
+        'height' : 90,
+        'width' : 728,
+        'params' : {}
+      };
+    `;
+    adRef.current.appendChild(script);
+
+    // Create and append the external script
+    const externalScript = document.createElement('script');
+    externalScript.src = 'https://www.highperformanceformat.com/e38de3cadfe0b2a63176f251af42b2a4/invoke.js';
+    externalScript.async = true;
+    adRef.current.appendChild(externalScript);
+
+    return () => {
+      // Cleanup if component unmounts
+      if (adRef.current) {
+        adRef.current.innerHTML = '';
+      }
+    };
+  }, []);
+
   return (
     <div className={`w-full flex flex-col items-center py-3 ${className}`}>
       <span className="text-[10px] text-muted-foreground/50 mb-1">{label}</span>
-      {/* ADSENSE: Replace this div with responsive banner ad unit */}
       <div
+        ref={adRef}
         className="w-full max-w-[728px] h-[90px] rounded-lg bg-muted/20 border border-border/10 flex items-center justify-center"
-        data-ad-slot="banner"
-        data-ad-format="horizontal"
-      >
-        <span className="text-xs text-muted-foreground/30 select-none">Ad Space — 728×90</span>
-      </div>
+      />
     </div>
   );
 }
