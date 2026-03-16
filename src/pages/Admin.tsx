@@ -628,6 +628,7 @@ export default function Admin() {
           )}
 
           {activeTab === "blocked" && <BlockedSignupsPanel />}
+          {activeTab === "game-image" && <GameImagePanel userId={user?.id} />}
         </div>
       </div>
     </div>
