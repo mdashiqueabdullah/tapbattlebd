@@ -59,7 +59,8 @@
     box-sizing: border-box;
   }
   body {
-    @apply bg-background text-foreground font-bangla antialiased;
+    @apply bg-background text-foreground antialiased;
+    font-family: 'Inter', sans-serif;
     line-height: 1.6;
     overflow-x: hidden;
   }
