@@ -11,6 +11,10 @@ import { BannerAd, RectangleAd } from "@/components/ads/AdContainer";
 import { t } from "@/lib/i18n";
 import { useAntiCheat } from "@/hooks/useAntiCheat";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
+import defaultCharacter from "@/assets/default-tap-character.png";
+import { useAntiCheat } from "@/hooks/useAntiCheat";
+import { toast } from "sonner";
 
 interface TapGameProps {
   isPractice: boolean;
