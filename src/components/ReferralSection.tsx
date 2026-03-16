@@ -56,12 +56,13 @@ export default function ReferralSection() {
   };
 
   const shareWhatsApp = () => {
-    const text = encodeURIComponent(`Tap Battle BD তে আমার রেফার লিংক দিয়ে জয়েন করো! প্রতি মাসে ৳১৫,০০০ জিতুন! ${referralLink}`);
-    window.open(`https://wa.me/?text=${text}`, "_blank");
+    const text = encodeURIComponent(`Tap Battle BD তে আমার রেফার লিংক দিয়ে জয়েন করো! প্রতি মাসে ৳১৫,০০০ জিতুন!\n\n${referralLink}`);
+    window.open(`https://api.whatsapp.com/send?text=${text}`, "_blank");
   };
 
   const shareFacebook = () => {
-    window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(referralLink)}`, "_blank");
+    const fbUrl = `https://www.facebook.com/sharer.php?u=${encodeURIComponent(referralLink)}`;
+    window.open(fbUrl, "_blank", "width=600,height=400");
   };
 
   const totalPoints = profile?.referral_points ?? 0;
