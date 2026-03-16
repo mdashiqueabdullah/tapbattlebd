@@ -160,7 +160,44 @@ export default function Leaderboard() {
             </div>
           ) : (
             <>
-              {/* Top 3 */}
+              {/* My Rank Summary with next rank info */}
+              {tab === "mine" && myEntry && (
+                <div className="glass-card p-4 mb-4 rounded-xl">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                      <span className="text-2xl">🏆</span>
+                      <div>
+                        <p className="text-xs text-muted-foreground">আমার র‍্যাঙ্ক</p>
+                        <p className="text-2xl font-bold text-accent">#{myEntry.rank}</p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-xs text-muted-foreground">মোট স্কোর</p>
+                      <p className="text-2xl font-bold text-primary">{myEntry.totalScore}</p>
+                    </div>
+                  </div>
+                  {myEntry.rank > 1 && nextRankEntry && (
+                    <div className="mt-3 p-3 rounded-lg" style={{ background: "hsl(var(--muted) / 0.3)" }}>
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="text-muted-foreground">র‍্যাঙ্ক #{myEntry.rank - 1} এ যেতে</span>
+                        <span className="font-bold text-accent">{pointsToNextRank} পয়েন্ট</span>
+                      </div>
+                      <div className="relative w-full h-2 rounded-full overflow-hidden mt-2" style={{ background: "hsl(var(--muted) / 0.4)" }}>
+                        <div
+                          className="absolute inset-y-0 left-0 rounded-full transition-all duration-500"
+                          style={{
+                            background: "linear-gradient(90deg, hsl(var(--primary)), hsl(var(--accent)))",
+                            width: `${nextRankEntry.totalScore > 0 ? Math.min(100, (myEntry.totalScore / nextRankEntry.totalScore) * 100) : 0}%`,
+                          }}
+                        />
+                      </div>
+                    </div>
+                  )}
+                  {myEntry.rank === 1 && (
+                    <p className="text-center text-sm text-accent font-semibold mt-2">🎉 আপনি ১ম স্থানে আছেন!</p>
+                  )}
+                </div>
+              )}
               {tab === "current" && currentPage === 1 && allEntries.length >= 3 && (
                 <div className="flex justify-center items-end gap-2 sm:gap-3 mb-6 px-2">
                   {[1, 0, 2].map(idx => {
