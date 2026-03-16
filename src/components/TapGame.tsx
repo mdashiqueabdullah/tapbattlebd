@@ -180,6 +180,9 @@ export default function TapGame({ isPractice, onGameEnd, onCancel, existingTotal
   }, []);
   const [phase, setPhase] = useState<"ready" | "starting" | "playing" | "submitting" | "done">("ready");
   const [score, setScore] = useState(0);
+  const [rankUpVisible, setRankUpVisible] = useState(false);
+  const [ranksPassedCount, setRanksPassedCount] = useState(0);
+  const prevRanksPassedRef = useRef(0);
   const [ballType, setBallType] = useState<BallType>("normal");
   const [flyingCoins, setFlyingCoins] = useState<FlyingCoin[]>([]);
   const [floatingTexts, setFloatingTexts] = useState<FloatingText[]>([]);
@@ -192,7 +195,19 @@ export default function TapGame({ isPractice, onGameEnd, onCancel, existingTotal
   const [verifiedScore, setVerifiedScore] = useState<number | null>(null);
   const [wasFlagged, setWasFlagged] = useState(false);
 
-  // Lion bonus state
+  // Rank-up detection
+  useEffect(() => {
+    if (isPractice || aboveScores.length === 0) return;
+    const liveTotal = existingTotalScore + score;
+    const passed = aboveScores.filter(s => s <= liveTotal).length;
+    if (passed > prevRanksPassedRef.current) {
+      prevRanksPassedRef.current = passed;
+      setRanksPassedCount(passed);
+      setRankUpVisible(true);
+      setTimeout(() => setRankUpVisible(false), 2000);
+    }
+  }, [score, aboveScores, existingTotalScore, isPractice]);
+
   const [lion, setLion] = useState<LionBonus | null>(null);
   // Lucky chest state
   const [chest, setChest] = useState<LuckyChest | null>(null);
@@ -816,7 +831,39 @@ export default function TapGame({ isPractice, onGameEnd, onCancel, existingTotal
         })()}
       </div>
 
-      {/* Combo indicator */}
+      {/* Rank-up celebration */}
+      <AnimatePresence>
+        {rankUpVisible && (
+          <motion.div
+            className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <motion.div
+              className="flex flex-col items-center gap-2 px-8 py-5 rounded-2xl"
+              style={{ background: "hsl(var(--card) / 0.95)", border: "2px solid hsl(var(--accent))", boxShadow: "0 0 40px hsl(var(--accent) / 0.4)" }}
+              initial={{ scale: 0.3, y: 40 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.5, y: -30, opacity: 0 }}
+              transition={{ type: "spring", stiffness: 300, damping: 18 }}
+            >
+              <motion.span
+                className="text-4xl"
+                animate={{ rotate: [0, -15, 15, -10, 10, 0], scale: [1, 1.3, 1] }}
+                transition={{ duration: 0.6 }}
+              >
+                🎉
+              </motion.span>
+              <p className="text-lg font-bold text-accent">র‍্যাঙ্ক আপ!</p>
+              <p className="text-sm text-muted-foreground">
+                #{currentRank ? currentRank - ranksPassedCount : "?"} এ উঠেছেন
+              </p>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
       <AnimatePresence>
         {comboMultiplier > 1 && (
           <motion.div
