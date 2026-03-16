@@ -6,7 +6,7 @@ import { isDisposableEmail } from "@/lib/disposable-emails";
 import { getDeviceFingerprint } from "@/lib/device-fingerprint";
 import { supabase } from "@/integrations/supabase/client";
 import { t } from "@/lib/i18n";
-import { Mail, Lock, User, Eye, EyeOff, Phone } from "lucide-react";
+import { Mail, Lock, User, Eye, EyeOff, Phone, Gift } from "lucide-react";
 import { toast } from "sonner";
 
 export default function Login() {
@@ -17,25 +17,26 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
+  const [referralInput, setReferralInput] = useState("");
   const [agreed, setAgreed] = useState(false);
   const [loading, setLoading] = useState(false);
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { signUp, signIn, user, isEmailVerified } = useAuth();
 
-  const referralCode = searchParams.get("ref") || "";
+  const referralFromUrl = searchParams.get("ref") || "";
+
+  useEffect(() => {
+    if (referralFromUrl) setReferralInput(referralFromUrl);
+  }, [referralFromUrl]);
 
   useEffect(() => {
     setIsRegister(location.pathname === "/register");
   }, [location.pathname]);
 
   useEffect(() => {
-    if (user) {
-      if (!isEmailVerified) {
-        navigate("/verify-email", { replace: true });
-      } else {
-        navigate("/dashboard", { replace: true });
-      }
+    if (user && isEmailVerified) {
+      navigate("/dashboard", { replace: true });
     }
   }, [user, isEmailVerified, navigate]);
 
@@ -50,16 +51,28 @@ export default function Login() {
       return;
     }
 
-    // Block disposable emails
     if (isRegister && isDisposableEmail(email)) {
       toast.error("টেম্পোরারি/ডিসপোজেবল ইমেইল ব্যবহার করা যাবে না।");
       return;
     }
 
+    // Validate referral code if provided
+    if (isRegister && referralInput.trim()) {
+      const { data: refProfile } = await supabase
+        .from("profiles")
+        .select("id")
+        .eq("referral_code", referralInput.trim().toUpperCase())
+        .maybeSingle();
+
+      if (!refProfile) {
+        toast.error("রেফারেল কোড সঠিক নয়।");
+        return;
+      }
+    }
+
     setLoading(true);
 
     if (isRegister) {
-      // Check device fingerprint
       try {
         const fingerprint = await getDeviceFingerprint();
         const { data: deviceCheck } = await supabase.functions.invoke("check-device", {
@@ -73,21 +86,21 @@ export default function Login() {
         }
       } catch (e) {
         console.error("Device check failed:", e);
-        // Continue with signup even if check fails
       }
 
-      const { error } = await signUp(email, password, username, phoneNumber || undefined, referralCode || undefined);
+      const { error } = await signUp(email, password, username, phoneNumber || undefined, referralInput.trim().toUpperCase() || undefined);
       if (error) {
         toast.error(error);
       } else {
-        toast.success("অ্যাকাউন্ট তৈরি হয়েছে! অনুগ্রহ করে আপনার ইমেইল ভেরিফাই করুন।");
-        navigate("/verify-email");
+        // Sign out immediately - user must verify email before logging in
+        await supabase.auth.signOut();
+        navigate("/registration-success", { state: { email }, replace: true });
       }
     } else {
       const { error } = await signIn(email, password);
       if (error) {
         if (error.includes("Email not confirmed")) {
-          toast.error("আপনার ইমেইল এখনও ভেরিফাই হয়নি। অনুগ্রহ করে ইমেইল চেক করুন।");
+          navigate("/email-not-verified", { state: { email } });
         } else {
           toast.error(error);
         }
@@ -108,9 +121,6 @@ export default function Login() {
             <p className="text-sm text-muted-foreground">
               {isRegister ? "নতুন অ্যাকাউন্ট তৈরি করুন" : "আপনার অ্যাকাউন্টে লগইন করুন"}
             </p>
-            {referralCode && isRegister && (
-              <p className="text-xs text-primary mt-2">রেফার কোড: <span className="font-bold">{referralCode}</span></p>
-            )}
           </div>
 
           <form className="space-y-4" onSubmit={handleSubmit}>
@@ -163,6 +173,20 @@ export default function Login() {
                   onChange={e => setPhoneNumber(e.target.value.replace(/\D/g, "").slice(0, 11))}
                   placeholder="ফোন নম্বর (ঐচ্ছিক)"
                   className="w-full pl-10 pr-4 py-3 rounded-xl bg-muted border border-border text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
+                />
+              </div>
+            )}
+
+            {isRegister && (
+              <div className="relative">
+                <Gift className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
+                <input
+                  type="text"
+                  value={referralInput}
+                  onChange={e => setReferralInput(e.target.value.toUpperCase())}
+                  placeholder="রেফারেল কোড (ঐচ্ছিক)"
+                  className="w-full pl-10 pr-4 py-3 rounded-xl bg-muted border border-border text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
+                  maxLength={8}
                 />
               </div>
             )}
