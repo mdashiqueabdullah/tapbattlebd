@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { Shield, Users, Trophy, CreditCard, BarChart3, AlertTriangle, Download, Megaphone, Share2, ShoppingCart, CheckCircle, XCircle, Award, FileText, Calendar, Ban, Smartphone } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import { Shield, Users, Trophy, CreditCard, BarChart3, AlertTriangle, Download, Megaphone, Share2, ShoppingCart, CheckCircle, XCircle, Award, FileText, Calendar, Ban, Smartphone, Image, Upload } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
