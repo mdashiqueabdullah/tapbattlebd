@@ -772,36 +772,19 @@ export default function TapGame({ isPractice, onGameEnd, onCancel, existingTotal
           </motion.span>
         </div>
 
-        {/* Session score + Ball type */}
-        <div className="flex items-center justify-center gap-3 mt-1.5">
-          <div className="flex items-center gap-1.5 px-3 py-1 rounded-full"
-            style={{ background: "hsl(var(--card) / 0.6)" }}>
-            <span className="text-xs text-primary font-semibold">এই সেশন: +{score}</span>
-          </div>
-          <div className="flex items-center gap-1.5 px-3 py-1 rounded-full"
-            style={{ background: "hsl(var(--card) / 0.6)" }}>
-            <div className="w-3 h-3 rounded-full" style={{ background: currentStyle.gradient }} />
-            <span className="text-xs text-muted-foreground">
-              {ballType === "golden" ? "গোল্ডেন +5" : ballType === "red" ? "লাল -3" : ballType === "mega" ? "মেগা +10" : "সাধারণ +1"}
-            </span>
-          </div>
-        </div>
-
         {/* Live Rank + Points to next rank */}
-        {!isPractice && currentRank && (
-          <div className="flex items-center justify-center gap-3 mt-2">
+        {!isPractice && (
+          <div className="flex items-center justify-center gap-4 mt-2">
             <div className="flex items-center gap-1.5 px-3 py-1 rounded-full"
               style={{ background: "hsl(var(--card) / 0.6)" }}>
-              <span className="text-xs text-accent font-bold">🏆 র‍্যাঙ্ক #{currentRank}</span>
+              <span className="text-xs text-accent font-bold">🏆 র‍্যাঙ্ক #{currentRank || "—"}</span>
             </div>
-            {nextRankScore !== null && nextRankScore > 0 && (
-              <div className="flex items-center gap-1.5 px-3 py-1 rounded-full"
-                style={{ background: "hsl(var(--card) / 0.6)" }}>
-                <span className="text-xs text-muted-foreground">
-                  পরবর্তী র‍্যাঙ্কে: <span className="text-primary font-semibold">{Math.max(0, nextRankScore - (existingTotalScore + score))}</span> পয়েন্ট
-                </span>
-              </div>
-            )}
+            <div className="flex items-center gap-1.5 px-3 py-1 rounded-full"
+              style={{ background: "hsl(var(--card) / 0.6)" }}>
+              <span className="text-xs text-muted-foreground">
+                পরবর্তী র‍্যাঙ্কে: <span className="text-primary font-semibold">{nextRankScore !== null && nextRankScore > 0 ? Math.max(0, nextRankScore - (existingTotalScore + score)) : 0}</span> পয়েন্ট
+              </span>
+            </div>
           </div>
         )}
       </div>
