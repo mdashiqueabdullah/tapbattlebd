@@ -180,6 +180,9 @@ export default function TapGame({ isPractice, onGameEnd, onCancel, existingTotal
   }, []);
   const [phase, setPhase] = useState<"ready" | "starting" | "playing" | "submitting" | "done">("ready");
   const [score, setScore] = useState(0);
+  const [rankUpVisible, setRankUpVisible] = useState(false);
+  const [ranksPassedCount, setRanksPassedCount] = useState(0);
+  const prevRanksPassedRef = React.useRef(0);
   const [ballType, setBallType] = useState<BallType>("normal");
   const [flyingCoins, setFlyingCoins] = useState<FlyingCoin[]>([]);
   const [floatingTexts, setFloatingTexts] = useState<FloatingText[]>([]);
