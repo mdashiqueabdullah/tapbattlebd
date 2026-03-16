@@ -833,6 +833,7 @@ export default function TapGame({ isPractice, onGameEnd, onCancel, existingTotal
       </div>
 
       {/* Rank-up celebration */}
+      <Confetti isActive={rankUpVisible} particleCount={60} />
       <AnimatePresence>
         {rankUpVisible && (
           <motion.div
