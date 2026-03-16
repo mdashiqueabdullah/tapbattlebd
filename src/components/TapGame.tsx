@@ -18,6 +18,9 @@ interface TapGameProps {
   isPractice: boolean;
   onGameEnd: (score: number) => void;
   onCancel: () => void;
+  existingTotalScore?: number;
+  currentRank?: number | null;
+  nextRankScore?: number | null;
 }
 
 type BallType = "normal" | "golden" | "red" | "mega";
