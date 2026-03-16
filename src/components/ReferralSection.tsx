@@ -57,9 +57,9 @@ export default function ReferralSection() {
 
   const shareMessage = `Tap Battle BD তে আমার রেফার লিংক দিয়ে জয়েন করো! প্রতি মাসে ৳১৫,০০০ জিতুন!\n\n${referralLink}`;
   const encodedShareMessage = encodeURIComponent(shareMessage);
-  const whatsappShareUrl = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent)
-    ? `https://wa.me/?text=${encodedShareMessage}`
-    : `https://web.whatsapp.com/send?text=${encodedShareMessage}`;
+  const isEmbeddedPreview = window.self !== window.top;
+  const shareTarget = isEmbeddedPreview ? "_top" : "_blank";
+  const whatsappShareUrl = `https://wa.me/?text=${encodedShareMessage}`;
   const facebookShareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(referralLink)}&quote=${encodeURIComponent("Tap Battle BD তে আমার রেফার লিংক দিয়ে জয়েন করো!")}`;
 
   const totalPoints = profile?.referral_points ?? 0;
