@@ -13,6 +13,7 @@ import { useAntiCheat } from "@/hooks/useAntiCheat";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import defaultCharacter from "@/assets/default-tap-character.png";
+import { Confetti } from "@/components/Confetti";
 
 interface TapGameProps {
   isPractice: boolean;
