@@ -165,7 +165,7 @@ function randomPosition() {
   };
 }
 
-export default function TapGame({ isPractice, onGameEnd, onCancel }: TapGameProps) {
+export default function TapGame({ isPractice, onGameEnd, onCancel, existingTotalScore = 0, currentRank = null, nextRankScore = null }: TapGameProps) {
   // Character image from game_settings
   const [characterImage, setCharacterImage] = useState(defaultCharacter);
   useEffect(() => {
